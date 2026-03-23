@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 :root {
   --bg:        #000;
@@ -68,6 +70,8 @@ body::after {
 @keyframes bounce   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
 @keyframes logIn    { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:translateX(0)} }
 @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.45} }
+@keyframes cardLift { 0%{transform:translateY(0) scale(1)} 100%{transform:translateY(-4px) scale(1.02)} }
+@keyframes cardAppear { from{opacity:0;transform:translateY(10px) scale(.98)} to{opacity:1;transform:translateY(0) scale(1)} }
 
 /* ── SHARED ── */
 .view { position:absolute; inset:0; display:flex; flex-direction:column; animation:viewIn .22s ease; }
@@ -173,6 +177,7 @@ body::after {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+  margin-bottom: 12px;
 }
 .arena-card {
   background: rgba(5,5,5,.85);
@@ -196,6 +201,36 @@ body::after {
 }
 .arena-card p { color: #999; font-size: .8rem; line-height: 1.25; }
 .arena-foot { display: flex; justify-content: flex-end; margin-top: 14px; }
+.room-board {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  padding-top: 12px;
+}
+.room-board-title {
+  font-family: var(--font-d);
+  letter-spacing: .08em;
+  color: #d5d5d5;
+  margin-bottom: 8px;
+}
+.room-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.room-item {
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.45);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.room-item:hover { border-color: var(--red-light); transform: translateY(-2px); }
+.room-code { font-family: var(--font-d); letter-spacing: .08em; font-size: 1.05rem; }
+.room-meta { font-size: .75rem; color: #8a8a8a; }
+.room-empty { color:#777; font-size:.82rem; }
 
 /* ════════════════════════════════════════
    DECK BUILDER
@@ -243,13 +278,15 @@ body::after {
   border:1px solid rgba(255,255,255,.12); border-radius:10px;
   cursor:pointer; transition:all .15s; opacity:.45; filter:grayscale(.4); position:relative;
   overflow:hidden;
+  transform-style: preserve-3d;
+  animation: cardAppear .22s ease both;
 }
 .m-card::before {
   content:''; position:absolute; inset:0;
   background:linear-gradient(160deg,rgba(255,255,255,.04) 0%,transparent 60%);
   pointer-events:none;
 }
-.m-card:hover { opacity:.82; filter:grayscale(0); border-color:var(--border2); transform:translateY(-3px); }
+.m-card:hover { opacity:.82; filter:grayscale(0); border-color:var(--border2); animation: cardLift .15s ease forwards; }
 .m-card.sel {
   opacity:1; filter:grayscale(0); border-color:var(--red);
   box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 0 20px rgba(220,20,60,.42), inset 0 0 24px rgba(220,20,60,.16);
@@ -328,6 +365,7 @@ body::after {
   border-radius:12px; padding:10px 16px;
   width:100%; max-width:420px; position:relative; overflow:hidden;
   box-shadow: 0 14px 30px rgba(0,0,0,.58);
+  animation: cardAppear .24s ease;
 }
 .b-card::before {
   content:''; position:absolute; inset:0; pointer-events:none;
@@ -380,7 +418,7 @@ body::after {
 .b-turn.thinking { color:#666; animation:pulse 1.1s infinite; }
 .b-logtext {
   font-family:var(--font-d); font-size:1.05rem; color:#fff; letter-spacing:.04em;
-  animation:logIn .25s ease;
+  animation:logIn .25s ease, cardAppear .25s ease;
 }
 
 /* Controls */
@@ -460,6 +498,7 @@ body::after {
 }
 @media (max-width:680px) {
   .arena-grid { grid-template-columns: 1fr; }
+  .room-list { grid-template-columns: 1fr; }
   .deck-hdr { flex-wrap: wrap; }
   .deck-counts { width: 100%; justify-content: center; }
   .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; gap: 8px; }
@@ -555,11 +594,30 @@ const BUFFS = [
 const S = {
   view:     'menu',
   mode:     null,
+  roomList: [],
+  online: {
+    uid: null,
+    db: null,
+    ready: false,
+    roomId: null,
+    role: null, // host | guest
+    roomUnsub: null,
+    listUnsub: null,
+  },
   deckBoxers: [],
   deckBuffs:  [],
   deckTab:  'boxers',
   battle:   null,
   toastTmr: null,
+};
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDi-5UoX0hDw7O6UQY5pduKgxQMX5C4KY4",
+  authDomain: "ringclash1.firebaseapp.com",
+  projectId: "ringclash1",
+  storageBucket: "ringclash1.firebasestorage.app",
+  messagingSenderId: "373910829853",
+  appId: "1:373910829853:web:319a0093fedf3ef7123ff4"
 };
 
 /* ════════════════════════════════════════════════════════
@@ -577,6 +635,218 @@ function loadProfile() {
 }
 function saveProfile() {
   localStorage.setItem('rcu_v2', JSON.stringify({ b:S.deckBoxers, f:S.deckBuffs }));
+}
+
+function hasFirebaseConfig() {
+  return FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('PASTE_');
+}
+
+function uid() {
+  let id = localStorage.getItem('rcu_uid');
+  if (!id) {
+    id = `u_${Math.random().toString(36).slice(2, 10)}`;
+    localStorage.setItem('rcu_uid', id);
+  }
+  return id;
+}
+
+function initOnline() {
+  if (S.online.ready) return true;
+  if (!hasFirebaseConfig() || !window.firebase?.apps) return false;
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  S.online.db = firebase.database();
+  S.online.uid = uid();
+  S.online.ready = true;
+  return true;
+}
+
+function roomCode() { return Math.random().toString(36).slice(2, 7).toUpperCase(); }
+function roomId() { return `r_${Date.now()}_${Math.random().toString(36).slice(2,7)}`; }
+function clone(x) { return JSON.parse(JSON.stringify(x)); }
+function now() { return Date.now(); }
+
+function battleSnapshotForRoom() {
+  return {
+    mode: 'online',
+    status: S.battle.status,
+    turn: S.battle.turn,
+    thinking: false,
+    turnCount: S.battle.turnCount,
+    log: S.battle.log.slice(-20),
+    winner: S.battle.winner,
+    anim: S.battle.anim,
+    player: S.battle.player,
+    cpu: S.battle.cpu,
+  };
+}
+
+async function pushRoomState() {
+  if (!S.online.ready || !S.online.roomId || !S.battle || S.battle.mode !== 'online') return;
+  const patch = {
+    battle: battleSnapshotForRoom(),
+    status: S.battle.status === 'playing' ? 'playing' : 'finished',
+    updatedAt: now(),
+  };
+  await S.online.db.ref(`rooms/${S.online.roomId}`).update(patch);
+}
+
+function cleanupOnlineRoomListener() {
+  if (S.online.roomUnsub && S.online.db && S.online.roomId) {
+    S.online.db.ref(`rooms/${S.online.roomId}`).off('value', S.online.roomUnsub);
+  }
+  S.online.roomUnsub = null;
+}
+
+function leaveRoom() {
+  cleanupOnlineRoomListener();
+  S.online.roomId = null;
+  S.online.role = null;
+}
+
+function canActOnline() {
+  if (!S.battle || S.battle.mode !== 'online') return false;
+  return (S.online.role === 'host' && S.battle.turn === 'player') ||
+         (S.online.role === 'guest' && S.battle.turn === 'cpu');
+}
+
+function actorForCurrentTurn(b) {
+  return b.turn === 'player'
+    ? { atkSide: b.player, defSide: b.cpu }
+    : { atkSide: b.cpu, defSide: b.player };
+}
+
+function subscribeRoomList() {
+  if (!initOnline()) return;
+  if (S.online.listUnsub) return;
+  const q = S.online.db.ref('rooms').orderByChild('status').equalTo('open');
+  const cb = snap => {
+    const rows = [];
+    snap.forEach(ch => {
+      const v = ch.val() || {};
+      rows.push({ id: ch.key, code: v.code, hostName: v.hostName || 'Host', createdAt: v.createdAt || 0 });
+    });
+    rows.sort((a,b)=>b.createdAt-a.createdAt);
+    S.roomList = rows.slice(0, 30);
+    if (S.view === 'arena') renderArena();
+  };
+  q.on('value', cb);
+  S.online.listUnsub = cb;
+}
+
+async function createOnlineRoom() {
+  if (!initOnline()) {
+    toast('Firebase config missing. Add your project credentials in FIREBASE_CONFIG.');
+    return;
+  }
+  if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
+    toast('Set up your squad first! Visit Strategy Hub.');
+    return;
+  }
+  const id = roomId();
+  const code = roomCode();
+  const hostName = `Host-${S.online.uid.slice(-4).toUpperCase()}`;
+  const payload = {
+    code,
+    status: 'open',
+    hostUid: S.online.uid,
+    hostName,
+    hostDeck: { b: S.deckBoxers, f: S.deckBuffs },
+    guestDeck: null,
+    guestUid: null,
+    createdAt: now(),
+    updatedAt: now(),
+  };
+  await S.online.db.ref(`rooms/${id}`).set(payload);
+  S.online.roomId = id;
+  S.online.role = 'host';
+  toast(`Room ${code} created. Waiting for opponent...`);
+  watchRoom(id);
+}
+
+async function joinOnlineRoomById(id) {
+  if (!initOnline()) {
+    toast('Firebase config missing. Add your project credentials in FIREBASE_CONFIG.');
+    return;
+  }
+  if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
+    toast('Set up your squad first! Visit Strategy Hub.');
+    return;
+  }
+  const ref = S.online.db.ref(`rooms/${id}`);
+  const snap = await ref.get();
+  const room = snap.val();
+  if (!room || room.status !== 'open' || !room.hostDeck) {
+    toast('Room unavailable.');
+    return;
+  }
+  if (room.hostUid === S.online.uid) {
+    toast('This is your own room.');
+    return;
+  }
+  const guestName = `Guest-${S.online.uid.slice(-4).toUpperCase()}`;
+  const battle = {
+    mode: 'online',
+    status: 'playing',
+    turn: 'player',
+    thinking: false,
+    turnCount: 1,
+    log: ['⚡ The bell rings! Online match started.'],
+    winner: null,
+    anim: null,
+    player: makePlayers(room.hostDeck.b, room.hostDeck.f, room.hostName || 'HOST'),
+    cpu: makePlayers(S.deckBoxers, S.deckBuffs, guestName),
+  };
+  await ref.update({
+    status: 'playing',
+    guestUid: S.online.uid,
+    guestName,
+    guestDeck: { b: S.deckBoxers, f: S.deckBuffs },
+    battle,
+    updatedAt: now(),
+  });
+  S.online.roomId = id;
+  S.online.role = 'guest';
+  watchRoom(id);
+}
+
+async function joinOnlineRoomByCode(codeRaw) {
+  if (!initOnline()) return;
+  const code = (codeRaw || '').trim().toUpperCase();
+  if (!code) return;
+  const snap = await S.online.db.ref('rooms').orderByChild('code').equalTo(code).get();
+  let target = null;
+  snap.forEach(ch => {
+    const v = ch.val() || {};
+    if (!target && v.status === 'open') target = ch.key;
+  });
+  if (!target) return toast('No open room found with that code.');
+  joinOnlineRoomById(target);
+}
+
+function watchRoom(id) {
+  if (!initOnline()) return;
+  cleanupOnlineRoomListener();
+  const ref = S.online.db.ref(`rooms/${id}`);
+  const cb = snap => {
+    const room = snap.val();
+    if (!room) {
+      toast('Room closed.');
+      leaveRoom();
+      goto('arena');
+      return;
+    }
+    if (room.battle) {
+      S.battle = clone(room.battle);
+      S.battle.mode = 'online';
+      if (S.view !== 'battle') goto('battle');
+      else renderBattle();
+    } else if (S.online.role === 'host' && room.status === 'open') {
+      if (S.view !== 'arena') goto('arena');
+      toast(`Room ${room.code} waiting for player...`);
+    }
+  };
+  ref.on('value', cb);
+  S.online.roomUnsub = cb;
 }
 
 /* ════════════════════════════════════════════════════════
@@ -632,11 +902,12 @@ function renderMenu() {
 }
 
 function renderArena() {
+  const onlineReady = initOnline();
   app().innerHTML = `
     <div class="view view-arena">
       <div class="arena-panel">
         <div class="arena-title">Choose Your Match</div>
-        <div class="arena-sub">Enter the ring against AI, or set up a room match with another player.</div>
+        <div class="arena-sub">Enter the ring against AI, or battle online with room creation and global room list.</div>
         <div class="arena-grid">
           <button class="arena-card" id="mode-ai">
             <h3>🤖 Battle AI</h3>
@@ -644,12 +915,28 @@ function renderArena() {
           </button>
           <button class="arena-card" id="mode-create">
             <h3>🏟️ Create Room</h3>
-            <p>Create a local room code and start a hotseat duel with another player.</p>
+            <p>Create an online room code and wait for challengers worldwide.</p>
           </button>
           <button class="arena-card" id="mode-join">
             <h3>🛰️ Join Room</h3>
-            <p>Join with a room code and challenge your friend on this device.</p>
+            <p>Join via code or choose from currently open online rooms.</p>
           </button>
+        </div>
+        <div class="room-board">
+          <div class="room-board-title">Open Rooms</div>
+          <div class="room-list" id="room-list">
+            ${
+              onlineReady
+                ? (S.roomList.length
+                    ? S.roomList.map(r => `
+                      <button class="room-item" data-room-id="${r.id}">
+                        <div class="room-code">${r.code}</div>
+                        <div class="room-meta">${r.hostName}</div>
+                      </button>`).join('')
+                    : '<div class="room-empty">No open rooms right now.</div>')
+                : '<div class="room-empty">Set FIREBASE_CONFIG to enable online rooms.</div>'
+            }
+          </div>
         </div>
         <div class="arena-foot">
           <button class="btn-back" id="arena-back">← Back to Menu</button>
@@ -659,17 +946,16 @@ function renderArena() {
 
   document.getElementById('arena-back').addEventListener('click', () => goto('menu'));
   document.getElementById('mode-ai').addEventListener('click', () => startBattle('ai'));
-  document.getElementById('mode-create').addEventListener('click', () => {
-    const code = Math.random().toString(36).slice(2, 7).toUpperCase();
-    toast(`Room ${code} created. Local duel mode ready.`);
-    startBattle('room');
-  });
+  document.getElementById('mode-create').addEventListener('click', createOnlineRoom);
   document.getElementById('mode-join').addEventListener('click', () => {
     const code = prompt('Enter room code:');
     if (!code) return;
-    toast(`Joined room ${code.toUpperCase()}. Local duel mode ready.`);
-    startBattle('room');
+    joinOnlineRoomByCode(code);
   });
+  document.querySelectorAll('[data-room-id]').forEach(el => {
+    el.addEventListener('click', () => joinOnlineRoomById(el.dataset.roomId));
+  });
+  if (onlineReady) subscribeRoomList();
 }
 
 /* ════════════════════════════════════════════════════════
@@ -817,10 +1103,11 @@ function renderTcPips(tc, isOpp) {
 function renderBattle() {
   const b = S.battle;
   const p = b.player, c = b.cpu;
-  const roomMode = b.mode === 'room';
+  const roomMode = b.mode === 'room' || b.mode === 'online';
+  const onlineMode = b.mode === 'online';
   const activeSide = roomMode ? (b.turn === 'player' ? p : c) : p;
   const enemySide  = roomMode ? (b.turn === 'player' ? c : p) : c;
-  const isMyTurn  = roomMode ? true : (b.turn==='player' && !b.thinking);
+  const isMyTurn  = onlineMode ? canActOnline() : roomMode ? true : (b.turn==='player' && !b.thinking);
   const myActive  = activeSide.boxers[activeSide.activeIdx];
   const oppActive = enemySide.boxers[enemySide.activeIdx];
   const logText   = b.log[b.log.length-1] || '';
@@ -828,7 +1115,13 @@ function renderBattle() {
   // turn display
   let turnLabel, turnCls;
   if (!roomMode && b.thinking) { turnLabel='CPU THINKING <span class="thinking-dot">…</span>'; turnCls='thinking'; }
-  else if (roomMode) { turnLabel = b.turn === 'player' ? 'PLAYER 1 TURN' : 'PLAYER 2 TURN'; turnCls = b.turn === 'player' ? 'mine' : 'theirs'; }
+  else if (onlineMode) {
+    const hostTurn = b.turn === 'player';
+    const myHost = S.online.role === 'host';
+    const mine = (hostTurn && myHost) || (!hostTurn && !myHost);
+    turnLabel = mine ? 'YOUR TURN' : 'OPPONENT TURN';
+    turnCls = mine ? 'mine' : 'theirs';
+  } else if (roomMode) { turnLabel = b.turn === 'player' ? 'PLAYER 1 TURN' : 'PLAYER 2 TURN'; turnCls = b.turn === 'player' ? 'mine' : 'theirs'; }
   else if (isMyTurn) { turnLabel='YOUR ROUND'; turnCls='mine'; }
   else { turnLabel='ENEMY MOVEMENT'; turnCls='theirs'; }
 
@@ -841,7 +1134,7 @@ function renderBattle() {
           ${enemySide.boxers.map((bx,i)=>`
             <div class="t-slot ${i===enemySide.activeIdx?'theirs':''} ${bx.isDead?'dead':''}" title="${bx.name}">${bx.icon}</div>
           `).join('')}
-          <span class="p-tag">${roomMode ? (b.turn === 'player' ? 'PLAYER 2' : 'PLAYER 1') : 'CPU'}</span>
+          <span class="p-tag">${onlineMode ? (S.online.role === 'host' ? c.name : p.name) : roomMode ? (b.turn === 'player' ? 'PLAYER 2' : 'PLAYER 1') : 'CPU'}</span>
         </div>
         <div class="tc-bar">${renderTcPips(enemySide.tc, true)}</div>
       </div>
@@ -909,12 +1202,19 @@ function renderBattle() {
       if (isMyTurn) doUseBuff(i);
     }));
   } else {
-    document.getElementById('btn-ret')?.addEventListener('click', () => { S.battle=null; goto('menu'); });
+    document.getElementById('btn-ret')?.addEventListener('click', () => {
+      S.battle=null;
+      leaveRoom();
+      goto('menu');
+    });
   }
 }
 
 function renderVictory() {
-  const won = S.battle.winner === 'player';
+  const b = S.battle;
+  const won = b.mode === 'online'
+    ? ((S.online.role === 'host' && b.winner === 'player') || (S.online.role === 'guest' && b.winner === 'cpu'))
+    : b.winner === 'player';
   return `
     <div class="v-overlay">
       <div class="v-body">
@@ -932,6 +1232,7 @@ function renderVictory() {
 function doAttack() {
   const b = S.battle;
   if (b.status !== 'playing') return;
+  if (b.mode === 'online' && !canActOnline()) return;
   if (b.mode === 'ai' && (b.turn !== 'player' || b.thinking)) return;
   if (b.mode === 'ai') b.thinking = true;
 
@@ -960,6 +1261,12 @@ function doAttack() {
 
   if (b.status === 'playing') {
     b.anim = null;
+    if (b.mode === 'online') {
+      b.turn = b.turn === 'player' ? 'cpu' : 'player';
+      renderBattle();
+      pushRoomState();
+      return;
+    }
     if (b.mode === 'room') {
       b.turn = b.turn === 'player' ? 'cpu' : 'player';
       renderBattle();
@@ -968,12 +1275,15 @@ function doAttack() {
     b.turn = 'cpu';
     renderBattle();
     setTimeout(aiTurn, 1300);
+  } else if (b.mode === 'online') {
+    pushRoomState();
   }
 }
 
 function doUseBuff(idx) {
   const b = S.battle;
   if (b.status!=='playing') return;
+  if (b.mode === 'online' && !canActOnline()) return;
   if (b.mode === 'ai' && (b.turn!=='player' || b.thinking)) return;
   const actor = b.turn === 'player' ? b.player : b.cpu;
   const bf = actor.buffs[idx];
@@ -997,17 +1307,25 @@ function doUseBuff(idx) {
   b.anim = 'buff';
   renderBattle();
   b.anim = null;
+  if (b.mode === 'online') pushRoomState();
 }
 
 function doSwitch(idx) {
   const b = S.battle;
   if (b.status!=='playing') return;
+  if (b.mode === 'online' && !canActOnline()) return;
   if (b.mode === 'ai' && (b.turn!=='player'||b.thinking)) return;
   const actor = b.turn === 'player' ? b.player : b.cpu;
   if (actor.tc < 1) return toast('Need 1 TC to switch');
   actor.activeIdx = idx; actor.tc -= 1;
   b.log.push(`${actor.boxers[idx].name} tags in!`);
   b.turnCount++;
+  if (b.mode === 'online') {
+    b.turn = b.turn === 'player' ? 'cpu' : 'player';
+    renderBattle();
+    pushRoomState();
+    return;
+  }
   if (b.mode === 'room') {
     b.turn = b.turn === 'player' ? 'cpu' : 'player';
     renderBattle();
