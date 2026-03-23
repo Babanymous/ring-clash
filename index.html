@@ -11,65 +11,228 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <style>
-    :root { --bg:#0b0d14; --bg2:#141a2f; --line:#323b62; --text:#f4f7ff; --muted:#a4add0; --red:#d5153d; --green:#00e676; --fd:"Bebas Neue",sans-serif; --fb:"Barlow Condensed",sans-serif; }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); }
+    :root {
+      --bg:#0b0d14; --bg2:#141a2f; --line:#323b62; --text:#f4f7ff;
+      --muted:#a4add0; --red:#d5153d; --green:#00e676;
+      --fd:"Bebas Neue",sans-serif; --fb:"Barlow Condensed",sans-serif;
+      --radius:14px; --radius-sm:10px;
+      --shadow-card:0 8px 24px rgba(0,0,0,.45);
+      --shadow-glow:0 0 0 1px rgba(255,116,147,.4), 0 8px 28px rgba(213,21,61,.3);
+      --transition:.18s cubic-bezier(.25,.8,.25,1);
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); -webkit-tap-highlight-color:transparent; }
     body { font-family:var(--fb); }
-    #app { width:100vw; height:100vh; position:relative; }
-    .view { position:absolute; inset:0; display:flex; flex-direction:column; animation:fade .2s ease; }
-    .btn { border:1px solid var(--line); background:#18203b; color:#fff; border-radius:10px; padding:10px 14px; font-family:var(--fd); letter-spacing:.08em; cursor:pointer; transition:.13s; }
-    .btn:hover { transform:translateY(-2px); border-color:#59679f; }
+    #app { width:100vw; height:100dvh; position:relative; }
+
+    /* ── Views ── */
+    .view { position:absolute; inset:0; display:flex; flex-direction:column; animation:fadeSlide .25s ease both; }
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── Buttons ── */
+    .btn {
+      border:1px solid var(--line); background:#18203b; color:#fff;
+      border-radius:var(--radius-sm); padding:10px 16px;
+      font-family:var(--fd); letter-spacing:.08em; cursor:pointer;
+      transition:var(--transition); touch-action:manipulation;
+      min-height:42px; display:inline-flex; align-items:center; justify-content:center;
+      user-select:none; -webkit-user-select:none;
+    }
+    .btn:hover { transform:translateY(-2px); border-color:#59679f; background:#1f2d4a; }
+    .btn:active { transform:translateY(1px) scale(.97); }
     .btn:disabled { opacity:.35; transform:none; cursor:not-allowed; }
     .btn-p { background:linear-gradient(150deg,#ff4e78,var(--red)); border-color:#ff7693; }
-    .menu { align-items:center; justify-content:center; text-align:center; gap:16px; padding:16px; background:radial-gradient(ellipse 120% 90% at 50% 50%, rgba(213,21,61,.2), transparent 64%), radial-gradient(ellipse 120% 90% at 0% 0%, rgba(85,165,255,.15), transparent 64%), var(--bg); }
-    .t1,.t3 { font-family:var(--fd); font-size:clamp(3rem,12vw,6.8rem); line-height:.84; }
-    .t2 { font-family:var(--fd); font-size:clamp(2rem,8vw,4rem); line-height:1; background:var(--red); display:inline-block; padding:0 18px; transform:skewX(-10deg); }
-    .row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
-    .sub { color:var(--muted); }
-    .toast-wrap { position:fixed; top:12px; left:50%; transform:translateX(-50%); z-index:50; }
-    .toast { background:#101521; border:1px solid #3a456d; border-radius:999px; padding:9px 14px; }
-    .panel { margin:12px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(160deg,#1a2037 0%, #10162a 100%); padding:10px; overflow:hidden; }
-    .head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
-    .tabs,.actions { display:flex; gap:8px; }
-    .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-    .choice { border:1px solid #3a446e; border-radius:12px; background:#171d33; padding:10px; cursor:pointer; }
-    .choice h3 { font-family:var(--fd); letter-spacing:.07em; font-size:1.1rem; }
-    .choice p { font-size:.8rem; color:#b4bdd9; }
-    .rooms { margin-top:8px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-height:170px; overflow:auto; }
-    .room { border:1px solid #3c4673; border-radius:10px; background:#141b2f; padding:8px; cursor:pointer; }
-    .warn { margin-top:8px; border:1px solid #8a6b2c; background:rgba(138,107,44,.2); color:#ffd892; border-radius:8px; padding:8px; font-size:.8rem; }
-    .cards { flex:1; overflow:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); grid-auto-rows:270px; gap:10px; align-content:start; }
-    .tcg { border:1px solid #49547f; border-radius:14px; background:linear-gradient(180deg,rgba(246,199,92,.22) 0 38px,rgba(246,199,92,0) 39px), linear-gradient(160deg,#1a213b,#12172a); padding:8px; display:flex; flex-direction:column; gap:6px; box-shadow:0 8px 18px rgba(0,0,0,.35); cursor:pointer; transition:.13s; }
-    .tcg:hover { transform:translateY(-2px); border-color:#6576b0; }
-    .tcg.sel { border-color:#ff7493; box-shadow:0 0 0 1px rgba(255,116,147,.35), 0 14px 24px rgba(210,21,61,.25); }
+    .btn-p:hover { background:linear-gradient(150deg,#ff6a8e,#e0203f); }
+
+    /* ── Toast ── */
+    .toast-wrap { position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:50; pointer-events:none; }
+    .toast {
+      background:rgba(16,21,33,.95); border:1px solid #3a456d;
+      border-radius:999px; padding:10px 18px;
+      box-shadow:0 4px 16px rgba(0,0,0,.5);
+      animation:fadeSlide .2s ease both;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      font-size:.9rem; white-space:nowrap;
+    }
+
+    /* ── Menu ── */
+    .menu {
+      align-items:center; justify-content:center; text-align:center; gap:20px; padding:20px;
+      background:
+        radial-gradient(ellipse 140% 80% at 50% 100%, rgba(213,21,61,.25), transparent 60%),
+        radial-gradient(ellipse 80% 60% at 10% 10%, rgba(85,165,255,.15), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(213,21,61,.1), transparent 50%),
+        var(--bg);
+    }
+    .menu::before {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background:repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(50,59,98,.18) 40px),
+                 repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(50,59,98,.1) 40px);
+    }
+    .menu > * { position:relative; z-index:1; }
+    .t1,.t3 { font-family:var(--fd); font-size:clamp(3rem,12vw,6.8rem); line-height:.84; text-shadow:0 2px 20px rgba(213,21,61,.3); }
+    .t2 {
+      font-family:var(--fd); font-size:clamp(2rem,8vw,4rem); line-height:1;
+      background:var(--red); display:inline-block; padding:0 20px;
+      transform:skewX(-10deg); box-shadow:4px 4px 0 rgba(0,0,0,.4), 0 0 30px rgba(213,21,61,.4);
+    }
+    .row { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+    .sub { color:var(--muted); font-size:.9rem; letter-spacing:.03em; }
+
+    /* ── Panel (Deck / Arena) ── */
+    .panel {
+      margin:10px; border:1px solid var(--line); border-radius:var(--radius);
+      background:linear-gradient(160deg,#1a2037 0%,#10162a 100%);
+      padding:10px; overflow:hidden;
+    }
+    .head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
+    .tabs, .actions { display:flex; gap:8px; }
+
+    /* ── Arena grid & rooms ── */
+    .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .choice {
+      border:1px solid #3a446e; border-radius:var(--radius-sm);
+      background:linear-gradient(160deg,#1c2340,#141a30);
+      padding:14px 12px; cursor:pointer;
+      transition:var(--transition); touch-action:manipulation;
+    }
+    .choice:hover { transform:translateY(-3px); border-color:#5a6496; background:linear-gradient(160deg,#222a4e,#181e3a); }
+    .choice:active { transform:translateY(0) scale(.98); }
+    .choice h3 { font-family:var(--fd); letter-spacing:.07em; font-size:1.15rem; margin-bottom:4px; }
+    .choice p { font-size:.8rem; color:#b4bdd9; line-height:1.3; }
+    .rooms { margin-top:10px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-height:160px; overflow:auto; }
+    .room {
+      border:1px solid #3c4673; border-radius:var(--radius-sm);
+      background:#141b2f; padding:10px; cursor:pointer;
+      transition:var(--transition); touch-action:manipulation;
+    }
+    .room:hover { border-color:#5a6496; background:#1a2240; }
+    .warn { margin-top:10px; border:1px solid #8a6b2c; background:rgba(138,107,44,.18); color:#ffd892; border-radius:8px; padding:9px; font-size:.8rem; }
+
+    /* ── Deck Builder Cards ── */
+    .cards { flex:1; overflow:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); grid-auto-rows:275px; gap:10px; align-content:start; padding-bottom:4px; }
+    .tcg {
+      border:1px solid #49547f; border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(246,199,92,.22) 0 40px,rgba(246,199,92,0) 41px), linear-gradient(160deg,#1a213b,#12172a);
+      padding:8px; display:flex; flex-direction:column; gap:6px;
+      box-shadow:var(--shadow-card); cursor:pointer;
+      transition:var(--transition); touch-action:manipulation;
+    }
+    .tcg:hover { transform:translateY(-3px) scale(1.01); border-color:#6576b0; box-shadow:0 12px 28px rgba(0,0,0,.5); }
+    .tcg:active { transform:translateY(0) scale(.98); }
+    .tcg.sel { border-color:#ff7493; box-shadow:var(--shadow-glow); }
     .tcg-top { display:flex; justify-content:space-between; align-items:center; gap:6px; }
     .name { font-family:var(--fd); font-size:1.05rem; letter-spacing:.05em; line-height:.95; }
-    .badge { font-size:.62rem; border:1px solid #4a547d; background:#11172c; border-radius:999px; padding:2px 7px; color:#c0c9ea; }
-    .art { height:120px; border:1px solid #3f486f; border-radius:10px; background:#101528 center/cover no-repeat; display:grid; place-items:center; font-size:2rem; }
-    .title { font-size:.75rem; color:#cad2f3; line-height:1; min-height:28px; }
+    .badge { font-size:.6rem; border:1px solid #4a547d; background:#11172c; border-radius:999px; padding:2px 8px; color:#c0c9ea; letter-spacing:.05em; }
+    .art { height:118px; border:1px solid #3f486f; border-radius:var(--radius-sm); background:#101528 center/cover no-repeat; display:grid; place-items:center; font-size:2.2rem; }
+    .title { font-size:.74rem; color:#cad2f3; line-height:1.2; min-height:26px; }
     .statline { display:flex; gap:5px; flex-wrap:wrap; }
-    .pill { font-size:.66rem; border:1px solid #4b567f; background:#10162a; border-radius:999px; padding:2px 6px; }
+    .pill { font-size:.65rem; border:1px solid #4b567f; background:#10162a; border-radius:999px; padding:2px 7px; }
     .hp { color:#ff9fb5; } .atk { color:#ffd787; } .def { color:#9fceff; } .tc { color:#b6fcb5; } .sp { color:#e6beff; }
-    .battle { display:grid; grid-template-rows:auto 1fr auto 1fr auto; }
-    .bar { padding:8px 10px; border-bottom:1px solid #313a5d; background:#11182d; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .slots { display:flex; gap:6px; } .slot { width:36px; height:36px; border:1px solid #46507a; border-radius:8px; background:#151c33; display:grid; place-items:center; }
-    .slot.dead { opacity:.25; filter:grayscale(1); }
-    .fight-card { margin:auto 10px; width:calc(100% - 20px); max-width:700px; border:1px solid #4b5683; border-radius:14px; background:linear-gradient(180deg,rgba(246,199,92,.2) 0 32px,rgba(246,199,92,0) 33px), linear-gradient(160deg,#1a2038,#12182e); padding:10px; display:flex; gap:10px; box-shadow:0 10px 24px rgba(0,0,0,.35); }
-    .fight-art { width:96px; min-width:96px; height:96px; border:1px solid #45507b; border-radius:10px; background:#101526 center/cover no-repeat; display:grid; place-items:center; font-size:2rem; }
+
+    /* ── Battle Layout ── */
+    .battle { display:grid; grid-template-rows:auto 1fr auto 1fr auto; overflow:hidden; }
+    .bar {
+      padding:8px 12px; border-bottom:1px solid #2a3356;
+      background:linear-gradient(90deg,#0e1428,#111930);
+      display:flex; justify-content:space-between; align-items:center; gap:8px;
+      font-size:.85rem;
+    }
+    .slots { display:flex; gap:6px; }
+    .slot {
+      width:38px; height:38px; border:1px solid #46507a; border-radius:9px;
+      background:#151c33; display:grid; place-items:center;
+      font-size:1.1rem; transition:var(--transition);
+    }
+    button.slot { cursor:pointer; touch-action:manipulation; }
+    button.slot:not(:disabled):hover { border-color:#7a8ac0; background:#1d2845; transform:scale(1.08); }
+    button.slot:not(:disabled):active { transform:scale(.94); }
+    .slot.dead { opacity:.22; filter:grayscale(1); }
+
+    /* ── Fight Cards ── */
+    .fight-card {
+      margin:auto 10px; width:calc(100% - 20px); max-width:700px;
+      border:1px solid #4b5683; border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(246,199,92,.18) 0 30px,rgba(246,199,92,0) 31px), linear-gradient(160deg,#1a2038,#12182e);
+      padding:10px; display:flex; gap:10px; box-shadow:var(--shadow-card);
+    }
+    .fight-art {
+      width:94px; min-width:94px; height:94px;
+      border:1px solid #45507b; border-radius:var(--radius-sm);
+      background:#101526 center/cover no-repeat; display:grid; place-items:center; font-size:2.2rem;
+    }
     .fname { font-family:var(--fd); font-size:1.15rem; letter-spacing:.05em; line-height:.95; }
-    .hpb { height:8px; border:1px solid #404a74; border-radius:999px; background:#12192f; overflow:hidden; margin:4px 0; }
-    .hpfill { height:100%; background:linear-gradient(90deg,#00e676,#41ffb5); transition:width .22s; }
-    .hpfill.mid { background:linear-gradient(90deg,#ff9a25,#ffd16b); } .hpfill.low { background:linear-gradient(90deg,#ff3f66,#ff7c99); }
-    .logbox { text-align:center; min-height:58px; display:grid; place-items:center; padding:8px; }
-    .turn { font-family:var(--fd); letter-spacing:.2em; color:#bdc5e8; } .log { font-family:var(--fd); font-size:1.02rem; }
-    .ctrl { border-top:1px solid #313a5d; background:#10162b; padding:8px; display:flex; flex-direction:column; gap:8px; }
-    .buffs { display:flex; gap:8px; overflow:auto; }
-    .buff { min-width:138px; border:1px solid #46507a; border-radius:11px; background:linear-gradient(180deg,rgba(90,169,255,.2),transparent 45%), #141a31; padding:6px; text-align:left; cursor:pointer; }
-    .buff.dis { opacity:.35; cursor:not-allowed; }
-    .ov { position:absolute; inset:0; background:rgba(0,0,0,.84); display:grid; place-items:center; }
-    .ov h1 { font-family:var(--fd); font-size:clamp(3rem,10vw,5rem); letter-spacing:.1em; } .win{color:var(--green)} .lose{color:#ff5f82}
-    @keyframes fade{from{opacity:0}to{opacity:1}}
-    @media (max-width:760px){ .grid3,.rooms{grid-template-columns:1fr} .cards{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:248px} .fight-art{width:74px;min-width:74px;height:74px} .fname{font-size:1rem} }
+    .hpb { height:9px; border:1px solid #3a4468; border-radius:999px; background:#0c1220; overflow:hidden; margin:5px 0; }
+    .hpfill { height:100%; background:linear-gradient(90deg,#00e676,#41ffb5); transition:width .35s cubic-bezier(.25,.8,.25,1); border-radius:999px; }
+    .hpfill.mid { background:linear-gradient(90deg,#ff9a25,#ffd16b); }
+    .hpfill.low { background:linear-gradient(90deg,#ff3f66,#ff7c99); animation:hpPulse 1.2s ease-in-out infinite; }
+    @keyframes hpPulse { 0%,100%{opacity:1} 50%{opacity:.65} }
+
+    /* ── Log Box ── */
+    .logbox { text-align:center; min-height:54px; display:grid; place-items:center; padding:6px 12px; background:rgba(10,14,26,.4); }
+    .turn { font-family:var(--fd); letter-spacing:.22em; font-size:.82rem; color:#8a97c0; margin-bottom:2px; }
+    .turn.active { color:#ff9bbb; animation:turnPulse 1.4s ease-in-out infinite; }
+    @keyframes turnPulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+    .log { font-family:var(--fd); font-size:1.05rem; letter-spacing:.04em; }
+
+    /* ── Controls ── */
+    .ctrl { border-top:1px solid #2a3356; background:linear-gradient(180deg,#0f1527,#0b1020); padding:8px; display:flex; flex-direction:column; gap:8px; }
+    .actions { display:flex; gap:8px; }
+    .actions .btn { flex:1; min-height:44px; font-size:.95rem; }
+
+    /* ── Buff Cards ── */
+    .buffs { display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+    .buffs::-webkit-scrollbar { height:3px; }
+    .buffs::-webkit-scrollbar-track { background:transparent; }
+    .buffs::-webkit-scrollbar-thumb { background:#3a4470; border-radius:999px; }
+    .buff {
+      min-width:130px; max-width:150px; flex-shrink:0; scroll-snap-align:start;
+      border:1px solid #46507a; border-radius:11px;
+      background:linear-gradient(180deg,rgba(90,169,255,.18),transparent 45%), #141a31;
+      padding:7px; text-align:left; cursor:pointer;
+      transition:var(--transition); touch-action:manipulation;
+    }
+    .buff:not(.dis):hover { transform:translateY(-2px); border-color:#7a9ed8; background:linear-gradient(180deg,rgba(90,169,255,.28),transparent 45%), #1a2140; }
+    .buff:not(.dis):active { transform:scale(.97); }
+    .buff.dis { opacity:.32; cursor:not-allowed; }
+
+    /* ── Victory / Defeat Overlay ── */
+    .ov { position:absolute; inset:0; background:rgba(0,0,0,.88); display:grid; place-items:center; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); animation:fadeSlide .3s ease both; }
+    .ov h1 { font-family:var(--fd); font-size:clamp(3rem,10vw,5.5rem); letter-spacing:.12em; margin-bottom:20px; }
+    .win { color:var(--green); text-shadow:0 0 40px rgba(0,230,118,.5); }
+    .lose { color:#ff5f82; text-shadow:0 0 40px rgba(255,95,130,.4); }
+
+    /* ── Scrollbar (panels) ── */
+    .panel ::-webkit-scrollbar { width:4px; height:4px; }
+    .panel ::-webkit-scrollbar-track { background:transparent; }
+    .panel ::-webkit-scrollbar-thumb { background:#3a4470; border-radius:999px; }
+
+    /* ── Mobile ── */
+    @media (max-width:760px) {
+      .grid3 { grid-template-columns:1fr; gap:8px; }
+      .rooms { grid-template-columns:1fr; }
+      .cards { grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:252px; }
+      .fight-art { width:72px; min-width:72px; height:72px; font-size:1.8rem; }
+      .fname { font-size:1rem; }
+      .statline .pill { font-size:.62rem; }
+    }
+    @media (max-width:480px) {
+      .panel { margin:6px; padding:8px; }
+      .head { margin-bottom:8px; }
+      .head .btn { padding:8px 10px; font-size:.85rem; min-height:38px; }
+      .cards { grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:240px; gap:8px; }
+      .fight-card { padding:8px; gap:8px; margin:auto 6px; width:calc(100% - 12px); }
+      .fight-art { width:64px; min-width:64px; height:64px; font-size:1.6rem; }
+      .fname { font-size:.92rem; }
+      .ctrl { padding:6px; gap:6px; }
+      .actions .btn { min-height:40px; font-size:.85rem; padding:8px 6px; }
+      .buff { min-width:118px; padding:6px; }
+      .slot { width:34px; height:34px; }
+      .bar { padding:6px 10px; font-size:.8rem; }
+      .logbox { min-height:48px; padding:5px 10px; }
+      .log { font-size:.92rem; }
+      .buffs { gap:6px; }
+    }
   </style>
 </head>
 <body>
@@ -127,7 +290,7 @@
     function watchRoom(id){if(S.online.roomCb&&S.online.roomId)roomsRef(S.online.roomId).off("value",S.online.roomCb);const cb=snap=>{const room=snap.val();if(!room){toast("Room closed.");S.online.roomId=null;S.online.role=null;goto("arena");return}if(room.battle){S.battle=deep(room.battle);S.battle.mode="online";if(S.view!=="battle")goto("battle");else renderBattle()}};roomsRef(id).on("value",cb);S.online.roomCb=cb;if(S.view!=="battle")goto("battle")}
 
     function fightCard(bx){const pct=Math.max(0,(bx.hp/bx.maxHp)*100).toFixed(1);return `<div class="fight-card"><div class="fight-art" ${artBg(bx.img)}>${bx.img?"":bx.icon}</div><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:center;gap:6px;"><div class="fname">${bx.name}</div><div class="badge">FIGHTER</div></div><div class="title">${bx.title} · ${bx.style.toUpperCase()}</div><div class="hpb"><div class="hpfill ${hpClass(bx.hp,bx.maxHp)}" style="width:${pct}%"></div></div><div class="statline"><span class="pill hp">HP ${bx.hp}/${bx.maxHp}</span><span class="pill atk">ATK ${bx.atk}</span><span class="pill def">DEF ${bx.def}</span><span class="pill sp">MOM ${bx.momentum||0}</span>${bx.guard?'<span class="pill tc">GUARD</span>':''}</div></div></div>`}
-    function renderBattle(){const b=S.battle;if(!b)return goto("menu");const myRole=b.mode==="online"?S.online.role:"host",myKey=myRole==="guest"?"guest":"host",opKey=myKey==="host"?"guest":"host";const me=b[myKey],op=b[opKey],myTurn=(b.mode==="ai"?b.turn==="host":b.turn===myRole),can=b.state==="playing"&&myTurn&&!S.online.lock;app().innerHTML=`<div class="view battle"><div class="bar"><div class="slots">${op.boxers.map(x=>`<div class="slot ${x.dead?"dead":""}">${x.icon}</div>`).join("")}</div><div>${op.label} · TC ${op.tc}</div></div>${fightCard(op.boxers[op.active])}<div class="logbox"><div><div class="turn">${can?"YOUR TURN":"OPPONENT TURN"}</div><div class="log">${b.log[b.log.length-1]||""}</div></div></div>${fightCard(me.boxers[me.active])}<div class="ctrl"><div class="actions"><div class="slots">${me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""}" data-sw="${i}" ${(!can||i===me.active||x.dead)?"disabled":""}>${x.icon}</button>`).join("")}</div><div class="actions"><button class="btn" id="a-guard" ${can?"":"disabled"}>GUARD</button><button class="btn" id="a-pass" ${can?"":"disabled"}>END TURN</button><button class="btn btn-p" id="a-hit" ${can?"":"disabled"}>ATTACK</button></div></div><div class="buffs">${me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost;return `<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="badge">BUFF</div><div style="font-size:1.2rem">${f.icon}</div><div style="font-family:var(--fd);line-height:1">${f.name}</div><div style="font-size:.7rem;color:#b4bde1">${f.desc}</div><div class="statline"><span class="pill tc">${f.cost} TC</span></div></button>`}).join("")}</div></div>${b.state==="finished"?`<div class="ov"><div style="text-align:center"><h1 class="${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"win":"lose"}">${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"VICTORY":"DEFEAT"}</h1><button class="btn btn-p" id="b-ex">MENU</button></div></div>`:""}</div>`;if(b.state==="finished"){document.getElementById("b-ex").onclick=()=>{if(S.online.roomCb&&S.online.roomId)roomsRef(S.online.roomId).off("value",S.online.roomCb);S.online.roomCb=null;S.online.roomId=null;S.online.role=null;S.battle=null;goto("menu")};return}document.getElementById("a-hit").onclick=()=>act("attack");document.getElementById("a-guard").onclick=()=>act("guard");document.getElementById("a-pass").onclick=()=>act("pass");app().querySelectorAll("[data-sw]").forEach(el=>el.onclick=()=>act("switch",+el.dataset.sw));app().querySelectorAll("[data-bf]").forEach(el=>el.onclick=()=>act("buff",+el.dataset.bf))}
+    function renderBattle(){const b=S.battle;if(!b)return goto("menu");const myRole=b.mode==="online"?S.online.role:"host",myKey=myRole==="guest"?"guest":"host",opKey=myKey==="host"?"guest":"host";const me=b[myKey],op=b[opKey],myTurn=(b.mode==="ai"?b.turn==="host":b.turn===myRole),can=b.state==="playing"&&myTurn&&!S.online.lock;app().innerHTML=`<div class="view battle"><div class="bar"><div class="slots">${op.boxers.map(x=>`<div class="slot ${x.dead?"dead":""}">${x.icon}</div>`).join("")}</div><div>${op.label} · TC ${op.tc}</div></div>${fightCard(op.boxers[op.active])}<div class="logbox"><div><div class="turn${can?" active":""}">${can?"YOUR TURN":"OPPONENT TURN"}</div><div class="log">${b.log[b.log.length-1]||""}</div></div></div>${fightCard(me.boxers[me.active])}<div class="ctrl"><div class="actions"><div class="slots">${me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""}" data-sw="${i}" ${(!can||i===me.active||x.dead)?"disabled":""}>${x.icon}</button>`).join("")}</div><div class="actions"><button class="btn" id="a-guard" ${can?"":"disabled"}>GUARD</button><button class="btn" id="a-pass" ${can?"":"disabled"}>END TURN</button><button class="btn btn-p" id="a-hit" ${can?"":"disabled"}>ATTACK</button></div></div><div class="buffs">${me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost;return `<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="badge">BUFF</div><div style="font-size:1.2rem">${f.icon}</div><div style="font-family:var(--fd);line-height:1">${f.name}</div><div style="font-size:.7rem;color:#b4bde1">${f.desc}</div><div class="statline"><span class="pill tc">${f.cost} TC</span></div></button>`}).join("")}</div></div>${b.state==="finished"?`<div class="ov"><div style="text-align:center"><h1 class="${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"win":"lose"}">${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"VICTORY":"DEFEAT"}</h1><button class="btn btn-p" id="b-ex" style="font-size:1.1rem;padding:12px 28px;">MENU</button></div></div>`:""}</div>`;if(b.state==="finished"){document.getElementById("b-ex").onclick=()=>{if(S.online.roomCb&&S.online.roomId)roomsRef(S.online.roomId).off("value",S.online.roomCb);S.online.roomCb=null;S.online.roomId=null;S.online.role=null;S.battle=null;goto("menu")};return}document.getElementById("a-hit").onclick=()=>act("attack");document.getElementById("a-guard").onclick=()=>act("guard");document.getElementById("a-pass").onclick=()=>act("pass");app().querySelectorAll("[data-sw]").forEach(el=>el.onclick=()=>act("switch",+el.dataset.sw));app().querySelectorAll("[data-bf]").forEach(el=>el.onclick=()=>act("buff",+el.dataset.bf))}
 
     function onlineApplyAction(bb,role,kind,idx){const me=bb[role],op=bb[role==="host"?"guest":"host"],myA=me.boxers[me.active],opA=op.boxers[op.active];let log=null;if(kind==="attack"){const r=resolveAttack(bb,myA,opA,`${bb.turnCount}|${myA.iid}|${opA.iid}`);log=r.log;me.tc=Math.min(8,me.tc+1);if(opA.hp<=0){opA.hp=0;opA.dead=true;log=`KO! ${opA.name} is down`;const ni=nextAlive(op);if(ni<0){bb.state="finished";bb.winner=role}else op.active=ni}}else if(kind==="switch"){if(typeof idx!=="number"||idx===me.active||!me.boxers[idx]||me.boxers[idx].dead||me.tc<1)return null;me.active=idx;me.tc-=1;log=`${me.boxers[idx].name} tagged in`}else if(kind==="buff"){if(typeof idx!=="number"||!me.buffs[idx])return null;const f=me.buffs[idx];if(f.used||me.tc<f.cost||!condOk(f,me))return null;applyBuff(f,me);f.used=true;me.tc-=f.cost;log=`${myA.name} used ${f.name}`}else if(kind==="guard"){myA.guard=true;myA.momentum=Math.min(3,myA.momentum+1);log=`${myA.name} takes guard stance`}else if(kind==="pass"){me.tc=Math.min(8,me.tc+1);log="Turn passed (+1 TC)"}if(!log)return null;bb.log.push(log);endTurn(bb);return true}
     async function act(kind,idx){const b=S.battle;if(!b||b.state!=="playing")return;if(b.mode==="ai")return actAI(kind,idx);if(!S.online.roomId||S.online.lock)return;const role=S.online.role;if(b.turn!==role)return;S.online.lock=true;try{const tx=await roomsRef(S.online.roomId).transaction(room=>{if(!room||room.status!=="playing"||!room.battle)return room;const bb=room.battle;if(bb.turn!==role||bb.state!=="playing")return room;const ok=onlineApplyAction(bb,role,kind,idx);if(!ok)return room;if(bb.state==="finished")room.status="finished";room.updatedAt=now();return room},undefined,false);if(!tx.committed)toast("Action rejected.")}catch(e){console.error(e);toast(`Sync error: ${e.code||"unknown"}`)}finally{S.online.lock=false}}
