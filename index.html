@@ -1,620 +1,272 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hajime no Ippo: Ring Clash</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        bebas: ['"Bebas Neue"', 'sans-serif'],
-                        inter: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        boxingRed: '#d91b22',
-                        boxingBlue: '#1b4bd9',
-                        ringBlack: '#0d0d0d',
-                        canvas: '#e3dfd3'
-                    },
-                    animation: {
-                        'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
-                        'slide-up': 'slideUp 0.3s ease-out forwards',
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-8px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(8px, 0, 0)' }
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(100%)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Ring Clash Rebuild</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <style>
+    :root {
+      --bg: #080808; --bg2: #121212; --line:#2a2a2a; --red:#dc143c; --red2:#ff3f66; --green:#00e676; --text:#f2f2f2; --muted:#9a9a9a;
+      --fd: "Bebas Neue", sans-serif; --fb: "Barlow Condensed", sans-serif;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    html, body { width:100%; height:100%; background:var(--bg); color:var(--text); overflow:hidden; }
+    body { font-family:var(--fb); }
+    #app { width:100vw; height:100vh; position:relative; }
+    .view { position:absolute; inset:0; display:flex; flex-direction:column; animation:fade .2s ease; }
+    .btn {
+      border:1px solid var(--line); border-radius:10px; background:#161616; color:#fff; padding:10px 14px; cursor:pointer;
+      font-family:var(--fd); letter-spacing:.08em; transition:.13s ease;
+    }
+    .btn:hover { transform:translateY(-2px); border-color:#444; }
+    .btn:disabled { opacity:.4; transform:none; cursor:not-allowed; }
+    .btn-p { background:linear-gradient(150deg,var(--red2),var(--red)); border-color:#ff6f8f; }
+    .menu { align-items:center; justify-content:center; text-align:center; gap:16px; padding:16px; background:radial-gradient(ellipse 120% 90% at 50% 50%, rgba(220,20,60,.13), transparent 62%), #080808; }
+    .t1,.t3 { font-family:var(--fd); font-size:clamp(3rem,14vw,7rem); line-height:.85; }
+    .t2 { font-family:var(--fd); display:inline-block; background:var(--red); padding:0 18px; transform:skewX(-10deg); font-size:clamp(2rem,8vw,4rem); line-height:1; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+    .sub { color:var(--muted); font-size:.9rem; }
+    .toast-wrap { position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:40; }
+    .toast { background:#171717; border:1px solid #333; border-radius:999px; padding:9px 14px; box-shadow:0 8px 24px rgba(0,0,0,.45); }
 
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    .panel { margin:12px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(165deg,#161616 0%,#0d0d0d 100%); padding:10px; }
+    .head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+    .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+    .choice { border:1px solid #333; border-radius:12px; background:#151515; padding:10px; cursor:pointer; transition:.13s ease; }
+    .choice:hover { transform:translateY(-2px); border-color:#555; }
+    .choice h3 { font-family:var(--fd); letter-spacing:.07em; font-size:1.1rem; }
+    .choice p { color:#a7a7a7; font-size:.8rem; }
+    .rooms { margin-top:8px; max-height:180px; overflow:auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .room { border:1px solid #333; border-radius:10px; background:#121212; padding:8px; cursor:pointer; }
+    .warn { margin-top:8px; border:1px solid #876020; background:rgba(135,96,32,.16); color:#ffd58c; border-radius:8px; padding:8px; font-size:.78rem; }
 
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    .tabs { display:flex; gap:8px; margin-bottom:8px; }
+    .cards { flex:1; overflow:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+    .card { border:1px solid #333; border-radius:12px; background:radial-gradient(ellipse 120% 120% at 0% 0%, rgba(220,20,60,.15), transparent 46%), #131313; padding:8px; min-height:102px; cursor:pointer; transition:.13s ease; }
+    .card:hover { transform:translateY(-2px); border-color:#555; }
+    .card.sel { border-color:#ff6c8b; box-shadow:0 0 0 1px rgba(255,108,139,.3), 0 6px 18px rgba(220,20,60,.2); }
+    .ic { font-size:1.6rem; } .nm { font-family:var(--fd); line-height:1; letter-spacing:.06em; } .meta { font-size:.76rem; color:#c8c8c8; margin-top:4px; }
 
-    <style>
-        body { background-color: #050505; color: white; overflow: hidden; touch-action: none; }
-        
-        .card-bg-attack { background: radial-gradient(circle at top left, #4a0c0f, #1a0204); }
-        .card-bg-block { background: radial-gradient(circle at top left, #0c274a, #020a1a); }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+    .battle { display:grid; grid-template-rows:auto 1fr auto 1fr auto; }
+    .bar { padding:8px 10px; border-bottom:1px solid #262626; background:#101010; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .slots { display:flex; gap:6px; }
+    .slot { width:36px; height:36px; border-radius:8px; border:1px solid #333; background:#171717; display:grid; place-items:center; }
+    .slot.dead { opacity:.25; filter:grayscale(1); }
+    .fighter { margin:auto 10px; width:calc(100% - 20px); max-width:560px; border:1px solid #333; border-radius:14px; background:#141414; padding:10px; display:flex; gap:10px; align-items:center; animation:pop .2s ease; }
+    .fighter .icon { font-size:2.2rem; } .fname { font-family:var(--fd); font-size:1.2rem; letter-spacing:.06em; }
+    .hpw { margin:4px 0; height:8px; border:1px solid #2b2b2b; border-radius:999px; overflow:hidden; background:#232323; }
+    .hp { height:100%; transition:width .2s ease; background:linear-gradient(90deg,#00e676,#2effad); }
+    .hp.mid { background:linear-gradient(90deg,#ff9c25,#ffcd5f); } .hp.low { background:linear-gradient(90deg,#ff3f66,#ff6f8f); }
+    .logbox { text-align:center; min-height:54px; display:grid; place-items:center; padding:8px; }
+    .turn { font-family:var(--fd); letter-spacing:.2em; color:#bbb; } .log { font-family:var(--fd); font-size:1.05rem; letter-spacing:.03em; }
+    .ctrl { border-top:1px solid #262626; background:#101010; padding:8px; display:flex; flex-direction:column; gap:8px; }
+    .actions { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .buffs { display:flex; gap:8px; overflow:auto; }
+    .buff { min-width:76px; border:1px solid #333; border-radius:10px; background:#151515; padding:6px; text-align:center; cursor:pointer; }
+    .buff.dis { opacity:.35; cursor:not-allowed; }
+    .ov { position:absolute; inset:0; background:rgba(0,0,0,.86); display:grid; place-items:center; }
+    .ov h1 { font-family:var(--fd); font-size:clamp(3rem,10vw,5rem); letter-spacing:.1em; }
+    .win { color:var(--green); } .lose { color:#ff4f72; }
 
-        .ring-ropes {
-            background-image: 
-                linear-gradient(to bottom, transparent 20%, rgba(255,255,255,0.03) 21%, transparent 22%),
-                linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.03) 51%, transparent 52%),
-                linear-gradient(to bottom, transparent 80%, rgba(255,255,255,0.03) 81%, transparent 82%);
-        }
-        
-        .crt-overlay {
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none;
-        }
-    </style>
+    @keyframes fade { from{opacity:0} to{opacity:1} } @keyframes pop { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    @media (max-width:760px){ .grid3,.rooms{grid-template-columns:1fr;} .cards{grid-template-columns:repeat(2,minmax(0,1fr));} .fname{font-size:1rem;} }
+  </style>
 </head>
 <body>
-    <div id="root" class="h-screen w-screen"></div>
+  <div id="app"></div>
+  <div class="toast-wrap" id="toast-wrap"></div>
+  <script>
+    "use strict";
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDi-5UoX0hDw7O6UQY5pduKgxQMX5C4KY4",
+    authDomain: "ringclash1.firebaseapp.com",
+    databaseURL: "https://ringclash1-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "ringclash1",
+    storageBucket: "ringclash1.firebasestorage.app",
+    messagingSenderId: "373910829853",
+    appId: "1:373910829853:web:319a0093fedf3ef7123ff4"
+};
+    const BOXERS = [
+      { id:"ippo",name:"Ippo",title:"Wind God",hp:130,atk:54,def:20,icon:"🥊" },
+      { id:"takamura",name:"Takamura",title:"Beast",hp:150,atk:60,def:24,icon:"🐻" },
+      { id:"miyata",name:"Miyata",title:"Counter",hp:90,atk:49,def:44,icon:"⚡" },
+      { id:"sendou",name:"Sendou",title:"Tiger",hp:122,atk:66,def:14,icon:"🐅" },
+      { id:"volg",name:"Volg",title:"Wolf",hp:112,atk:52,def:34,icon:"🐺" },
+      { id:"ricardo",name:"Ricardo",title:"Legend",hp:168,atk:70,def:31,icon:"👑" }
+    ];
+    const BUFFS = [
+      { id:"mitts",name:"Mitts",cost:1,effect:"atk",val:14,icon:"🥊" },
+      { id:"steak",name:"Steak",cost:2,effect:"hp",val:60,icon:"🥩" },
+      { id:"weights",name:"Weights",cost:1,effect:"def",val:16,icon:"⛓️" },
+      { id:"focus",name:"Focus",cost:0,effect:"def",val:8,icon:"🧘" },
+      { id:"fury",name:"Fury",cost:3,effect:"atk",val:45,icon:"🔥",cond:"low" },
+      { id:"doctor",name:"Doctor",cost:2,effect:"hp",val:40,icon:"🩺" },
+      { id:"plan",name:"Game Plan",cost:1,effect:"tc",val:2,icon:"📝" }
+    ];
+    const S = {
+      view:"menu", deckTab:"boxers", deckBoxers:["ippo","takamura","miyata"], deckBuffs:["mitts","steak","weights","focus","doctor"],
+      battle:null, roomList:[], toastTmr:null,
+      online:{ db:null, uid:null, auth:false, roomNode:"rooms", roomId:null, role:null, roomCb:null, listCb:null, lock:false }
+    };
+    const app = () => document.getElementById("app");
+    const deep = x => JSON.parse(JSON.stringify(x));
+    const now = () => Date.now();
+    const hasCfg = () => !!(FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE_"));
+    const roomsRef = (path="") => S.online.db.ref(path ? `${S.online.roomNode}/${path}` : S.online.roomNode);
+    const rid = () => `r_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+    const rcode = () => Math.random().toString(36).slice(2,7).toUpperCase();
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    function toast(m){ const w=document.getElementById("toast-wrap"); w.innerHTML=`<div class="toast">${m}</div>`; clearTimeout(S.toastTmr); S.toastTmr=setTimeout(()=>w.innerHTML="",2600); }
+    function load(){ try{ const d=JSON.parse(localStorage.getItem("ring_rebuild_v1")||"{}"); if(Array.isArray(d.b)&&d.b.length)S.deckBoxers=d.b; if(Array.isArray(d.f)&&d.f.length)S.deckBuffs=d.f; }catch{} }
+    function save(){ localStorage.setItem("ring_rebuild_v1", JSON.stringify({b:S.deckBoxers,f:S.deckBuffs})); }
 
-        window.FirebaseAPI = { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, getDocs, deleteDoc };
-    </script>
+    async function initOnline(){
+      if(!hasCfg()) return false;
+      if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      if(!S.online.db) S.online.db=firebase.database();
+      if(firebase.auth().currentUser){ S.online.uid=firebase.auth().currentUser.uid; S.online.auth=true; return true; }
+      try{ await firebase.auth().signInAnonymously(); S.online.uid=firebase.auth().currentUser?.uid||null; S.online.auth=!!S.online.uid; return S.online.auth; }
+      catch(e){ console.error(e); toast("Enable Anonymous Auth in Firebase."); return false; }
+    }
+    async function detectNode(){
+      const nodes=["rooms","rooms2","rooms2d"];
+      for(const n of nodes){ try{ await S.online.db.ref(n).limitToFirst(1).get(); S.online.roomNode=n; return; }catch{} }
+      S.online.roomNode="rooms";
+    }
 
-    <script type="text/babel" data-type="module">
-        const { useState, useEffect, useRef } = React;
+    function goto(v){ S.view=v; render(); }
+    function readyDeck(){ if(S.deckBoxers.length!==3||S.deckBuffs.length!==5){ toast("Pick 3 fighters and 5 buffs."); return false; } return true; }
+    function mkSide(bids,fids,label){ return { label, boxers:bids.map((id,i)=>{const b=BOXERS.find(x=>x.id===id); return {...b,maxHp:b.hp,hp:b.hp,dead:false,iid:`${label}_${i}`};}), buffs:fids.map((id,i)=>{const f=BUFFS.find(x=>x.id===id); return {...f,used:false,iid:`${label}_f${i}`};}), active:0, tc:2 }; }
+    function mkAiDeck(){ return { b:deep(BOXERS).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.id), f:deep(BUFFS).sort(()=>Math.random()-.5).slice(0,5).map(x=>x.id) }; }
+    function mkBattle(mode, hd, gd, hn, gn){ return { mode, state:"playing", turn:"host", turnCount:1, winner:null, log:["The bell rings!"], host:mkSide(hd.b,hd.f,hn), guest:mkSide(gd.b,gd.f,gn) }; }
+    const nextAlive = side => side.boxers.findIndex(x=>!x.dead);
+    function condOk(f,side){ if(!f.cond) return true; const a=side.boxers[side.active]; if(f.cond==="low") return a.hp<=a.maxHp*.4; return true; }
+    function applyBuff(f,side){ const a=side.boxers[side.active]; if(f.effect==="atk")a.atk+=f.val; if(f.effect==="def")a.def+=f.val; if(f.effect==="hp")a.hp=Math.min(a.maxHp,a.hp+f.val); if(f.effect==="tc")side.tc=Math.min(8,side.tc+f.val); }
 
-        // --- GAME DATA ---
-        const CARDS = {
-            'jab': { id: 'jab', name: 'Left Jab', type: 'attack', cost: 1, value: 8, desc: 'A swift, basic punch to test the waters.', icon: 'fist' },
-            'straight': { id: 'straight', name: 'Right Straight', type: 'attack', cost: 2, value: 15, desc: 'A heavy right cross with solid power.', icon: 'fist' },
-            'liver': { id: 'liver', name: 'Liver Blow', type: 'attack', cost: 2, value: 18, desc: 'A brutal hook to the body.', icon: 'fist' },
-            'smash': { id: 'smash', name: 'The Smash', type: 'attack', cost: 3, value: 25, desc: 'A terrifying ¾ uppercut.', icon: 'fist' },
-            'dempsey': { id: 'dempsey', name: 'Dempsey Roll', type: 'attack', cost: 4, value: 35, desc: 'A barrage of heavy hooks from blind spots.', icon: 'fist' },
-            'weave': { id: 'weave', name: 'Weaving', type: 'block', cost: 1, value: 10, desc: 'Dodge incoming attacks nimbly.', icon: 'shield' },
-            'guard': { id: 'guard', name: 'Cross Arm Guard', type: 'block', cost: 2, value: 20, desc: 'A sturdy guard to absorb heavy blows.', icon: 'shield' },
-            'gazelle': { id: 'gazelle', name: 'Gazelle Punch', type: 'attack', cost: 3, value: 20, blockValue: 5, desc: 'Spring forward with an uppercut. Adds 5 Block.', icon: 'fist' },
-        };
+    function render(){
+      if(S.view==="menu") return renderMenu();
+      if(S.view==="deck") return renderDeck();
+      if(S.view==="arena") return renderArena();
+      if(S.view==="battle") return renderBattle();
+    }
+    function renderMenu(){
+      app().innerHTML=`<div class="view menu"><div class="t1">RING</div><div class="t2">CLASH</div><div class="t3">REBUILD</div><div class="row"><button class="btn btn-p" id="m-ar">ENTER ARENA</button><button class="btn" id="m-de">DECK BUILDER</button></div><div class="sub">Turn-based card combat · Online rooms</div></div>`;
+      document.getElementById("m-ar").onclick=()=>goto("arena"); document.getElementById("m-de").onclick=()=>goto("deck");
+    }
+    function renderDeck(){
+      const isB=S.deckTab==="boxers", src=isB?BOXERS:BUFFS, sel=isB?S.deckBoxers:S.deckBuffs, ready=S.deckBoxers.length===3&&S.deckBuffs.length===5;
+      app().innerHTML=`<div class="view panel"><div class="head"><button class="btn" id="d-bk">Back</button><div>Fighters ${S.deckBoxers.length}/3 · Buffs ${S.deckBuffs.length}/5</div><button class="btn btn-p" id="d-sv" ${ready?"":"disabled"}>Save</button></div><div class="tabs"><button class="btn ${isB?"btn-p":""}" id="d-tb">Boxers</button><button class="btn ${!isB?"btn-p":""}" id="d-tf">Buffs</button></div><div class="cards">${src.map(x=>`<div class="card ${sel.includes(x.id)?"sel":""}" data-id="${x.id}"><div class="ic">${x.icon}</div><div class="nm">${x.name}</div><div class="meta">${x.title||(x.effect+" +"+x.val)}</div></div>`).join("")}</div></div>`;
+      document.getElementById("d-bk").onclick=()=>goto("menu"); document.getElementById("d-sv").onclick=()=>{save(); toast("Deck saved."); goto("menu");};
+      document.getElementById("d-tb").onclick=()=>{S.deckTab="boxers"; renderDeck();}; document.getElementById("d-tf").onclick=()=>{S.deckTab="buffs"; renderDeck();};
+      app().querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>toggle(el.dataset.id,isB?"boxer":"buff"));
+    }
+    function toggle(id,k){ if(k==="boxer"){ if(S.deckBoxers.includes(id)) S.deckBoxers=S.deckBoxers.filter(x=>x!==id); else if(S.deckBoxers.length<3)S.deckBoxers.push(id); else return toast("3 fighters max."); } else { if(S.deckBuffs.includes(id))S.deckBuffs=S.deckBuffs.filter(x=>x!==id); else if(S.deckBuffs.length<5)S.deckBuffs.push(id); else return toast("5 buffs max."); } renderDeck(); }
 
-        const DECK_TEMPLATE = ['jab', 'jab', 'jab', 'straight', 'straight', 'weave', 'weave', 'guard', 'liver', 'smash', 'gazelle', 'dempsey'];
+    async function renderArena(){
+      const cfg=hasCfg(); if(cfg){ await initOnline(); await detectNode(); subscribeRooms(); }
+      app().innerHTML=`<div class="view panel"><div class="head"><button class="btn" id="a-bk">Back</button><div style="font-family:var(--fd);letter-spacing:.08em;">Choose Match</div><div></div></div><div class="grid3"><div class="choice" id="a-ai"><h3>AI Match</h3><p>Single-player tactical duel.</p></div><div class="choice" id="a-cr"><h3>Create Room</h3><p>Host live online match.</p></div><div class="choice" id="a-jn"><h3>Join by Code</h3><p>Enter a room code.</p></div></div><div style="margin-top:10px;font-family:var(--fd);letter-spacing:.08em;">Open Rooms</div><div class="rooms">${S.roomList.length?S.roomList.map(r=>`<div class="room" data-r="${r.id}"><b>${r.code}</b><div style="font-size:.78rem;color:#a0a0a0;">${r.hostName}</div></div>`).join(""):`<div style="color:#999;">No open rooms.</div>`}</div>${cfg?`<div class="warn">Connected node: ${S.online.roomNode}</div>`:`<div class="warn">Fill FIREBASE_CONFIG first.</div>`}</div>`;
+      document.getElementById("a-bk").onclick=()=>goto("menu"); document.getElementById("a-ai").onclick=startAI; document.getElementById("a-cr").onclick=createRoom; document.getElementById("a-jn").onclick=joinByCode;
+      app().querySelectorAll("[data-r]").forEach(el=>el.onclick=()=>joinRoom(el.dataset.r));
+    }
 
-        // Helpers
-        const shuffleArray = (array) => {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        };
+    function startAI(){ if(!readyDeck()) return; const me={b:S.deckBoxers,f:S.deckBuffs}, ai=mkAiDeck(); S.battle=mkBattle("ai",me,ai,"YOU","CPU"); goto("battle"); }
+    async function createRoom(){
+      if(!readyDeck()) return; if(!(await initOnline())) return; await detectNode();
+      const id=rid(), code=rcode(), hostName="Host-"+S.online.uid.slice(-4).toUpperCase();
+      const room={ code,status:"open",createdAt:now(),updatedAt:now(),hostUid:S.online.uid,hostName,hostDeck:{b:S.deckBoxers,f:S.deckBuffs},guestUid:null,guestName:null,guestDeck:null,battle:null };
+      try{ await roomsRef(id).set(room); S.online.roomId=id; S.online.role="host"; watchRoom(id); toast(`Room ${code} created.`); }catch(e){ console.error(e); toast(`Create failed: ${e.code||"unknown"}`); }
+    }
+    async function joinByCode(){
+      if(!readyDeck()) return; if(!(await initOnline())) return; await detectNode();
+      const code=(prompt("Enter room code:")||"").trim().toUpperCase(); if(!code) return;
+      try{ const s=await roomsRef().orderByChild("code").equalTo(code).get(); let id=null; s.forEach(c=>{const v=c.val()||{}; if(!id&&v.status==="open") id=c.key;}); if(!id) return toast("No open room with that code."); await joinRoom(id); }
+      catch(e){ console.error(e); toast(`Join failed: ${e.code||"unknown"}`); }
+    }
+    async function joinRoom(id){
+      if(!readyDeck()) return; if(!(await initOnline())) return; await detectNode();
+      const ref=roomsRef(id);
+      try{
+        const tx=await ref.transaction(room=>{
+          if(!room||room.status!=="open"||room.guestUid) return;
+          room.guestUid=S.online.uid; room.guestName="Guest-"+S.online.uid.slice(-4).toUpperCase(); room.guestDeck={b:S.deckBoxers,f:S.deckBuffs};
+          room.status="playing"; room.battle=mkBattle("online",room.hostDeck,room.guestDeck,room.hostName,room.guestName); room.updatedAt=now(); return room;
+        }, undefined, false);
+        if(!tx.committed) return toast("Room not available.");
+        S.online.roomId=id; S.online.role="guest"; watchRoom(id);
+      }catch(e){ console.error(e); toast(`Join failed: ${e.code||"unknown"}`); }
+    }
+    function subscribeRooms(){
+      if(!S.online.db||S.online.listCb) return;
+      const q=roomsRef().orderByChild("status").equalTo("open");
+      const cb=snap=>{ const rows=[]; snap.forEach(ch=>{const v=ch.val()||{}; rows.push({id:ch.key,code:v.code||"-----",hostName:v.hostName||"Host",createdAt:v.createdAt||0});}); rows.sort((a,b)=>b.createdAt-a.createdAt); S.roomList=rows.slice(0,40); if(S.view==="arena") renderArena(); };
+      q.on("value",cb); S.online.listCb=cb;
+    }
+    function watchRoom(id){
+      if(S.online.roomCb&&S.online.roomId) roomsRef(S.online.roomId).off("value",S.online.roomCb);
+      const cb=snap=>{ const room=snap.val(); if(!room){ toast("Room closed."); S.online.roomId=null; S.online.role=null; goto("arena"); return; } if(room.battle){ S.battle=deep(room.battle); S.battle.mode="online"; if(S.view!=="battle") goto("battle"); else renderBattle(); } };
+      roomsRef(id).on("value",cb); S.online.roomCb=cb; if(S.view!=="battle") goto("battle");
+    }
 
-        const createPlayerState = (name) => {
-            let deck = shuffleArray(DECK_TEMPLATE);
-            let hand = deck.splice(0, 5); // Draw 5
-            return {
-                name: name,
-                hp: 100,
-                maxHp: 100,
-                energy: 3,
-                maxEnergy: 3,
-                block: 0,
-                deck: deck,
-                hand: hand,
-                discard: []
-            };
-        };
+    const hpClass=(hp,m)=>{const p=hp/m; return p<.3?"low":(p<.6?"mid":"");};
+    function fighterCard(bx){ const pct=Math.max(0,(bx.hp/bx.maxHp)*100).toFixed(1); return `<div class="fighter"><div class="icon">${bx.icon}</div><div style="flex:1;min-width:0;"><div class="fname">${bx.name}</div><div class="hpw"><div class="hp ${hpClass(bx.hp,bx.maxHp)}" style="width:${pct}%"></div></div><div style="font-size:.78rem;color:#bbb;">HP ${bx.hp}/${bx.maxHp} · ATK ${bx.atk} · DEF ${bx.def}</div></div></div>`; }
+    function renderBattle(){
+      const b=S.battle; if(!b) return goto("menu");
+      const myRole=b.mode==="online"?S.online.role:"host", myKey=myRole==="guest"?"guest":"host", opKey=myKey==="host"?"guest":"host";
+      const me=b[myKey], op=b[opKey], isMyTurn=(b.mode==="ai" ? b.turn==="host" : b.turn===myRole), can=b.state==="playing"&&isMyTurn&&!S.online.lock;
+      app().innerHTML=`<div class="view battle"><div class="bar"><div class="slots">${op.boxers.map(x=>`<div class="slot ${x.dead?"dead":""}">${x.icon}</div>`).join("")}</div><div>${op.label} · TC ${op.tc}</div></div>${fighterCard(op.boxers[op.active])}<div class="logbox"><div><div class="turn">${can?"YOUR TURN":"OPPONENT TURN"}</div><div class="log">${b.log[b.log.length-1]||""}</div></div></div>${fighterCard(me.boxers[me.active])}<div class="ctrl"><div class="actions"><div class="slots">${me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""}" data-sw="${i}" ${(!can||i===me.active||x.dead)?"disabled":""}>${x.icon}</button>`).join("")}</div><div style="display:flex;gap:6px;"><button class="btn" id="a-pass" ${can?"":"disabled"}>END TURN</button><button class="btn btn-p" id="a-hit" ${can?"":"disabled"}>ATTACK</button></div></div><div class="buffs">${me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost; return `<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div>${f.icon}</div><div style="font-family:var(--fd);">${f.name}</div><div style="font-size:.68rem;color:#a2a2a2;">${f.cost} TC</div></button>`;}).join("")}</div></div>${b.state==="finished"?`<div class="ov"><div style="text-align:center;"><h1 class="${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"win":"lose"}">${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"VICTORY":"DEFEAT"}</h1><button class="btn btn-p" id="b-ex">MENU</button></div></div>`:""}</div>`;
+      if(b.state==="finished"){ document.getElementById("b-ex").onclick=()=>{ if(S.online.roomCb&&S.online.roomId) roomsRef(S.online.roomId).off("value",S.online.roomCb); S.online.roomCb=null; S.online.roomId=null; S.online.role=null; S.battle=null; goto("menu"); }; return; }
+      document.getElementById("a-hit").onclick=()=>act("attack"); document.getElementById("a-pass").onclick=()=>act("pass");
+      app().querySelectorAll("[data-sw]").forEach(el=>el.onclick=()=>act("switch", +el.dataset.sw)); app().querySelectorAll("[data-bf]").forEach(el=>el.onclick=()=>act("buff", +el.dataset.bf));
+    }
 
-        // --- COMPONENTS ---
+    async function act(kind, idx){
+      const b=S.battle; if(!b||b.state!=="playing") return;
+      if(b.mode==="ai") return actAI(kind,idx);
+      if(!S.online.roomId||S.online.lock) return;
+      const role=S.online.role; if(b.turn!==role) return;
+      S.online.lock=true;
+      try{
+        const tx=await roomsRef(S.online.roomId).transaction(room=>{
+          if(!room||room.status!=="playing"||!room.battle) return room;
+          const bb=room.battle; if(bb.turn!==role||bb.state!=="playing") return room;
+          const me=bb[role], op=bb[role==="host"?"guest":"host"], myA=me.boxers[me.active], opA=op.boxers[op.active];
+          let log=null;
+          if(kind==="attack"){ const dmg=Math.max(8,myA.atk-Math.floor(opA.def/2)); opA.hp=Math.max(0,opA.hp-dmg); me.tc=Math.min(8,me.tc+1); log=`${myA.name} hits for ${dmg}`; if(opA.hp<=0){ opA.hp=0; opA.dead=true; log=`KO! ${opA.name} is down`; const ni=nextAlive(op); if(ni<0){ bb.state="finished"; bb.winner=role; room.status="finished"; } else op.active=ni; } }
+          else if(kind==="switch"){ if(typeof idx!=="number"||idx===me.active||!me.boxers[idx]||me.boxers[idx].dead||me.tc<1) return room; me.active=idx; me.tc-=1; log=`${me.boxers[idx].name} tagged in`; }
+          else if(kind==="buff"){ if(typeof idx!=="number"||!me.buffs[idx]) return room; const f=me.buffs[idx]; if(f.used||me.tc<f.cost||!condOk(f,me)) return room; applyBuff(f,me); f.used=true; me.tc-=f.cost; log=`${myA.name} used ${f.name}`; }
+          else if(kind==="pass"){ log="Turn passed"; }
+          if(!log) return room;
+          bb.log.push(log); bb.turn=role==="host"?"guest":"host"; bb.turnCount++; room.updatedAt=now(); return room;
+        }, undefined, false);
+        if(!tx.committed) toast("Action rejected.");
+      }catch(e){ console.error(e); toast(`Sync error: ${e.code||"unknown"}`); }
+      finally{ S.online.lock=false; }
+    }
+    function actAI(kind,idx){
+      const b=S.battle; if(!b||b.state!=="playing"||b.turn!=="host") return;
+      const me=b.host, op=b.guest, myA=me.boxers[me.active], opA=op.boxers[op.active]; let ok=false;
+      if(kind==="attack"){ const dmg=Math.max(8,myA.atk-Math.floor(opA.def/2)); opA.hp=Math.max(0,opA.hp-dmg); me.tc=Math.min(8,me.tc+1); b.log.push(`${myA.name} hits for ${dmg}`); ok=true; if(opA.hp<=0){ opA.hp=0; opA.dead=true; b.log.push(`KO! ${opA.name} is down`); const ni=nextAlive(op); if(ni<0){ b.state="finished"; b.winner="host"; renderBattle(); return; } op.active=ni; } }
+      else if(kind==="switch"){ if(idx===me.active||!me.boxers[idx]||me.boxers[idx].dead||me.tc<1) return; me.active=idx; me.tc-=1; b.log.push(`${me.boxers[idx].name} tagged in`); ok=true; }
+      else if(kind==="buff"){ const f=me.buffs[idx]; if(!f||f.used||me.tc<f.cost||!condOk(f,me)) return; applyBuff(f,me); f.used=true; me.tc-=f.cost; b.log.push(`${myA.name} used ${f.name}`); ok=true; }
+      else if(kind==="pass"){ b.log.push("Turn passed"); ok=true; }
+      if(!ok) return; b.turn="guest"; b.turnCount++; renderBattle(); setTimeout(aiTurn,650);
+    }
+    function aiTurn(){
+      const b=S.battle; if(!b||b.mode!=="ai"||b.state!=="playing"||b.turn!=="guest") return;
+      const ai=b.guest, pl=b.host, a=ai.boxers[ai.active], p=pl.boxers[pl.active];
+      const usable=ai.buffs.map((f,i)=>({f,i})).filter(x=>!x.f.used&&ai.tc>=x.f.cost&&condOk(x.f,ai));
+      if(usable.length&&Math.random()<.35){ const pick=usable[Math.floor(Math.random()*usable.length)]; applyBuff(pick.f,ai); pick.f.used=true; ai.tc-=pick.f.cost; b.log.push(`${a.name} used ${pick.f.name}`); }
+      else { const dmg=Math.max(8,a.atk-Math.floor(p.def/2)); p.hp=Math.max(0,p.hp-dmg); ai.tc=Math.min(8,ai.tc+1); b.log.push(`${a.name} hits for ${dmg}`); if(p.hp<=0){ p.hp=0; p.dead=true; b.log.push(`KO! ${p.name} is down`); const ni=nextAlive(pl); if(ni<0){ b.state="finished"; b.winner="guest"; renderBattle(); return; } pl.active=ni; } }
+      b.turn="host"; b.turnCount++; renderBattle();
+    }
 
-        const CardUI = ({ cardId, isPlayable, onClick, disabled }) => {
-            const card = CARDS[cardId];
-            if(!card) return null;
-
-            const isAttack = card.type === 'attack';
-            const bgClass = isAttack ? 'card-bg-attack' : 'card-bg-block';
-            const accent = isAttack ? 'text-boxingRed' : 'text-blue-400';
-
-            return (
-                <div 
-                    onClick={() => isPlayable && !disabled && onClick()}
-                    className={`relative w-32 h-48 rounded-xl border-2 ${isPlayable && !disabled ? 'border-yellow-500 cursor-pointer hover:-translate-y-4 hover:shadow-[0_0_15px_rgba(234,179,8,0.5)] z-10' : 'border-gray-700 opacity-80'} ${bgClass} shadow-xl flex flex-col transition-all duration-200 overflow-hidden group select-none`}
-                >
-                    <div className="absolute top-1 left-1 bg-black/60 rounded-full w-6 h-6 flex items-center justify-center font-bebas text-lg text-yellow-400 border border-yellow-600">
-                        {card.cost}
-                    </div>
-                    
-                    <div className="flex-1 flex items-center justify-center pt-4">
-                        {isAttack ? 
-                            <svg className={`w-12 h-12 ${accent} opacity-80`} viewBox="0 0 24 24" fill="currentColor"><path d="M4 11V13C4 16.866 7.13401 20 11 20H13C16.866 20 20 16.866 20 13V11C20 9.89543 19.1046 9 18 9C17.7013 9 17.4178 9.06543 17.1633 9.18274C16.8111 8.47355 16.085 8 15.25 8C14.7836 8 14.3484 8.13328 13.9877 8.35626C13.6708 7.55173 12.8989 7 12 7C11.6661 7 11.3508 7.08298 11.0772 7.2269C10.7431 6.49503 10.0125 6 9.18182 6C8.52984 6 7.94723 6.29742 7.56846 6.76413L5.33714 3.78854C4.94586 3.26683 4.16843 3.16113 3.63974 3.56545L2.36026 4.54418C1.86828 4.92055 1.76104 5.62638 2.11584 6.13621L4 8.845V11Z"/></svg>
-                            : 
-                            <svg className={`w-12 h-12 ${accent} opacity-80`} viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        }
-                    </div>
-
-                    <div className="bg-black/80 backdrop-blur-sm p-2 border-t border-gray-700 h-2/5 flex flex-col justify-between">
-                        <div className="font-bebas text-sm leading-none tracking-wide text-white text-center truncate">{card.name}</div>
-                        <div className="text-[9px] text-gray-400 font-inter leading-tight text-center mt-1 truncate">
-                            {isAttack ? `DMG: ${card.value}` : `BLK: ${card.value}`}
-                            {card.blockValue && `, BLK: ${card.blockValue}`}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const FighterDisplay = ({ state, isPlayer, isTurn, animateShake }) => {
-            const hpPercent = Math.max(0, (state.hp / state.maxHp) * 100);
-            return (
-                <div className={`flex flex-col ${isPlayer ? 'items-end' : 'items-start'} ${animateShake ? 'animate-shake' : ''}`}>
-                    <div className="flex items-end gap-3 mb-1">
-                        {!isPlayer && <div className="text-xl font-bebas text-white tracking-wider">{state.name}</div>}
-                        
-                        <div className={`w-16 h-16 rounded bg-zinc-800 border-2 flex items-center justify-center
-                            ${isTurn ? 'border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.4)]' : 'border-zinc-600'}
-                            ${isPlayer ? 'order-last' : 'order-first'}`}
-                        >
-                            <svg className="w-10 h-10 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                        </div>
-                        
-                        {isPlayer && <div className="text-xl font-bebas text-white tracking-wider">{state.name}</div>}
-                    </div>
-
-                    <div className={`flex items-center gap-2 ${isPlayer ? 'flex-row-reverse' : 'flex-row'}`}>
-                        {/* HP Bar */}
-                        <div className="w-48 sm:w-64 h-6 bg-zinc-900 border border-zinc-700 rounded overflow-hidden relative">
-                            <div className="absolute inset-0 flex items-center justify-center font-bebas text-sm text-white z-10 drop-shadow-md">
-                                {state.hp} / {state.maxHp}
-                            </div>
-                            <div className={`h-full transition-all duration-300 ${hpPercent > 40 ? 'bg-green-600' : hpPercent > 15 ? 'bg-yellow-500' : 'bg-red-600'}`} style={{ width: `${hpPercent}%` }}></div>
-                        </div>
-
-                        {/* Block */}
-                        {state.block > 0 && (
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-900 border border-blue-400 text-blue-200 font-bebas shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                                {state.block}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Energy (Only show clearly for player, or simple pips for enemy) */}
-                    <div className={`flex gap-1 mt-2 ${isPlayer ? 'flex-row-reverse' : 'flex-row'}`}>
-                        {Array.from({length: state.maxEnergy}).map((_, i) => (
-                            <div key={i} className={`w-4 h-4 rounded-full border border-yellow-700 ${i < state.energy ? 'bg-yellow-400 shadow-[0_0_5px_#facc15]' : 'bg-zinc-800'}`}></div>
-                        ))}
-                    </div>
-                </div>
-            );
-        };
-
-        // --- MAIN APP ---
-
-        const App = () => {
-            const [user, setUser] = useState(null);
-            const [fbAPI, setFbAPI] = useState(null);
-            const [currentMatch, setCurrentMatch] = useState(null); // ID of lobby
-            const [matchState, setMatchState] = useState(null);
-            const [loadingText, setLoadingText] = useState("Warming up the ring...");
-            const [logScrollKey, setLogScrollKey] = useState(0);
-
-            const LOBBIES_PATH = ['artifacts', typeof __app_id !== 'undefined' ? __app_id : 'ippo-card-app', 'public', 'data', 'arenas'];
-
-            // Initialize Firebase
-            useEffect(() => {
-                const initAuth = async () => {
-                    if(!window.FirebaseAPI) return;
-                    setFbAPI(window.FirebaseAPI);
-                    const { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = window.FirebaseAPI;
-                    
-                    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-                    const app = initializeApp(firebaseConfig);
-                    const auth = getAuth(app);
-
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-
-                    onAuthStateChanged(auth, (u) => {
-                        setUser(u);
-                        if(u) setLoadingText("");
-                    });
-                };
-                initAuth();
-            }, []);
-
-            // Match Listener
-            useEffect(() => {
-                if(!user || !fbAPI || !currentMatch) return;
-                const { getFirestore, doc, onSnapshot } = fbAPI;
-                const db = getFirestore();
-                
-                const unsub = onSnapshot(doc(db, ...LOBBIES_PATH, currentMatch), (docSnap) => {
-                    if (docSnap.exists()) {
-                        setMatchState(docSnap.data());
-                        setLogScrollKey(k => k + 1);
-                    } else {
-                        // Match deleted
-                        setCurrentMatch(null);
-                        setMatchState(null);
-                    }
-                }, (err) => {
-                    console.error("Match sync error", err);
-                });
-                return () => unsub();
-            }, [currentMatch, user, fbAPI]);
-
-            // Auto-scroll log
-            useEffect(() => {
-                const logEl = document.getElementById('battle-log');
-                if(logEl) logEl.scrollTop = logEl.scrollHeight;
-            }, [logScrollKey]);
-
-
-            const handleFindMatch = async () => {
-                setLoadingText("Looking for challengers...");
-                const { getFirestore, collection, getDocs, updateDoc, doc, addDoc } = fbAPI;
-                const db = getFirestore();
-                const arenasRef = collection(db, ...LOBBIES_PATH);
-
-                try {
-                    const snap = await getDocs(arenasRef);
-                    const lobbies = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                    
-                    // Cleanup dead lobbies (optional, simple logic)
-                    const openLobby = lobbies.find(l => l.status === 'open' && l.p1 !== user.uid);
-
-                    if (openLobby) {
-                        // Join
-                        const joinState = createPlayerState(`Challenger ${user.uid.slice(0,3)}`);
-                        await updateDoc(doc(db, ...LOBBIES_PATH, openLobby.id), {
-                            status: 'playing',
-                            p2: user.uid,
-                            [`players.${user.uid}`]: joinState,
-                            log: [...openLobby.log, `Challenger approached! The bell rings!`]
-                        });
-                        setCurrentMatch(openLobby.id);
-                    } else {
-                        // Create
-                        const hostState = createPlayerState(`Fighter ${user.uid.slice(0,3)}`);
-                        const newLobby = await addDoc(arenasRef, {
-                            status: 'open',
-                            p1: user.uid,
-                            p2: null,
-                            turn: user.uid,
-                            players: {
-                                [user.uid]: hostState
-                            },
-                            log: ['Waiting for a challenger to enter the ring...'],
-                            createdAt: Date.now()
-                        });
-                        setCurrentMatch(newLobby.id);
-                    }
-                } catch (e) {
-                    console.error("Matchmaking failed:", e);
-                }
-                setLoadingText("");
-            };
-
-            const leaveMatch = async () => {
-                if(!currentMatch || !fbAPI) return;
-                const { getFirestore, doc, deleteDoc } = fbAPI;
-                const db = getFirestore();
-                
-                // If leaving, just delete the lobby to clean up. In a real game we'd handle concede.
-                try {
-                    await deleteDoc(doc(db, ...LOBBIES_PATH, currentMatch));
-                } catch(e) {}
-                setCurrentMatch(null);
-                setMatchState(null);
-            };
-
-            const playCard = async (cardIndex) => {
-                if (!matchState || matchState.status !== 'playing' || matchState.turn !== user.uid) return;
-                
-                const { getFirestore, doc, updateDoc } = fbAPI;
-                const db = getFirestore();
-
-                const myState = matchState.players[user.uid];
-                const enemyUid = matchState.p1 === user.uid ? matchState.p2 : matchState.p1;
-                const enemyState = matchState.players[enemyUid];
-                
-                const cardId = myState.hand[cardIndex];
-                const card = CARDS[cardId];
-
-                if (myState.energy < card.cost) return; // UI should block this, but safety check
-
-                let nextMyState = JSON.parse(JSON.stringify(myState));
-                let nextEnemyState = JSON.parse(JSON.stringify(enemyState));
-                let newLog = [...matchState.log];
-
-                // Pay cost
-                nextMyState.energy -= card.cost;
-                nextMyState.hand.splice(cardIndex, 1);
-                nextMyState.discard.push(cardId);
-
-                newLog.push(`${myState.name} plays ${card.name}!`);
-
-                // Apply Effect
-                if (card.type === 'attack') {
-                    let dmg = card.value;
-                    if (card.blockValue) nextMyState.block += card.blockValue;
-
-                    if (nextEnemyState.block > 0) {
-                        if (nextEnemyState.block >= dmg) {
-                            nextEnemyState.block -= dmg;
-                            dmg = 0;
-                            newLog.push(`  Blocked!`);
-                        } else {
-                            dmg -= nextEnemyState.block;
-                            nextEnemyState.block = 0;
-                        }
-                    }
-                    
-                    if (dmg > 0) {
-                        nextEnemyState.hp -= dmg;
-                        newLog.push(`  Clean hit! -${dmg} HP`);
-                    }
-                } else if (card.type === 'block') {
-                    nextMyState.block += card.value;
-                    newLog.push(`  Defense up (+${card.value} Block).`);
-                }
-
-                // Check Knockout
-                let newStatus = matchState.status;
-                if (nextEnemyState.hp <= 0) {
-                    nextEnemyState.hp = 0;
-                    newStatus = 'finished';
-                    newLog.push(`\n>>> KNOCKOUT! ${myState.name} wins! <<<`);
-                }
-
-                await updateDoc(doc(db, ...LOBBIES_PATH, currentMatch), {
-                    [`players.${user.uid}`]: nextMyState,
-                    [`players.${enemyUid}`]: nextEnemyState,
-                    log: newLog.slice(-20), // Keep log small
-                    status: newStatus
-                });
-            };
-
-            const endTurn = async () => {
-                if (!matchState || matchState.status !== 'playing' || matchState.turn !== user.uid) return;
-                
-                const { getFirestore, doc, updateDoc } = fbAPI;
-                const db = getFirestore();
-                
-                const enemyUid = matchState.p1 === user.uid ? matchState.p2 : matchState.p1;
-                let nextEnemyState = JSON.parse(JSON.stringify(matchState.players[enemyUid]));
-                let nextMyState = JSON.parse(JSON.stringify(matchState.players[user.uid]));
-                let newLog = [...matchState.log];
-
-                // Process turn end for me
-                nextMyState.block = 0; // Block resets
-
-                // Process turn start for enemy
-                nextEnemyState.energy = nextEnemyState.maxEnergy; // Full energy
-                
-                // Draw card logic for enemy (doing it here keeps state centralized without cloud functions)
-                if (nextEnemyState.deck.length === 0 && nextEnemyState.discard.length > 0) {
-                    nextEnemyState.deck = shuffleArray(nextEnemyState.discard);
-                    nextEnemyState.discard = [];
-                    newLog.push(`${nextEnemyState.name} reshuffled deck.`);
-                }
-                if (nextEnemyState.deck.length > 0) {
-                    const drawn = nextEnemyState.deck.pop();
-                    nextEnemyState.hand.push(drawn);
-                }
-
-                newLog.push(`\n--- ${nextEnemyState.name}'s Turn ---`);
-
-                await updateDoc(doc(db, ...LOBBIES_PATH, currentMatch), {
-                    turn: enemyUid,
-                    [`players.${user.uid}`]: nextMyState,
-                    [`players.${enemyUid}`]: nextEnemyState,
-                    log: newLog.slice(-20)
-                });
-            };
-
-            // --- RENDERERS ---
-
-            if (loadingText || !user) {
-                return (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 font-bebas text-white">
-                        <div className="text-4xl animate-pulse text-boxingRed tracking-widest">{loadingText}</div>
-                    </div>
-                );
-            }
-
-            if (!currentMatch) {
-                return (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 to-black font-bebas relative overflow-hidden">
-                        <div className="absolute inset-0 ring-ropes opacity-20"></div>
-                        <div className="z-10 flex flex-col items-center">
-                            <h1 className="text-7xl md:text-9xl text-white tracking-widest drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] mb-2 text-center leading-none">
-                                RING <span className="text-boxingRed">CLASH</span><br/>ULTRA
-                            </h1>
-                            <p className="font-inter text-zinc-400 mb-12 text-center max-w-md uppercase tracking-widest text-sm">Online Deck-Building Boxing</p>
-                            
-                            <button onClick={handleFindMatch} className="px-12 py-4 bg-boxingRed hover:bg-red-500 text-white text-3xl tracking-widest rounded-sm transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(217,27,34,0.4)] border-b-4 border-red-900 active:border-b-0 active:translate-y-1">
-                                ENTER THE RING (Find Match)
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (matchState && matchState.status === 'open') {
-                return (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 font-bebas">
-                        <div className="p-8 border-2 border-zinc-800 bg-zinc-900 rounded-lg shadow-2xl text-center max-w-sm w-full">
-                            <div className="w-16 h-16 border-4 border-t-boxingRed border-zinc-700 rounded-full animate-spin mx-auto mb-6"></div>
-                            <h2 className="text-3xl text-white tracking-wider mb-2">WAITING FOR CHALLENGER</h2>
-                            <p className="text-zinc-500 font-inter text-sm mb-6">Warming up in the corner...</p>
-                            <button onClick={leaveMatch} className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded border border-zinc-600 transition-colors">
-                                LEAVE LOCKER ROOM
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (matchState && matchState.players) {
-                const myState = matchState.players[user.uid];
-                const enemyUid = matchState.p1 === user.uid ? matchState.p2 : matchState.p1;
-                const enemyState = matchState.players[enemyUid];
-                const isMyTurn = matchState.turn === user.uid && matchState.status === 'playing';
-                const isGameOver = matchState.status === 'finished';
-
-                return (
-                    <div className="w-full h-full flex flex-col bg-ringBlack relative select-none">
-                        {/* CRT Effect overlay */}
-                        <div className="absolute inset-0 crt-overlay z-0"></div>
-
-                        {/* Top Bar - Controls */}
-                        <div className="h-12 border-b border-zinc-800 flex justify-between items-center px-4 bg-black z-20">
-                            <div className="font-bebas text-zinc-500 tracking-wider">LOBBY ID: {currentMatch.slice(0,6)}</div>
-                            <button onClick={leaveMatch} className="text-zinc-500 hover:text-white font-inter text-sm font-semibold transition-colors">
-                                SURRENDER & LEAVE
-                            </button>
-                        </div>
-
-                        {/* Battle Area */}
-                        <div className="flex-1 flex flex-col z-10 p-4 pb-0 relative">
-                            
-                            {/* Enemy Area (Top) */}
-                            <div className="flex-none flex justify-between items-start">
-                                <FighterDisplay state={enemyState} isPlayer={false} isTurn={matchState.turn === enemyUid} animateShake={false} />
-                                
-                                {/* Deck/Discard Visuals (Enemy) */}
-                                <div className="flex flex-col gap-2 items-end opacity-50">
-                                    <div className="w-12 h-16 border-2 border-zinc-700 rounded bg-zinc-800 flex items-center justify-center text-xs font-bebas text-zinc-500">
-                                        {enemyState.deck.length}
-                                    </div>
-                                    <div className="w-12 h-16 border-2 border-zinc-800 rounded flex items-center justify-center text-xs font-bebas text-zinc-600">
-                                        {enemyState.discard.length}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Center Log / Arena Floor */}
-                            <div className="flex-1 flex items-center justify-center relative my-4">
-                                <div className="w-full max-w-md h-full max-h-48 bg-black/60 border border-zinc-800 rounded p-3 overflow-y-auto font-inter text-sm shadow-inner" id="battle-log">
-                                    {matchState.log.map((line, i) => (
-                                        <div key={i} className={`mb-1 ${line.includes('KNOCKOUT') ? 'text-boxingRed font-bold font-bebas text-xl' : line.includes('Turn') ? 'text-blue-400 mt-2 font-semibold' : 'text-zinc-300'}`}>
-                                            {line}
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {isGameOver && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50 animate-slide-up">
-                                        <div className="text-center">
-                                            <h1 className="text-7xl font-bebas text-white drop-shadow-[0_0_20px_rgba(255,0,0,0.8)] mb-4">MATCH OVER</h1>
-                                            <button onClick={leaveMatch} className="px-8 py-3 bg-boxingRed text-white font-bebas text-2xl rounded hover:bg-red-500 transition-colors">BACK TO MENU</button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Player Area (Bottom) */}
-                            <div className="flex-none flex justify-between items-end mb-4">
-                                {/* Deck/Discard Visuals (Player) */}
-                                <div className="flex flex-col gap-2">
-                                    <div className="w-16 h-24 border-2 border-zinc-700 rounded-lg bg-zinc-800 flex flex-col items-center justify-center text-sm font-bebas text-zinc-400 relative overflow-hidden group">
-                                        <div className="absolute inset-0 bg-blue-900/20 group-hover:bg-blue-900/40 transition-colors"></div>
-                                        <span>DECK</span>
-                                        <span className="text-xl text-white">{myState.deck.length}</span>
-                                    </div>
-                                    <div className="w-16 h-24 border-2 border-zinc-800 rounded-lg flex flex-col items-center justify-center text-sm font-bebas text-zinc-600">
-                                        <span>DISCARD</span>
-                                        <span>{myState.discard.length}</span>
-                                    </div>
-                                </div>
-
-                                <FighterDisplay state={myState} isPlayer={true} isTurn={matchState.turn === user.uid} animateShake={false} />
-                            </div>
-                        </div>
-
-                        {/* Hand & Action Bar */}
-                        <div className="h-56 border-t border-zinc-800 bg-zinc-950 p-4 relative z-20 flex flex-col">
-                            {/* Turn Indicator & End Turn Button */}
-                            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
-                                <div className={`px-6 py-1 rounded-t border-t border-x ${isMyTurn ? 'bg-boxingRed border-red-500 text-white shadow-[0_-5px_15px_rgba(217,27,34,0.4)]' : 'bg-zinc-800 border-zinc-700 text-zinc-500'} font-bebas text-xl tracking-widest transition-colors`}>
-                                    {isMyTurn ? 'YOUR TURN' : 'OPPONENT TURN'}
-                                </div>
-                                {isMyTurn && !isGameOver && (
-                                    <button onClick={endTurn} className="px-4 py-1 rounded bg-zinc-800 hover:bg-white hover:text-black border border-zinc-600 text-white font-bebas text-lg transition-all absolute left-full ml-4 whitespace-nowrap">
-                                        END TURN
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Cards in Hand */}
-                            <div className="flex-1 flex justify-center items-end pb-2">
-                                <div className="flex px-8 relative h-48 items-end">
-                                    {myState.hand.map((cardId, i) => {
-                                        const cardCost = CARDS[cardId]?.cost || 0;
-                                        const playable = isMyTurn && myState.energy >= cardCost;
-                                        return (
-                                            <div key={i} className={`transition-transform duration-300 ${i !== 0 ? '-ml-8' : ''}`}>
-                                                <CardUI 
-                                                    cardId={cardId} 
-                                                    isPlayable={playable} 
-                                                    disabled={!isMyTurn || isGameOver}
-                                                    onClick={() => playCard(i)} 
-                                                />
-                                            </div>
-                                        );
-                                    })}
-                                    {myState.hand.length === 0 && (
-                                        <div className="font-bebas text-zinc-600 text-2xl pb-8">NO CARDS IN HAND</div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            return null;
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+    load(); render();
+  </script>
 </body>
 </html>
