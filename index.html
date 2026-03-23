@@ -617,6 +617,8 @@ const S = {
     ready: false,
     authReady: false,
     authPromise: null,
+    authOptional: false,
+    authWarned: false,
     syncing: false,
     roomId: null,
     role: null, // host | guest
@@ -692,13 +694,20 @@ function initOnline() {
   });
   firebase.auth().signInAnonymously().catch(err => {
     console.error('Anonymous auth failed:', err);
-    toast('Online auth failed. Enable Anonymous sign-in in Firebase Auth.');
+    // Fallback: allow public-rules mode if anonymous auth is disabled.
+    S.online.authOptional = true;
+    S.online.authReady = true;
+    if (!S.online.authWarned) {
+      toast('Anonymous auth disabled. Using public-rules mode.');
+      S.online.authWarned = true;
+    }
   });
   return true;
 }
 
 async function ensureOnlineAuth() {
   if (!initOnline()) return false;
+  if (S.online.authOptional) return true;
   if (S.online.authReady && firebase.auth().currentUser) {
     S.online.uid = firebase.auth().currentUser.uid;
     return true;
@@ -711,6 +720,7 @@ async function ensureOnlineAuth() {
     S.online.uid = user.uid;
     return true;
   } catch {
+    if (S.online.authOptional) return true;
     toast('Online auth timeout. Check Firebase Auth anonymous sign-in.');
     return false;
   }
