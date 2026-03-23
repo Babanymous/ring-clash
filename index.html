@@ -232,6 +232,16 @@ body::after {
 .room-code { font-family: var(--font-d); letter-spacing: .08em; font-size: 1.05rem; }
 .room-meta { font-size: .75rem; color: #8a8a8a; }
 .room-empty { color:#777; font-size:.82rem; }
+.setup-warning {
+  margin-top: 10px;
+  border: 1px solid rgba(255, 140, 0, .5);
+  background: rgba(255, 140, 0, .1);
+  color: #ffd08a;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: .8rem;
+  line-height: 1.35;
+}
 
 /* ════════════════════════════════════════
    DECK BUILDER
@@ -624,6 +634,7 @@ const S = {
     role: null, // host | guest
     roomUnsub: null,
     listUnsub: null,
+    roomsNode: 'rooms',
   },
   deckBoxers: [],
   deckBuffs:  [],
@@ -661,6 +672,33 @@ function saveProfile() {
 
 function hasFirebaseConfig() {
   return FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('PASTE_');
+}
+
+function firebaseSetupMessage() {
+  return `Online disabled: FIREBASE_CONFIG is still placeholder.
+Update apiKey/authDomain/databaseURL/projectId/messagingSenderId/appId in index.html.
+Current databaseURL: ${FIREBASE_CONFIG.databaseURL}`;
+}
+
+function roomsRef(path = '') {
+  const base = S.online.roomsNode || 'rooms';
+  return S.online.db.ref(path ? `${base}/${path}` : base);
+}
+
+async function detectRoomsNode() {
+  if (!S.online.db) return 'rooms';
+  const candidates = ['rooms', 'rooms2', 'rooms2d'];
+  for (const node of candidates) {
+    try {
+      await S.online.db.ref(node).limitToFirst(1).get();
+      S.online.roomsNode = node;
+      return node;
+    } catch {
+      // Try next node
+    }
+  }
+  S.online.roomsNode = 'rooms';
+  return 'rooms';
 }
 
 function uid() {
@@ -753,7 +791,7 @@ async function pushRoomState() {
     status: S.battle.status === 'playing' ? 'playing' : 'finished',
     updatedAt: now(),
   };
-  await S.online.db.ref(`rooms/${S.online.roomId}`).update(patch);
+  await roomsRef(S.online.roomId).update(patch);
 }
 
 async function pushRoomStateSafe({ rollback } = {}) {
@@ -775,7 +813,7 @@ async function pushRoomStateSafe({ rollback } = {}) {
 
 function cleanupOnlineRoomListener() {
   if (S.online.roomUnsub && S.online.db && S.online.roomId) {
-    S.online.db.ref(`rooms/${S.online.roomId}`).off('value', S.online.roomUnsub);
+    roomsRef(S.online.roomId).off('value', S.online.roomUnsub);
   }
   S.online.roomUnsub = null;
 }
@@ -802,7 +840,7 @@ function actorForCurrentTurn(b) {
 function subscribeRoomList() {
   if (!initOnline()) return;
   if (S.online.listUnsub) return;
-  const q = S.online.db.ref('rooms').orderByChild('status').equalTo('open');
+  const q = roomsRef().orderByChild('status').equalTo('open');
   const cb = snap => {
     const rows = [];
     snap.forEach(ch => {
@@ -823,6 +861,7 @@ async function createOnlineRoom() {
     return;
   }
   if (!(await ensureOnlineAuth())) return;
+  await detectRoomsNode();
   if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
     toast('Set up your squad first! Visit Strategy Hub.');
     return;
@@ -842,7 +881,7 @@ async function createOnlineRoom() {
     updatedAt: now(),
   };
   try {
-    await S.online.db.ref(`rooms/${id}`).set(payload);
+    await roomsRef(id).set(payload);
   } catch (err) {
     toast(`Create room failed: ${err?.code || 'unknown error'}`);
     console.error('Create room failed:', err);
@@ -860,11 +899,12 @@ async function joinOnlineRoomById(id) {
     return;
   }
   if (!(await ensureOnlineAuth())) return;
+  await detectRoomsNode();
   if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
     toast('Set up your squad first! Visit Strategy Hub.');
     return;
   }
-  const ref = S.online.db.ref(`rooms/${id}`);
+  const ref = roomsRef(id);
   let snap;
   try {
     snap = await ref.get();
@@ -917,9 +957,10 @@ async function joinOnlineRoomById(id) {
 async function joinOnlineRoomByCode(codeRaw) {
   if (!initOnline()) return;
   if (!(await ensureOnlineAuth())) return;
+  await detectRoomsNode();
   const code = (codeRaw || '').trim().toUpperCase();
   if (!code) return;
-  const snap = await S.online.db.ref('rooms').orderByChild('code').equalTo(code).get();
+  const snap = await roomsRef().orderByChild('code').equalTo(code).get();
   let target = null;
   snap.forEach(ch => {
     const v = ch.val() || {};
@@ -932,7 +973,7 @@ async function joinOnlineRoomByCode(codeRaw) {
 function watchRoom(id) {
   if (!initOnline()) return;
   cleanupOnlineRoomListener();
-  const ref = S.online.db.ref(`rooms/${id}`);
+  const ref = roomsRef(id);
   const cb = snap => {
     const room = snap.val();
     if (!room) {
@@ -1009,6 +1050,7 @@ function renderMenu() {
 
 function renderArena() {
   const onlineReady = initOnline();
+  const configReady = hasFirebaseConfig();
   app().innerHTML = `
     <div class="view view-arena">
       <div class="arena-panel">
@@ -1043,6 +1085,7 @@ function renderArena() {
                 : '<div class="room-empty">Set FIREBASE_CONFIG to enable online rooms.</div>'
             }
           </div>
+          ${configReady ? `<div class="setup-warning">Online node: <b>${S.online.roomsNode}</b>. If your rules use another key, app auto-detects ` + '`rooms`/`rooms2`/`rooms2d`.</div>' : `<div class="setup-warning">${firebaseSetupMessage()}</div>`}
         </div>
         <div class="arena-foot">
           <button class="btn-back" id="arena-back">← Back to Menu</button>
@@ -1052,8 +1095,12 @@ function renderArena() {
 
   document.getElementById('arena-back').addEventListener('click', () => goto('menu'));
   document.getElementById('mode-ai').addEventListener('click', () => startBattle('ai'));
-  document.getElementById('mode-create').addEventListener('click', createOnlineRoom);
+  document.getElementById('mode-create').addEventListener('click', () => {
+    if (!hasFirebaseConfig()) return toast('Set FIREBASE_CONFIG first (index.html).');
+    createOnlineRoom();
+  });
   document.getElementById('mode-join').addEventListener('click', () => {
+    if (!hasFirebaseConfig()) return toast('Set FIREBASE_CONFIG first (index.html).');
     const code = prompt('Enter room code:');
     if (!code) return;
     joinOnlineRoomByCode(code);
@@ -1062,6 +1109,7 @@ function renderArena() {
     el.addEventListener('click', () => joinOnlineRoomById(el.dataset.roomId));
   });
   if (onlineReady) subscribeRoomList();
+  if (onlineReady) detectRoomsNode().then(() => { if (S.view === 'arena') renderArena(); });
 }
 
 /* ════════════════════════════════════════════════════════
