@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hajime No Ippo: Ring Clash Ultra</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px) rotate(-2deg); }
+    50% { transform: translateX(5px) rotate(2deg); }
+    75% { transform: translateX(-5px) rotate(-2deg); }
+  }
+  @keyframes punch {
+    0% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.2) translateY(-40px); z-index: 50; filter: brightness(1.3); }
+    100% { transform: scale(1) translateY(0); }
+  }
+  @keyframes opponent-punch {
+    0% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.2) translateY(40px); z-index: 50; filter: brightness(1.3); }
+    100% { transform: scale(1) translateY(0); }
+  }
+  @keyframes drop-in {
+    0% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes flash-red {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(239, 68, 68, 0.5); }
+  }
+  @keyframes flash-blue {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(59, 130, 246, 0.5); }
+  }
+  .animate-shake { animation: shake 0.4s ease-in-out; }
+  .animate-punch { animation: punch 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .animate-opponent-punch { animation: opponent-punch 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  .animate-drop-in { animation: drop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+  .animate-flash-dmg { animation: flash-red 0.5s ease-in-out; }
+  .animate-flash-buff { animation: flash-blue 0.5s ease-in-out; }
+  .bg-pattern { background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 32px 32px; }
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #020617; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.263.1",
+    "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+  }
+}
+</script>
+</head>
+<body class="bg-slate-950 text-white font-sans overflow-hidden h-screen w-screen">
+<div id="root" class="h-full w-full"></div>
+
+<script type="text/babel" data-type="module">
+import React, { useState, useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Swords, Shield, Heart, UserPlus, LogIn, ArrowLeft, PackageOpen, Zap, Activity, Repeat, Trash2, Info, Star, Flame, Trophy, Crosshair } from 'lucide-react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
+
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+const BOXERS = [
+  { id: 'b_ippo', type: 'boxer', name: 'Makunouchi Ippo', title: 'The Wind God', hp: 135, maxHp: 135, atk: 54, def: 20, icon: '🥊', desc: 'Dempsey Roll: Massive power in short bursts.' },
+  { id: 'b_takamura', type: 'boxer', name: 'Takamura Mamoru', title: 'Ultimate Beast', hp: 155, maxHp: 155, atk: 60, def: 25, icon: '🐻', desc: 'World Champion: Fearsome power and durability.' },
+  { id: 'b_miyata', type: 'boxer', name: 'Miyata Ichirou', title: 'Lightning God', hp: 90, maxHp: 90, atk: 50, def: 45, icon: '⚡', desc: 'Counter King: Low health, elite defense.' },
+  { id: 'b_sendou', type: 'boxer', name: 'Sendou Takeshi', title: 'Naniwa Tiger', hp: 125, maxHp: 125, atk: 65, def: 15, icon: '🐅', desc: 'Wild Instinct: The strongest puncher in Japan.' },
+  { id: 'b_volg', type: 'boxer', name: 'Volg Zangief', title: 'Red Wolf', hp: 115, maxHp: 115, atk: 52, def: 35, icon: '🐺', desc: 'Technical: High balance of offense and defense.' },
+  { id: 'b_mashiba', type: 'boxer', name: 'Mashiba Ryou', title: 'The Grim Reaper', hp: 100, maxHp: 100, atk: 58, def: 28, icon: '💀', desc: 'Flicker Jabs: Reach keeps opponents at bay.' },
+  { id: 'b_sawamura', type: 'boxer', name: 'Sawamura Ryuuhei', title: 'Dragon', hp: 100, maxHp: 100, atk: 68, def: 22, icon: '🐉', desc: 'Bullet: Unrivaled precision and lethality.' },
+  { id: 'b_itagaki', type: 'boxer', name: 'Itagaki Manabu', title: 'Speed Star', hp: 85, maxHp: 85, atk: 44, def: 52, icon: '🌀', desc: 'Chrono: Impossible to hit when focused.' },
+  { id: 'b_date', type: 'boxer', name: 'Date Eiji', title: 'The Veteran', hp: 130, maxHp: 130, atk: 50, def: 38, icon: '🍷', desc: 'Heartbreak Shot: Never stays down.' },
+  { id: 'b_ricardo', type: 'boxer', name: 'Ricardo Martinez', title: 'El Diablo', hp: 170, maxHp: 170, atk: 70, def: 32, icon: '👑', desc: 'Living Legend: The pinnacle of boxing.' },
+  { id: 'b_hawk', type: 'boxer', name: 'Bryan Hawk', title: 'The Wild Man', hp: 140, maxHp: 140, atk: 75, def: 10, icon: '🦅', desc: 'Unorthodox: Absurd offense, zero technique.' },
+  { id: 'b_eagle', type: 'boxer', name: 'David Eagle', title: 'Gold Medalist', hp: 150, maxHp: 150, atk: 55, def: 40, icon: '🎖️', desc: 'Perfect Style: Disciplined and sturdy.' },
+  { id: 'b_kamogawa', type: 'boxer', name: 'Genji Kamogawa', title: 'Iron Fist', hp: 120, maxHp: 120, atk: 62, def: 30, icon: '🔨', desc: 'Spirit: Punches that can break wood.' },
+  { id: 'b_nekota', type: 'boxer', name: 'Nekota Ginpachi', title: 'Electric Spark', hp: 80, maxHp: 80, atk: 45, def: 60, icon: '🏮', desc: 'Feral Speed: Instinct-based movement.' },
+  { id: 'b_guevara', type: 'boxer', name: 'Antonio Guevara', title: 'Little Hero', hp: 110, maxHp: 110, atk: 56, def: 25, icon: '🇵🇭', desc: 'Southpaw: Tricky angles for opponents.' },
+  { id: 'b_kobashi', type: 'boxer', name: 'Kobashi Kenta', title: 'Clinch Artist', hp: 105, maxHp: 105, atk: 35, def: 55, icon: '🫂', desc: 'Decision Winner: Stalls for time.' },
+  { id: 'b_hayami', type: 'boxer', name: 'Hayami Ryuichi', title: 'Shotgun', hp: 95, maxHp: 95, atk: 55, def: 30, icon: '🔫', desc: 'Rapid Fire: Dozens of punches in seconds.' },
+  { id: 'b_okita', type: 'boxer', name: 'Okita Keigo', title: 'Date Copy', hp: 110, maxHp: 110, atk: 48, def: 32, icon: '🥈', desc: 'Imitation: Solid all-around ability.' },
+  { id: 'b_shimabukuro', type: 'boxer', name: 'Shimabukuro', title: 'Fisherman', hp: 145, maxHp: 145, atk: 58, def: 15, icon: '⚓', desc: 'Lung Capacity: Infinite stamina slugger.' },
+  { id: 'b_aoki', type: 'boxer', name: 'Aoki Masaru', title: 'Frog King', hp: 120, maxHp: 120, atk: 40, def: 40, icon: '🐸', desc: 'Frog Punch: Unpredictable and strange.' },
+  { id: 'b_kimura', type: 'boxer', name: 'Kimura Tatsuya', title: 'Dragon Fish', hp: 115, maxHp: 115, atk: 45, def: 35, icon: '🐟', desc: 'Dragon Fish Blow: Precise technical strikes.' },
+  { id: 'b_imai', type: 'boxer', name: 'Imai Kyosuke', title: 'Next Generation', hp: 130, maxHp: 130, atk: 55, def: 25, icon: '🆕', desc: 'Ippo Copy: Younger, fresher, just as strong.' },
+  { id: 'b_hoshi', type: 'boxer', name: 'Hoshi Hiroyuki', title: 'Karateka', hp: 125, maxHp: 125, atk: 62, def: 10, icon: '🥋', desc: 'One-Hit KO: Destructive force from Sendou gym.' },
+  { id: 'b_alfredo', type: 'boxer', name: 'Alfredo Gonzales', title: 'Metztli', hp: 140, maxHp: 140, atk: 65, def: 30, icon: '🇲🇽', desc: 'Grim Reaper: Cold, technical, and brutal.' },
+  { id: 'b_ozuma', type: 'boxer', name: 'Jason Ozuma', title: 'The Hook', hp: 140, maxHp: 140, atk: 60, def: 10, icon: '⚓', desc: 'Devastating Hooks: Gentle heart, heavy hands.' },
+  { id: 'b_kenta', type: 'boxer', name: 'Sanada Kazuki', title: 'The Doctor', hp: 110, maxHp: 110, atk: 50, def: 45, icon: '🩺', desc: 'Anatomy Master: Strikes the nerves directly.' },
+  { id: 'b_hammer', type: 'boxer', name: 'Hammer Nao', title: 'The Pupil', hp: 135, maxHp: 135, atk: 55, def: 15, icon: '🔨', desc: 'Solar Plexus: Punches that steal the breath.' },
+  { id: 'b_malcolm', type: 'boxer', name: 'Malcolm Gedo', title: 'The Magician', hp: 105, maxHp: 105, atk: 52, def: 40, icon: '🎩', desc: 'Magic Punch: Tricks that confuse the senses.' },
+  { id: 'b_rabbymaru', type: 'boxer', name: 'Randy Boy Jr', title: 'Asura', hp: 120, maxHp: 120, atk: 63, def: 30, icon: '👊', desc: 'Switch-Hitter: Master of both stances.' },
+  { id: 'b_billy', type: 'boxer', name: 'Billy McCallum', title: 'Golden Eagle', hp: 145, maxHp: 145, atk: 50, def: 45, icon: '🦅', desc: 'Philadelphia Shell: Impenetrable defense.' },
+  { id: 'b_ponchai', type: 'boxer', name: 'Ponchai Chuwatana', title: 'Thai Champ', hp: 110, maxHp: 110, atk: 48, def: 20, icon: '🇹🇭', desc: 'Muay Thai Roots: Sturdy and focused.' },
+  { id: 'b_papaya', type: 'boxer', name: 'Papaya Dachiu', title: 'Pineapple', hp: 115, maxHp: 115, atk: 42, def: 45, icon: '🍍', desc: 'Coconut Punch: Weird timing and power.' }
+];
+
+const BUFFS = [
+  { id: 'f_mitts', type: 'buff', name: 'Mitts', cost: 1, effect: 'atk', val: 15, icon: '🥊', desc: '+15 ATK: Fundamental training.' },
+  { id: 'f_steak', type: 'buff', name: 'Steak', cost: 2, effect: 'hp', val: 65, icon: '🥩', desc: '+65 HP: Nutrition is key.' },
+  { id: 'f_weights', type: 'buff', name: 'Weights', cost: 1, effect: 'def', val: 18, icon: '⛓️', desc: '+18 DEF: Body conditioning.' },
+  { id: 'f_counter', type: 'buff', name: 'Counter', cost: 2, effect: 'atk', val: 45, icon: '🎯', condition: 'low_hp', desc: '+45 ATK: Trigger when HP < 40%.' },
+  { id: 'f_adrenaline', type: 'buff', name: 'Adrenaline', cost: 3, effect: 'atk', val: 65, icon: '💉', condition: 'teammate_down', desc: '+65 ATK: Trigger if a teammate fell.' },
+  { id: 'f_bandage', type: 'buff', name: 'Triage', cost: 1, effect: 'hp_all', val: 30, icon: '🩹', desc: '+30 HP to benched boxers.' },
+  { id: 'f_focus', type: 'buff', name: 'Focus', cost: 0, effect: 'def', val: 8, icon: '🧘', desc: '+8 DEF: Zero cost mental prep.' },
+  { id: 'f_ice', type: 'buff', name: 'Ice Pack', cost: 2, effect: 'hp_def', val: 35, icon: '🧊', desc: '+35 HP & +15 DEF.' },
+  { id: 'f_early', type: 'buff', name: 'Pressure', cost: 1, effect: 'atk', val: 30, icon: '⚡', condition: 'early_game', desc: '+30 ATK: Turn 1-3 only.' },
+  { id: 'f_desperate', type: 'buff', name: 'Fury', cost: 4, effect: 'atk', val: 90, icon: '🔥', condition: 'very_low_hp', desc: '+90 ATK: Trigger if HP < 20%.' },
+  { id: 'f_strategy', type: 'buff', name: 'Strategy', cost: 2, effect: 'tc_gain', val: 3, icon: '📝', desc: 'Gain +3 TC next turn.' },
+  { id: 'f_cornerman', type: 'buff', name: 'Corner', cost: 1, effect: 'hp', val: 40, icon: '👴', desc: '+40 HP: Good coaching.' },
+  { id: 'f_roadwork', type: 'buff', name: 'Roadwork', cost: 1, effect: 'def', val: 25, icon: '🏃', desc: '+25 DEF: Building stamina.' },
+  { id: 'f_sparring', type: 'buff', name: 'Sparring', cost: 3, effect: 'atk_def', val: 25, icon: '🤝', desc: '+25 ATK & +25 DEF.' },
+  { id: 'f_spirit', type: 'buff', name: 'Spirit', cost: 2, effect: 'hp', val: 50, icon: '🔥', condition: 'last_man', desc: '+50 HP: Only for last fighter.' },
+  { id: 'f_champion', type: 'buff', name: 'Pride', cost: 5, effect: 'atk_def_hp', val: 40, icon: '🏆', desc: '+40 to ALL STATS.' },
+  { id: 'f_southpaw', type: 'buff', name: 'Southpaw', cost: 2, effect: 'def', val: 35, icon: '🥊', desc: '+35 DEF: Change stance to confuse.' },
+  { id: 'f_peakaboo', type: 'buff', name: 'Peak-a-boo', cost: 2, effect: 'atk_def', val: 20, icon: '🙈', desc: '+20 ATK & +20 DEF: Tight guard.' },
+  { id: 'f_weights_cut', type: 'buff', name: 'Weight Cut', cost: 0, effect: 'atk_hp_neg', val: 30, icon: '⚖️', desc: '+30 ATK but lose 30 HP.' },
+  { id: 'f_medicine', type: 'buff', name: 'Medicine', cost: 3, effect: 'hp', val: 100, icon: '🧪', desc: '+100 HP: High cost recovery.' },
+  { id: 'f_shout', type: 'buff', name: 'Coach Shout', cost: 1, effect: 'atk', val: 25, icon: '📢', desc: '+25 ATK: Motivational surge.' },
+  { id: 'f_bonds', type: 'buff', name: 'Gym Bonds', cost: 2, effect: 'atk', val: 20, condition: 'teammates_up', desc: '+20 ATK per alive benched teammate.' },
+  { id: 'f_revenge', type: 'buff', name: 'Revenge', cost: 2, effect: 'atk', val: 50, condition: 'took_dmg', desc: '+50 ATK: Use after taking damage.' },
+  { id: 'f_calm', type: 'buff', name: 'Zen State', cost: 1, effect: 'def', val: 40, condition: 'high_hp', desc: '+40 DEF: Only if HP > 80%.' }
+];
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [view, setView] = useState('menu');
+  const [profile, setProfile] = useState({ deckBoxers: [], deckBuffs: [] });
+  const [room, setRoom] = useState(null);
+  const [toast, setToast] = useState('');
+
+  useEffect(() => {
+    const initAuth = async () => {
+      if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+        await signInWithCustomToken(auth, __initial_auth_token);
+      } else {
+        await signInAnonymously(auth);
+      }
+    };
+    initAuth();
+    const unsubscribe = onAuthStateChanged(auth, setUser);
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const profileRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'main');
+    const unsub = onSnapshot(profileRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setProfile(docSnap.data());
+      } else {
+        const initData = { 
+          deckBoxers: ['b_ippo', 'b_takamura', 'b_miyata'], 
+          deckBuffs: ['f_mitts', 'f_steak', 'f_weights', 'f_focus', 'f_ice'] 
+        };
+        setDoc(profileRef, initData);
+        setProfile(initData);
+      }
+    });
+    return () => unsub();
+  }, [user]);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 3000);
+  };
+
+  const updateProfile = async (updates) => {
+    if (!user) return;
+    const profileRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'main');
+    await setDoc(profileRef, { ...profile, ...updates }, { merge: true });
+  };
+
+  if (!user) return <div className="h-full flex items-center justify-center bg-slate-950 text-red-500 font-black animate-pulse text-xl tracking-tighter uppercase">Initializing Camp...</div>;
+
+  return (
+    <div className="h-full w-full bg-slate-950 text-white font-sans overflow-hidden flex flex-col relative">
+      {view !== 'battle' && (
+        <div className="bg-slate-900/90 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center z-10 shadow-2xl">
+          <div className="flex items-center gap-3">
+            <div className="bg-red-600 p-2 rounded-lg rotate-12 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+              <Trophy size={20} className="text-white" />
+            </div>
+            <span className="text-2xl font-black italic uppercase tracking-tighter">Ring <span className="text-red-600">Clash</span> Ultra</span>
+          </div>
+          <div className="flex items-center gap-4 bg-black/40 px-4 py-2 rounded-full border border-slate-700">
+             <div className="text-slate-400 font-mono text-xs hidden md:block">UID: {user.uid.slice(0, 8)}</div>
+             <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,1)]"></div>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-red-600 text-white px-8 py-4 rounded-2xl shadow-2xl z-[100] font-black uppercase tracking-widest border-2 border-red-400 animate-drop-in">
+          {toast}
+        </div>
+      )}
+
+      <div className="flex-1 overflow-auto bg-pattern relative">
+        {view === 'menu' && <MainMenu setView={setView} />}
+        {view === 'deck' && <DeckBuilder profile={profile} updateProfile={updateProfile} setView={setView} showToast={showToast} />}
+        {view === 'lobby' && <Lobby setView={setView} user={user} setRoom={setRoom} showToast={showToast} profile={profile} />}
+        {view === 'battle' && <BattleArena room={room} setRoom={setRoom} user={user} setView={setView} showToast={showToast} />}
+      </div>
+    </div>
+  );
+}
+
+function MainMenu({ setView }) {
+  return (
+    <div className="h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-transparent to-black/80">
+      <div className="relative mb-16 text-center transform hover:scale-105 transition-transform duration-500">
+        <h1 className="text-6xl md:text-9xl font-black italic text-white drop-shadow-[0_0_50px_rgba(255,255,255,0.1)] uppercase tracking-tighter leading-none">
+          HAJIME <br/> <span className="text-red-600">NO IPPO</span>
+        </h1>
+        <div className="inline-block mt-4 bg-white text-black px-8 py-3 font-black text-2xl md:text-3xl italic skew-x-[-15deg] tracking-[0.2em] uppercase shadow-2xl">Ring Clash Ultra</div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl">
+        <button onClick={() => setView('lobby')} className="group bg-white text-black p-10 rounded-3xl font-black text-2xl hover:bg-red-600 hover:text-white transition-all transform hover:-translate-y-2 hover:scale-105 shadow-2xl flex items-center justify-center gap-4 uppercase italic">
+          <Flame size={32} className="group-hover:animate-bounce"/> Enter Arena
+        </button>
+        <button onClick={() => setView('deck')} className="bg-slate-900 text-white p-10 rounded-3xl font-black text-2xl hover:bg-slate-800 transition-all transform hover:-translate-y-2 hover:scale-105 shadow-2xl flex items-center justify-center gap-4 border-2 border-slate-700 uppercase italic">
+          <PackageOpen size={32}/> Strategy Hub
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DeckBuilder({ profile, updateProfile, setView, showToast }) {
+  const [deckBoxers, setDeckBoxers] = useState(profile.deckBoxers || []);
+  const [deckBuffs, setDeckBuffs] = useState(profile.deckBuffs || []);
+  const [activeTab, setActiveTab] = useState('boxers');
+
+  const toggleCard = (id, type) => {
+    if (type === 'boxer') {
+      if (deckBoxers.includes(id)) setDeckBoxers(deckBoxers.filter(c => c !== id));
+      else if (deckBoxers.length < 3) setDeckBoxers([...deckBoxers, id]);
+      else showToast("3 Boxers Max!");
+    } else {
+      if (deckBuffs.includes(id)) setDeckBuffs(deckBuffs.filter(c => c !== id));
+      else if (deckBuffs.length < 5) setDeckBuffs([...deckBuffs, id]);
+      else showToast("5 Buffs Max!");
+    }
+  };
+
+  const saveDeck = () => {
+    if (deckBoxers.length !== 3 || deckBuffs.length !== 5) return showToast("Pick 3 Boxers and 5 Buffs!");
+    updateProfile({ deckBoxers, deckBuffs });
+    showToast("Strategy Saved.");
+  };
+
+  return (
+    <div className="h-full flex flex-col p-6 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6 bg-slate-900/80 p-6 rounded-[2.5rem] border border-slate-800 shadow-xl">
+        <button onClick={() => setView('menu')} className="text-slate-500 hover:text-white flex items-center gap-2 font-black uppercase text-sm transition-colors">
+          <ArrowLeft size={20}/> Exit Strategy
+        </button>
+        <div className="flex gap-12 bg-black/40 px-8 py-2 rounded-2xl border border-slate-800/50">
+           <StatDisplay label="Fighters" current={deckBoxers.length} max={3} />
+           <StatDisplay label="Arsenal" current={deckBuffs.length} max={5} />
+        </div>
+        <button 
+          onClick={saveDeck}
+          className={`px-12 py-5 rounded-2xl font-black uppercase italic tracking-widest shadow-2xl transition-all scale-100 hover:scale-105 active:scale-95 ${deckBoxers.length === 3 && deckBuffs.length === 5 ? 'bg-red-600 hover:bg-red-500' : 'bg-slate-800 text-slate-600'}`}
+        >
+          Confirm Squad
+        </button>
+      </div>
+
+      <div className="flex gap-2 mb-6 bg-black/40 p-2 rounded-2xl border border-slate-800">
+        <TabButton label="Fighter Roster" active={activeTab === 'boxers'} onClick={() => setActiveTab('boxers')} />
+        <TabButton label="Training Buffs" active={activeTab === 'buffs'} onClick={() => setActiveTab('buffs')} />
+      </div>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 pb-24">
+            {(activeTab === 'boxers' ? BOXERS : BUFFS).map(card => (
+              <div key={card.id} onClick={() => toggleCard(card.id, activeTab === 'boxers' ? 'boxer' : 'buff')} className={`cursor-pointer transform transition-all duration-300 hover:scale-105 ${ (activeTab === 'boxers' ? deckBoxers : deckBuffs).includes(card.id) ? '' : 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0'}`}>
+                <Card card={card} selected={(activeTab === 'boxers' ? deckBoxers : deckBuffs).includes(card.id)} />
+              </div>
+            ))}
+         </div>
+      </div>
+    </div>
+  );
+}
+
+function Lobby({ setView, user, setRoom, showToast, profile }) {
+  const [roomName, setRoomName] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleAction = async (isCreate) => {
+    if (!roomName || !password) return showToast("Room and Pass required.");
+    if (profile.deckBoxers.length !== 3) return showToast("Strategy Incomplete!");
+
+    setLoading(true);
+    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomName);
+    const snap = await getDoc(roomRef);
+
+    const playerData = {
+      uid: user.uid,
+      boxers: profile.deckBoxers.map((id, i) => ({ ...BOXERS.find(c => c.id === id), instanceId: `${user.uid}_${i}`, isDead: false })),
+      buffs: profile.deckBuffs.map((id, i) => ({ ...BUFFS.find(c => c.id === id), instanceId: `${user.uid}_${i}_b`, used: false })),
+      activeBoxerIdx: 0,
+      tacticalCost: 2
+    };
+
+    if (isCreate) {
+      if (snap.exists()) { setLoading(false); return showToast("Arena Full."); }
+      await setDoc(roomRef, {
+        id: roomName, password, status: 'waiting', host: user.uid, guest: null, turn: user.uid,
+        winner: null, lastAction: 'Match Ready.', trigger: 0, animType: null, turnCount: 1,
+        players: { [user.uid]: playerData }
+      });
+    } else {
+      if (!snap.exists()) { setLoading(false); return showToast("Arena not found."); }
+      const data = snap.data();
+      if (data.password !== password) { setLoading(false); return showToast("Access Denied."); }
+      await setDoc(roomRef, {
+        status: 'playing', guest: user.uid, lastAction: 'The bell rings!', trigger: data.trigger + 1,
+        players: { ...data.players, [user.uid]: playerData }
+      }, { merge: true });
+    }
+    onSnapshot(roomRef, (s) => { if(s.exists()) { setRoom(s.data()); setView('battle'); }});
+  };
+
+  return (
+    <div className="h-full flex items-center justify-center p-6">
+      <div className="bg-slate-900 p-12 rounded-[3.5rem] border border-slate-800 shadow-2xl w-full max-w-md text-center transform -rotate-1">
+        <h2 className="text-4xl font-black italic uppercase mb-10 tracking-tighter text-white">Matchmaking</h2>
+        <div className="space-y-6">
+          <input type="text" placeholder="ARENA CODE" value={roomName} onChange={e => setRoomName(e.target.value.toUpperCase())} className="w-full bg-black border-2 border-slate-700 rounded-2xl p-5 font-black focus:border-red-600 outline-none uppercase text-center text-xl tracking-widest" />
+          <input type="password" placeholder="PASSWORD" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-black border-2 border-slate-700 rounded-2xl p-5 font-black focus:border-red-600 outline-none text-center text-xl tracking-widest" />
+          <div className="flex flex-col gap-4 pt-4">
+            <button onClick={() => handleAction(true)} disabled={loading} className="bg-white text-black font-black py-5 rounded-2xl uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-xl">Host Arena</button>
+            <button onClick={() => handleAction(false)} disabled={loading} className="bg-slate-800 text-white font-black py-5 rounded-2xl border border-slate-700 uppercase tracking-widest hover:bg-slate-700 transition-all">Join Arena</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BattleArena({ room, setRoom, user, setView, showToast }) {
+  const [anim, setAnim] = useState(null);
+  const prevTrigger = useRef(room?.trigger);
+
+  const me = room?.players?.[user.uid];
+  const oppId = room?.host === user.uid ? room?.guest : room?.host;
+  const opp = room?.players?.[oppId];
+  const isMyTurn = room?.turn === user.uid;
+
+  useEffect(() => {
+    if (room && room.trigger !== prevTrigger.current) {
+      prevTrigger.current = room.trigger;
+      setAnim(room.animType);
+      setTimeout(() => setAnim(null), 500);
+    }
+  }, [room?.trigger]);
+
+  const update = async (data) => await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', room.id), data, { merge: true });
+
+  const handleAttack = async () => {
+    if (!isMyTurn || room.status !== 'playing') return;
+    const mB = me.boxers[me.activeBoxerIdx];
+    const oB = opp.boxers[opp.activeBoxerIdx];
+    
+    let dmg = Math.max(10, mB.atk - Math.floor(oB.def / 2));
+    let updatedOppBoxers = [...opp.boxers];
+    updatedOppBoxers[opp.activeBoxerIdx].hp -= dmg;
+
+    let log = `${mB.name} connects! (-${dmg} HP)`;
+    let status = room.status;
+    let winner = null;
+
+    if (updatedOppBoxers[opp.activeBoxerIdx].hp <= 0) {
+      updatedOppBoxers[opp.activeBoxerIdx].hp = 0;
+      updatedOppBoxers[opp.activeBoxerIdx].isDead = true;
+      log = `KO! ${oB.name} is down!`;
+      if (updatedOppBoxers.every(b => b.isDead)) { status = 'finished'; winner = user.uid; }
+      else {
+        opp.activeBoxerIdx = updatedOppBoxers.findIndex(b => !b.isDead);
+      }
+    }
+
+    await update({
+      turn: oppId, lastAction: log, trigger: room.trigger + 1, animType: 'attack', status, winner,
+      turnCount: room.turnCount + 1,
+      players: { 
+        ...room.players, 
+        [user.uid]: { ...me, tacticalCost: Math.min(8, me.tacticalCost + 1) },
+        [oppId]: { ...opp, boxers: updatedOppBoxers, activeBoxerIdx: opp.activeBoxerIdx }
+      }
+    });
+  };
+
+  const useBuff = async (idx) => {
+    if (!isMyTurn || room.status !== 'playing') return;
+    const b = me.buffs[idx];
+    if (b.used || me.tacticalCost < b.cost) return;
+
+    const mB = me.boxers[me.activeBoxerIdx];
+    
+    // Complex condition logic
+    if (b.condition === 'low_hp' && mB.hp > mB.maxHp * 0.4) return showToast("Wait for critical HP");
+    if (b.condition === 'very_low_hp' && mB.hp > mB.maxHp * 0.2) return showToast("Near death only");
+    if (b.condition === 'teammate_down' && me.boxers.filter(x=>x.isDead).length === 0) return showToast("Need a KO'd ally");
+    if (b.condition === 'early_game' && room.turnCount > 6) return showToast("Round start only");
+    if (b.condition === 'last_man' && me.boxers.filter(x=>!x.isDead).length > 1) return showToast("Last survivor only");
+    if (b.condition === 'teammates_up' && me.boxers.filter(x=>!x.isDead).length < 2) return showToast("Strength in numbers!");
+    if (b.condition === 'high_hp' && mB.hp < mB.maxHp * 0.8) return showToast("Too bruised to focus");
+
+    let updatedBoxers = [...me.boxers];
+    let active = updatedBoxers[me.activeBoxerIdx];
+    let nextTc = me.tacticalCost - b.cost;
+
+    if (b.effect === 'hp') active.hp = Math.min(active.maxHp, active.hp + b.val);
+    else if (b.effect === 'atk') {
+        let actualVal = b.val;
+        if (b.condition === 'teammates_up') actualVal = (me.boxers.filter(x=>!x.isDead && x.instanceId !== active.instanceId).length) * 20;
+        active.atk += actualVal;
+    }
+    else if (b.effect === 'def') active.def += b.val;
+    else if (b.effect === 'atk_def') { active.atk += b.val; active.def += b.val; }
+    else if (b.effect === 'hp_def') { active.hp = Math.min(active.maxHp, active.hp + b.val); active.def += 15; }
+    else if (b.effect === 'hp_all') updatedBoxers.forEach(x => { if(!x.isDead) x.hp = Math.min(x.maxHp, x.hp + b.val); });
+    else if (b.effect === 'tc_gain') nextTc += b.val;
+    else if (b.effect === 'atk_def_hp') { active.atk += b.val; active.def += b.val; active.hp = Math.min(active.maxHp, active.hp + b.val); }
+    else if (b.effect === 'atk_hp_neg') { active.atk += b.val; active.hp = Math.max(1, active.hp - 30); }
+
+    let buffs = [...me.buffs]; buffs[idx].used = true;
+    await update({
+      lastAction: `${mB.name} activates ${b.name}!`, trigger: room.trigger + 1, animType: 'buff',
+      players: { ...room.players, [user.uid]: { ...me, boxers: updatedBoxers, buffs, tacticalCost: Math.min(8, nextTc) } }
+    });
+  };
+
+  const switchFighter = async (idx) => {
+    if (!isMyTurn || me.activeBoxerIdx === idx || me.boxers[idx].isDead || me.tacticalCost < 1) return;
+    await update({
+      turn: oppId, lastAction: `${me.boxers[idx].name} tags in!`, trigger: room.trigger + 1, animType: 'switch',
+      players: { ...room.players, [user.uid]: { ...me, activeBoxerIdx: idx, tacticalCost: me.tacticalCost - 1 } }
+    });
+  };
+
+  if (!room) return null;
+  if (room.status === 'waiting') return <div className="h-full flex flex-col items-center justify-center p-6"><div className="w-32 h-32 border-8 border-red-600 border-t-transparent animate-spin rounded-full mb-8 shadow-2xl shadow-red-500/20"></div><h2 className="text-4xl font-black italic uppercase text-white">Shadow Boxing...</h2><p className="mt-4 text-slate-500 uppercase font-black tracking-widest">Gym ID: {room.id}</p></div>;
+
+  return (
+    <div className={`h-full flex flex-col relative transition-all duration-300 ${anim === 'attack' ? 'animate-flash-dmg' : anim === 'buff' ? 'animate-flash-buff' : ''}`}>
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-black z-0"></div>
+
+      {/* TOP: OPPONENT */}
+      <div className="p-4 z-10 flex justify-between items-start">
+         <div className="flex gap-2 bg-black/60 p-3 rounded-2xl border border-white/10 shadow-2xl">
+           {opp?.boxers.map((b, i) => (
+             <div key={i} className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl border-2 transition-all ${i === opp.activeBoxerIdx ? 'border-red-600 bg-red-950/40' : 'border-slate-800'} ${b.isDead ? 'opacity-20 grayscale scale-90' : ''}`}>{b.icon}</div>
+           ))}
+         </div>
+         <div className="flex flex-col items-end gap-1 p-2">
+            <div className="text-[10px] font-black text-red-500/80 uppercase tracking-widest">Opponent TC</div>
+            <div className="flex gap-1">{[...Array(8)].map((_, i) => <div key={i} className={`h-2 w-3 rounded-sm ${i < (opp?.tacticalCost || 0) ? 'bg-red-500 shadow-[0_0_5px_red]' : 'bg-slate-900'}`}></div>)}</div>
+         </div>
+      </div>
+
+      {/* MID: ARENA */}
+      <div className="flex-1 flex flex-col items-center justify-center z-10 p-4 gap-8">
+        <div className={`transform scale-75 md:scale-90 transition-all duration-300 ${anim === 'attack' && !isMyTurn ? 'animate-opponent-punch' : ''}`}>
+           <Card card={opp?.boxers[opp?.activeBoxerIdx]} hideDesc />
+        </div>
+        
+        <div className="relative">
+            <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full"></div>
+            <div className="bg-black/80 px-10 py-5 rounded-3xl border border-white/10 text-center shadow-2xl backdrop-blur-xl max-w-sm relative">
+               <div className={`text-[10px] font-black uppercase tracking-[0.5em] mb-2 ${isMyTurn ? 'text-green-500' : 'text-red-600 animate-pulse'}`}>{isMyTurn ? 'Your Round' : "Enemy Movement"}</div>
+               <div className="text-xl font-black italic text-slate-100 uppercase leading-tight">{room.lastAction}</div>
+            </div>
+        </div>
+
+        <div className={`transform scale-90 md:scale-110 transition-all duration-300 ${anim === 'attack' && isMyTurn ? 'animate-punch' : ''}`}>
+           <Card card={me?.boxers[me?.activeBoxerIdx]} hideDesc />
+        </div>
+      </div>
+
+      {/* BOTTOM: ACTIONS */}
+      <div className="p-4 bg-slate-900/95 border-t border-white/5 z-20 flex flex-col gap-5 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex gap-2">
+            {me?.boxers.map((b, i) => (
+              <div key={i} onClick={() => switchFighter(i)} className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-4xl border-2 cursor-pointer transition-all ${i === me.activeBoxerIdx ? 'border-green-500 bg-green-950/30 scale-105' : b.isDead ? 'opacity-20 cursor-not-allowed border-slate-900 grayscale' : 'border-white/10 hover:border-white/50 bg-black/40'}`}>{b.icon}</div>
+            ))}
+          </div>
+          
+          <div className="flex flex-col items-center gap-2">
+            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tactical Cost</div>
+            <div className="flex gap-1.5">{[...Array(8)].map((_, i) => <div key={i} className={`h-10 w-4 rounded-md border border-white/10 ${i < (me?.tacticalCost || 0) ? 'bg-white shadow-[0_0_15px_white]' : 'bg-black/60'}`}></div>)}</div>
+          </div>
+
+          <button onClick={handleAttack} disabled={!isMyTurn || room.status !== 'playing'} className={`px-12 py-6 rounded-3xl font-black text-2xl uppercase tracking-[0.2em] transition-all transform italic ${isMyTurn ? 'bg-red-600 hover:bg-red-500 shadow-[0_0_30px_rgba(220,38,38,0.4)] active:scale-95 text-white' : 'bg-slate-800 text-slate-600 cursor-not-allowed'}`}>PUNCH</button>
+        </div>
+
+        <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar">
+           {me?.buffs.map((b, i) => (
+              <div key={i} onClick={() => useBuff(i)} className={`min-w-[130px] md:min-w-[150px] p-4 rounded-2xl border-2 flex flex-col justify-between transition-all select-none relative h-28 ${b.used ? 'opacity-20 grayscale scale-95' : (isMyTurn && me.tacticalCost >= b.cost) ? 'bg-black border-white/20 cursor-pointer hover:border-white hover:-translate-y-2 hover:shadow-2xl shadow-white/5' : 'bg-black/40 border-slate-900 opacity-40'}`}>
+                <div className="flex justify-between items-start">
+                  <span className="text-2xl drop-shadow-md">{b.icon}</span>
+                  <div className="text-[10px] font-black px-2 py-0.5 rounded-full bg-white text-black shadow-lg">{b.cost} TC</div>
+                </div>
+                <div>
+                    <div className="text-[11px] font-black uppercase truncate text-white">{b.name}</div>
+                    <div className="text-[8px] font-bold text-slate-500 uppercase mt-0.5">{b.effect.replace('_', ' ')}</div>
+                </div>
+                {b.condition && <div className="absolute top-1 right-10 text-[7px] bg-yellow-600 px-1.5 rounded-full font-black text-white">COND</div>}
+              </div>
+           ))}
+        </div>
+      </div>
+
+      {room.status === 'finished' && (
+        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-8 animate-drop-in">
+           <div className="relative mb-8">
+             <Trophy size={100} className={`mx-auto ${room.winner === user.uid ? 'text-yellow-500 animate-bounce' : 'text-slate-700'}`} />
+             <div className="absolute inset-0 blur-3xl bg-yellow-500/20 rounded-full"></div>
+           </div>
+           <h3 className="text-7xl md:text-9xl font-black italic uppercase text-white mb-2 tracking-tighter">THE FINAL BELL</h3>
+           <div className={`text-4xl md:text-6xl font-black mb-16 uppercase tracking-[0.4em] italic ${room.winner === user.uid ? 'text-green-500 drop-shadow-[0_0_20px_rgba(34,197,94,0.5)]' : 'text-red-600'}`}>
+             {room.winner === user.uid ? 'Victory' : 'Defeat'}
+           </div>
+           <button onClick={() => { setRoom(null); setView('menu'); }} className="bg-white text-black px-16 py-6 rounded-full font-black text-2xl uppercase italic hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 active:scale-95 shadow-2xl">Return to Gym</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const StatDisplay = ({ label, current, max }) => (
+  <div className="flex flex-col items-center">
+    <div className="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1">{label}</div>
+    <div className={`text-4xl font-black italic tracking-tighter ${current === max ? 'text-green-500' : 'text-red-500'}`}>{current}<span className="text-slate-700 text-xl mx-0.5">/</span>{max}</div>
+  </div>
+);
+
+const TabButton = ({ label, active, onClick }) => (
+  <button onClick={onClick} className={`flex-1 py-5 font-black rounded-2xl transition-all uppercase tracking-widest text-xs italic ${active ? 'bg-white text-black shadow-2xl scale-100' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}>{label}</button>
+);
+
+function Card({ card, selected = false, hideDesc = false }) {
+  if (!card) return null;
+  const isBoxer = card.type === 'boxer';
+  return (
+    <div className={`w-44 h-64 md:w-56 md:h-80 rounded-[2.5rem] p-1 shadow-2xl transition-all duration-300 ${selected ? 'bg-white ring-4 ring-green-500/50' : 'bg-slate-800 border border-white/5 hover:border-white/20'}`}>
+      <div className="w-full h-full rounded-[2.3rem] bg-black flex flex-col overflow-hidden relative border border-white/5">
+        <div className={`absolute top-0 left-0 w-full h-1/2 opacity-30 blur-2xl ${isBoxer ? 'bg-red-600' : 'bg-blue-600'}`}></div>
+        <div className="h-[48%] flex items-center justify-center relative pt-4 text-7xl drop-shadow-2xl hover:scale-110 transition-transform duration-500">{card.icon}</div>
+        <div className="flex-1 p-5 flex flex-col z-10 bg-gradient-to-t from-black via-black/80 to-transparent">
+          <div className="font-black italic uppercase text-lg leading-tight truncate mb-1 tracking-tighter">{card.name}</div>
+          <div className="text-[10px] font-black text-red-600 uppercase tracking-[0.2em] mb-3 truncate">{card.title || 'Support'}</div>
+          {!hideDesc && <div className="text-[10px] text-slate-400 font-bold leading-tight line-clamp-2 italic opacity-80">{card.desc}</div>}
+          <div className="mt-auto flex justify-between items-center pt-3 border-t border-white/10">
+             {isBoxer ? (
+               <>
+                 <div className="flex items-center gap-1 font-black text-red-500 text-sm"><Heart size={14} fill="currentColor"/> {card.hp}</div>
+                 <div className="flex gap-3 items-center">
+                    <div className="flex items-center gap-0.5 font-black text-slate-100 text-[11px]"><Swords size={12}/> {card.atk}</div>
+                    <div className="flex items-center gap-0.5 font-black text-slate-100 text-[11px]"><Shield size={12}/> {card.def}</div>
+                 </div>
+               </>
+             ) : <div className="w-full text-center text-[10px] font-black uppercase text-white bg-blue-900/40 py-1.5 rounded-xl border border-blue-500/20">Power: {card.val}</div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
