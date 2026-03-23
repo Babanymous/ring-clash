@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Ring Clash Rebuild</title>
+  <title>Hajime no Ippo Ring Clash</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <style>
     :root {
-      --bg: #080808; --bg2: #121212; --line:#2a2a2a; --red:#dc143c; --red2:#ff3f66; --green:#00e676; --text:#f2f2f2; --muted:#9a9a9a;
+      --bg: #070708; --bg2: #121217; --line:#2a2b33; --red:#dc143c; --red2:#ff3f66; --gold:#f6c654; --blue:#4ea1ff; --green:#00e676; --text:#f2f2f2; --muted:#9a9a9a;
       --fd: "Bebas Neue", sans-serif; --fb: "Barlow Condensed", sans-serif;
     }
     * { box-sizing:border-box; margin:0; padding:0; }
@@ -27,7 +27,10 @@
     .btn:hover { transform:translateY(-2px); border-color:#444; }
     .btn:disabled { opacity:.4; transform:none; cursor:not-allowed; }
     .btn-p { background:linear-gradient(150deg,var(--red2),var(--red)); border-color:#ff6f8f; }
-    .menu { align-items:center; justify-content:center; text-align:center; gap:16px; padding:16px; background:radial-gradient(ellipse 120% 90% at 50% 50%, rgba(220,20,60,.13), transparent 62%), #080808; }
+    .menu { align-items:center; justify-content:center; text-align:center; gap:16px; padding:16px; background:
+      radial-gradient(ellipse 120% 90% at 50% 50%, rgba(220,20,60,.15), transparent 62%),
+      radial-gradient(ellipse 140% 80% at 30% 5%, rgba(78,161,255,.08), transparent 70%),
+      #080808; }
     .t1,.t3 { font-family:var(--fd); font-size:clamp(3rem,14vw,7rem); line-height:.85; }
     .t2 { font-family:var(--fd); display:inline-block; background:var(--red); padding:0 18px; transform:skewX(-10deg); font-size:clamp(2rem,8vw,4rem); line-height:1; }
     .row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
@@ -47,18 +50,42 @@
     .warn { margin-top:8px; border:1px solid #876020; background:rgba(135,96,32,.16); color:#ffd58c; border-radius:8px; padding:8px; font-size:.78rem; }
 
     .tabs { display:flex; gap:8px; margin-bottom:8px; }
-    .cards { flex:1; overflow:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
-    .card { border:1px solid #333; border-radius:12px; background:radial-gradient(ellipse 120% 120% at 0% 0%, rgba(220,20,60,.15), transparent 46%), #131313; padding:8px; min-height:102px; cursor:pointer; transition:.13s ease; }
+    .cards { flex:1; overflow:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(156px,1fr)); gap:10px; }
+    .card {
+      border:1px solid #393a48; border-radius:13px;
+      background:
+        linear-gradient(180deg, rgba(246,198,84,.18) 0px, rgba(246,198,84,0) 36px),
+        radial-gradient(ellipse 120% 120% at 0% 0%, rgba(220,20,60,.18), transparent 46%),
+        #15151d;
+      padding:9px; min-height:148px; cursor:pointer; transition:.15s ease; position:relative; overflow:hidden;
+      box-shadow:0 10px 20px rgba(0,0,0,.3);
+    }
     .card:hover { transform:translateY(-2px); border-color:#555; }
-    .card.sel { border-color:#ff6c8b; box-shadow:0 0 0 1px rgba(255,108,139,.3), 0 6px 18px rgba(220,20,60,.2); }
-    .ic { font-size:1.6rem; } .nm { font-family:var(--fd); line-height:1; letter-spacing:.06em; } .meta { font-size:.76rem; color:#c8c8c8; margin-top:4px; }
+    .card.sel { border-color:#ff6c8b; box-shadow:0 0 0 1px rgba(255,108,139,.3), 0 12px 24px rgba(220,20,60,.28); }
+    .ctype {
+      position:absolute; top:6px; right:6px; font-size:.6rem; padding:2px 6px; border-radius:999px;
+      background:#101017; border:1px solid #34384a; color:#c3c7da; letter-spacing:.06em;
+    }
+    .ic { font-size:1.8rem; }
+    .nm { font-family:var(--fd); line-height:1; letter-spacing:.06em; font-size:1rem; margin-top:2px; }
+    .meta { font-size:.72rem; color:#c8c8c8; margin-top:4px; min-height:30px; line-height:1.1; }
+    .statline { margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; font-size:.69rem; }
+    .pill { border:1px solid #34384a; background:#101017; border-radius:999px; padding:2px 6px; }
+    .pill.hp { color:#ff8ea7; } .pill.atk { color:#ffd67f; } .pill.def { color:#8ac2ff; } .pill.tc { color:#c9fca1; }
 
     .battle { display:grid; grid-template-rows:auto 1fr auto 1fr auto; }
     .bar { padding:8px 10px; border-bottom:1px solid #262626; background:#101010; display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .slots { display:flex; gap:6px; }
     .slot { width:36px; height:36px; border-radius:8px; border:1px solid #333; background:#171717; display:grid; place-items:center; }
     .slot.dead { opacity:.25; filter:grayscale(1); }
-    .fighter { margin:auto 10px; width:calc(100% - 20px); max-width:560px; border:1px solid #333; border-radius:14px; background:#141414; padding:10px; display:flex; gap:10px; align-items:center; animation:pop .2s ease; }
+    .fighter {
+      margin:auto 10px; width:calc(100% - 20px); max-width:640px; border:1px solid #3c3d4a; border-radius:14px;
+      background:
+        linear-gradient(180deg, rgba(246,198,84,.16) 0px, rgba(246,198,84,0) 34px),
+        radial-gradient(ellipse 120% 140% at 100% 0%, rgba(78,161,255,.12), transparent 48%),
+        #171821;
+      padding:10px; display:flex; gap:10px; align-items:center; animation:pop .2s ease; box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
     .fighter .icon { font-size:2.2rem; } .fname { font-family:var(--fd); font-size:1.2rem; letter-spacing:.06em; }
     .hpw { margin:4px 0; height:8px; border:1px solid #2b2b2b; border-radius:999px; overflow:hidden; background:#232323; }
     .hp { height:100%; transition:width .2s ease; background:linear-gradient(90deg,#00e676,#2effad); }
@@ -68,14 +95,17 @@
     .ctrl { border-top:1px solid #262626; background:#101010; padding:8px; display:flex; flex-direction:column; gap:8px; }
     .actions { display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .buffs { display:flex; gap:8px; overflow:auto; }
-    .buff { min-width:76px; border:1px solid #333; border-radius:10px; background:#151515; padding:6px; text-align:center; cursor:pointer; }
+    .buff {
+      min-width:86px; border:1px solid #3b3d4b; border-radius:10px;
+      background:linear-gradient(180deg, rgba(78,161,255,.12), transparent 40%), #171821; padding:6px; text-align:center; cursor:pointer;
+    }
     .buff.dis { opacity:.35; cursor:not-allowed; }
     .ov { position:absolute; inset:0; background:rgba(0,0,0,.86); display:grid; place-items:center; }
     .ov h1 { font-family:var(--fd); font-size:clamp(3rem,10vw,5rem); letter-spacing:.1em; }
     .win { color:var(--green); } .lose { color:#ff4f72; }
 
     @keyframes fade { from{opacity:0} to{opacity:1} } @keyframes pop { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-    @media (max-width:760px){ .grid3,.rooms{grid-template-columns:1fr;} .cards{grid-template-columns:repeat(2,minmax(0,1fr));} .fname{font-size:1rem;} }
+    @media (max-width:760px){ .grid3,.rooms{grid-template-columns:1fr;} .cards{grid-template-columns:repeat(2,minmax(0,1fr));} .fname{font-size:1rem;} .meta{min-height:24px;} }
   </style>
 </head>
 <body>
@@ -83,14 +113,14 @@
   <div class="toast-wrap" id="toast-wrap"></div>
   <script>
     "use strict";
-const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyDi-5UoX0hDw7O6UQY5pduKgxQMX5C4KY4",
-    authDomain: "ringclash1.firebaseapp.com",
-    databaseURL: "https://ringclash1-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "ringclash1",
-    storageBucket: "ringclash1.firebasestorage.app",
-    messagingSenderId: "373910829853",
-    appId: "1:373910829853:web:319a0093fedf3ef7123ff4"
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDi-5UoX0hDw7O6UQY5pduKgxQMX5C4KY4",
+      authDomain: "ringclash1.firebaseapp.com",
+      databaseURL: "https://ringclash1-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ringclash1",
+      storageBucket: "ringclash1.firebasestorage.app",
+      messagingSenderId: "373910829853",
+      appId: "1:373910829853:web:319a0093fedf3ef7123ff4"
 };
     const BOXERS = [
       { id:"ippo",name:"Ippo",title:"Wind God",hp:130,atk:54,def:20,icon:"🥊" },
@@ -98,16 +128,27 @@ const FIREBASE_CONFIG = {
       { id:"miyata",name:"Miyata",title:"Counter",hp:90,atk:49,def:44,icon:"⚡" },
       { id:"sendou",name:"Sendou",title:"Tiger",hp:122,atk:66,def:14,icon:"🐅" },
       { id:"volg",name:"Volg",title:"Wolf",hp:112,atk:52,def:34,icon:"🐺" },
-      { id:"ricardo",name:"Ricardo",title:"Legend",hp:168,atk:70,def:31,icon:"👑" }
+      { id:"ricardo",name:"Ricardo",title:"Legend",hp:168,atk:70,def:31,icon:"👑" },
+      { id:"date",name:"Date",title:"Veteran",hp:128,atk:50,def:37,icon:"🍷" },
+      { id:"mashiba",name:"Mashiba",title:"Reaper",hp:102,atk:59,def:28,icon:"💀" },
+      { id:"itagaki",name:"Itagaki",title:"Speed Star",hp:86,atk:43,def:54,icon:"🌀" },
+      { id:"alfredo",name:"Alfredo",title:"Metztli",hp:140,atk:64,def:30,icon:"🇲🇽" },
+      { id:"aoki",name:"Aoki",title:"Frog King",hp:121,atk:41,def:39,icon:"🐸" },
+      { id:"kimura",name:"Kimura",title:"Dragon Fish",hp:114,atk:46,def:35,icon:"🐟" }
     ];
     const BUFFS = [
-      { id:"mitts",name:"Mitts",cost:1,effect:"atk",val:14,icon:"🥊" },
-      { id:"steak",name:"Steak",cost:2,effect:"hp",val:60,icon:"🥩" },
-      { id:"weights",name:"Weights",cost:1,effect:"def",val:16,icon:"⛓️" },
-      { id:"focus",name:"Focus",cost:0,effect:"def",val:8,icon:"🧘" },
-      { id:"fury",name:"Fury",cost:3,effect:"atk",val:45,icon:"🔥",cond:"low" },
-      { id:"doctor",name:"Doctor",cost:2,effect:"hp",val:40,icon:"🩺" },
-      { id:"plan",name:"Game Plan",cost:1,effect:"tc",val:2,icon:"📝" }
+      { id:"mitts",name:"Mitts",cost:1,effect:"atk",val:14,icon:"🥊",desc:"+14 ATK" },
+      { id:"steak",name:"Steak",cost:2,effect:"hp",val:60,icon:"🥩",desc:"+60 HP" },
+      { id:"weights",name:"Weights",cost:1,effect:"def",val:16,icon:"⛓️",desc:"+16 DEF" },
+      { id:"focus",name:"Focus",cost:0,effect:"def",val:8,icon:"🧘",desc:"+8 DEF" },
+      { id:"fury",name:"Fury",cost:3,effect:"atk",val:45,icon:"🔥",cond:"low",desc:"+45 ATK if low HP" },
+      { id:"doctor",name:"Doctor",cost:2,effect:"hp",val:40,icon:"🩺",desc:"+40 HP" },
+      { id:"plan",name:"Game Plan",cost:1,effect:"tc",val:2,icon:"📝",desc:"+2 TC" },
+      { id:"ice",name:"Ice Pack",cost:1,effect:"hp",val:24,icon:"🧊",desc:"+24 HP" },
+      { id:"peekaboo",name:"Peek-a-boo",cost:2,effect:"def",val:28,icon:"🙈",desc:"+28 DEF" },
+      { id:"adrenaline",name:"Adrenaline",cost:3,effect:"atk",val:36,icon:"💉",desc:"+36 ATK" },
+      { id:"roadwork",name:"Roadwork",cost:1,effect:"tc",val:1,icon:"🏃",desc:"+1 TC" },
+      { id:"corner",name:"Corner Advice",cost:2,effect:"hp",val:48,icon:"📣",desc:"+48 HP" }
     ];
     const S = {
       view:"menu", deckTab:"boxers", deckBoxers:["ippo","takamura","miyata"], deckBuffs:["mitts","steak","weights","focus","doctor"],
@@ -156,12 +197,12 @@ const FIREBASE_CONFIG = {
       if(S.view==="battle") return renderBattle();
     }
     function renderMenu(){
-      app().innerHTML=`<div class="view menu"><div class="t1">RING</div><div class="t2">CLASH</div><div class="t3">REBUILD</div><div class="row"><button class="btn btn-p" id="m-ar">ENTER ARENA</button><button class="btn" id="m-de">DECK BUILDER</button></div><div class="sub">Turn-based card combat · Online rooms</div></div>`;
+      app().innerHTML=`<div class="view menu"><div class="t1">HAJIME NO</div><div class="t2">IPPO</div><div class="t3">RING CLASH</div><div class="row"><button class="btn btn-p" id="m-ar">ENTER ARENA</button><button class="btn" id="m-de">DECK BUILDER</button></div><div class="sub">Turn-based card combat · Online rooms</div></div>`;
       document.getElementById("m-ar").onclick=()=>goto("arena"); document.getElementById("m-de").onclick=()=>goto("deck");
     }
     function renderDeck(){
       const isB=S.deckTab==="boxers", src=isB?BOXERS:BUFFS, sel=isB?S.deckBoxers:S.deckBuffs, ready=S.deckBoxers.length===3&&S.deckBuffs.length===5;
-      app().innerHTML=`<div class="view panel"><div class="head"><button class="btn" id="d-bk">Back</button><div>Fighters ${S.deckBoxers.length}/3 · Buffs ${S.deckBuffs.length}/5</div><button class="btn btn-p" id="d-sv" ${ready?"":"disabled"}>Save</button></div><div class="tabs"><button class="btn ${isB?"btn-p":""}" id="d-tb">Boxers</button><button class="btn ${!isB?"btn-p":""}" id="d-tf">Buffs</button></div><div class="cards">${src.map(x=>`<div class="card ${sel.includes(x.id)?"sel":""}" data-id="${x.id}"><div class="ic">${x.icon}</div><div class="nm">${x.name}</div><div class="meta">${x.title||(x.effect+" +"+x.val)}</div></div>`).join("")}</div></div>`;
+      app().innerHTML=`<div class="view panel"><div class="head"><button class="btn" id="d-bk">Back</button><div>Fighters ${S.deckBoxers.length}/3 · Buffs ${S.deckBuffs.length}/5</div><button class="btn btn-p" id="d-sv" ${ready?"":"disabled"}>Save</button></div><div class="tabs"><button class="btn ${isB?"btn-p":""}" id="d-tb">Boxers</button><button class="btn ${!isB?"btn-p":""}" id="d-tf">Buffs</button></div><div class="cards">${src.map(x=>`<div class="card ${sel.includes(x.id)?"sel":""}" data-id="${x.id}"><div class="ctype">${isB?"BOXER":"BUFF"}</div><div class="ic">${x.icon}</div><div class="nm">${x.name}</div><div class="meta">${x.title||(x.desc||("+"+x.val+" "+x.effect.toUpperCase()))}</div>${isB?`<div class="statline"><span class="pill hp">HP ${x.hp}</span><span class="pill atk">ATK ${x.atk}</span><span class="pill def">DEF ${x.def}</span></div>`:`<div class="statline"><span class="pill tc">COST ${x.cost}</span><span class="pill">${x.effect.toUpperCase()}</span></div>`}</div>`).join("")}</div></div>`;
       document.getElementById("d-bk").onclick=()=>goto("menu"); document.getElementById("d-sv").onclick=()=>{save(); toast("Deck saved."); goto("menu");};
       document.getElementById("d-tb").onclick=()=>{S.deckTab="boxers"; renderDeck();}; document.getElementById("d-tf").onclick=()=>{S.deckTab="buffs"; renderDeck();};
       app().querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>toggle(el.dataset.id,isB?"boxer":"buff"));
@@ -214,12 +255,26 @@ const FIREBASE_CONFIG = {
     }
 
     const hpClass=(hp,m)=>{const p=hp/m; return p<.3?"low":(p<.6?"mid":"");};
-    function fighterCard(bx){ const pct=Math.max(0,(bx.hp/bx.maxHp)*100).toFixed(1); return `<div class="fighter"><div class="icon">${bx.icon}</div><div style="flex:1;min-width:0;"><div class="fname">${bx.name}</div><div class="hpw"><div class="hp ${hpClass(bx.hp,bx.maxHp)}" style="width:${pct}%"></div></div><div style="font-size:.78rem;color:#bbb;">HP ${bx.hp}/${bx.maxHp} · ATK ${bx.atk} · DEF ${bx.def}</div></div></div>`; }
+    function fighterCard(bx){
+      const pct=Math.max(0,(bx.hp/bx.maxHp)*100).toFixed(1);
+      return `<div class="fighter">
+        <div class="icon">${bx.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+            <div class="fname">${bx.name}</div>
+            <div class="ctype">FIGHTER</div>
+          </div>
+          <div class="meta">${bx.title||"Boxer Card"}</div>
+          <div class="hpw"><div class="hp ${hpClass(bx.hp,bx.maxHp)}" style="width:${pct}%"></div></div>
+          <div class="statline"><span class="pill hp">HP ${bx.hp}/${bx.maxHp}</span><span class="pill atk">ATK ${bx.atk}</span><span class="pill def">DEF ${bx.def}</span></div>
+        </div>
+      </div>`;
+    }
     function renderBattle(){
       const b=S.battle; if(!b) return goto("menu");
       const myRole=b.mode==="online"?S.online.role:"host", myKey=myRole==="guest"?"guest":"host", opKey=myKey==="host"?"guest":"host";
       const me=b[myKey], op=b[opKey], isMyTurn=(b.mode==="ai" ? b.turn==="host" : b.turn===myRole), can=b.state==="playing"&&isMyTurn&&!S.online.lock;
-      app().innerHTML=`<div class="view battle"><div class="bar"><div class="slots">${op.boxers.map(x=>`<div class="slot ${x.dead?"dead":""}">${x.icon}</div>`).join("")}</div><div>${op.label} · TC ${op.tc}</div></div>${fighterCard(op.boxers[op.active])}<div class="logbox"><div><div class="turn">${can?"YOUR TURN":"OPPONENT TURN"}</div><div class="log">${b.log[b.log.length-1]||""}</div></div></div>${fighterCard(me.boxers[me.active])}<div class="ctrl"><div class="actions"><div class="slots">${me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""}" data-sw="${i}" ${(!can||i===me.active||x.dead)?"disabled":""}>${x.icon}</button>`).join("")}</div><div style="display:flex;gap:6px;"><button class="btn" id="a-pass" ${can?"":"disabled"}>END TURN</button><button class="btn btn-p" id="a-hit" ${can?"":"disabled"}>ATTACK</button></div></div><div class="buffs">${me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost; return `<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div>${f.icon}</div><div style="font-family:var(--fd);">${f.name}</div><div style="font-size:.68rem;color:#a2a2a2;">${f.cost} TC</div></button>`;}).join("")}</div></div>${b.state==="finished"?`<div class="ov"><div style="text-align:center;"><h1 class="${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"win":"lose"}">${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"VICTORY":"DEFEAT"}</h1><button class="btn btn-p" id="b-ex">MENU</button></div></div>`:""}</div>`;
+      app().innerHTML=`<div class="view battle"><div class="bar"><div class="slots">${op.boxers.map(x=>`<div class="slot ${x.dead?"dead":""}">${x.icon}</div>`).join("")}</div><div>${op.label} · TC ${op.tc}</div></div>${fighterCard(op.boxers[op.active])}<div class="logbox"><div><div class="turn">${can?"YOUR TURN":"OPPONENT TURN"}</div><div class="log">${b.log[b.log.length-1]||""}</div></div></div>${fighterCard(me.boxers[me.active])}<div class="ctrl"><div class="actions"><div class="slots">${me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""}" data-sw="${i}" ${(!can||i===me.active||x.dead)?"disabled":""}>${x.icon}</button>`).join("")}</div><div style="display:flex;gap:6px;"><button class="btn" id="a-pass" ${can?"":"disabled"}>END TURN</button><button class="btn btn-p" id="a-hit" ${can?"":"disabled"}>ATTACK</button></div></div><div class="buffs">${me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost; return `<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="ctype">BUFF</div><div style="font-size:1.2rem;">${f.icon}</div><div style="font-family:var(--fd);line-height:1;">${f.name}</div><div style="font-size:.68rem;color:#a2a2a2;">${f.desc||("+"+f.val+" "+f.effect.toUpperCase())}</div><div class="pill tc" style="display:inline-block;margin-top:4px;">${f.cost} TC</div></button>`;}).join("")}</div></div>${b.state==="finished"?`<div class="ov"><div style="text-align:center;"><h1 class="${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"win":"lose"}">${((b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole))?"VICTORY":"DEFEAT"}</h1><button class="btn btn-p" id="b-ex">MENU</button></div></div>`:""}</div>`;
       if(b.state==="finished"){ document.getElementById("b-ex").onclick=()=>{ if(S.online.roomCb&&S.online.roomId) roomsRef(S.online.roomId).off("value",S.online.roomCb); S.online.roomCb=null; S.online.roomId=null; S.online.role=null; S.battle=null; goto("menu"); }; return; }
       document.getElementById("a-hit").onclick=()=>act("attack"); document.getElementById("a-pass").onclick=()=>act("pass");
       app().querySelectorAll("[data-sw]").forEach(el=>el.onclick=()=>act("switch", +el.dataset.sw)); app().querySelectorAll("[data-bf]").forEach(el=>el.onclick=()=>act("buff", +el.dataset.bf));
