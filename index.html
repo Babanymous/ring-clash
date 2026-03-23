@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <style>
 :root {
   --bg:        #000;
@@ -614,6 +615,7 @@ const S = {
     uid: null,
     db: null,
     ready: false,
+    authReady: false,
     syncing: false,
     roomId: null,
     role: null, // host | guest
@@ -674,6 +676,13 @@ function initOnline() {
   S.online.db = firebase.database();
   S.online.uid = uid();
   S.online.ready = true;
+  firebase.auth().onAuthStateChanged(user => {
+    S.online.authReady = !!user;
+  });
+  firebase.auth().signInAnonymously().catch(err => {
+    console.error('Anonymous auth failed:', err);
+    toast('Online auth failed. Enable Anonymous sign-in in Firebase Auth.');
+  });
   return true;
 }
 
@@ -773,6 +782,10 @@ async function createOnlineRoom() {
     toast('Firebase config missing. Add your project credentials in FIREBASE_CONFIG.');
     return;
   }
+  if (!S.online.authReady) {
+    toast('Connecting online identity... try again in a second.');
+    return;
+  }
   if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
     toast('Set up your squad first! Visit Strategy Hub.');
     return;
@@ -801,6 +814,10 @@ async function createOnlineRoom() {
 async function joinOnlineRoomById(id) {
   if (!initOnline()) {
     toast('Firebase config missing. Add your project credentials in FIREBASE_CONFIG.');
+    return;
+  }
+  if (!S.online.authReady) {
+    toast('Connecting online identity... try again in a second.');
     return;
   }
   if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
