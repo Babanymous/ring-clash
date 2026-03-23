@@ -616,6 +616,7 @@ const S = {
     db: null,
     ready: false,
     authReady: false,
+    authPromise: null,
     syncing: false,
     roomId: null,
     role: null, // host | guest
@@ -676,14 +677,43 @@ function initOnline() {
   S.online.db = firebase.database();
   S.online.uid = uid();
   S.online.ready = true;
+  S.online.authPromise = new Promise(resolve => {
+    firebase.auth().onAuthStateChanged(user => {
+      S.online.authReady = !!user;
+      if (user) {
+        S.online.uid = user.uid;
+        resolve(user);
+      }
+    });
+  });
   firebase.auth().onAuthStateChanged(user => {
     S.online.authReady = !!user;
+    if (user) S.online.uid = user.uid;
   });
   firebase.auth().signInAnonymously().catch(err => {
     console.error('Anonymous auth failed:', err);
     toast('Online auth failed. Enable Anonymous sign-in in Firebase Auth.');
   });
   return true;
+}
+
+async function ensureOnlineAuth() {
+  if (!initOnline()) return false;
+  if (S.online.authReady && firebase.auth().currentUser) {
+    S.online.uid = firebase.auth().currentUser.uid;
+    return true;
+  }
+  try {
+    const user = await Promise.race([
+      S.online.authPromise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Auth timeout')), 6000)),
+    ]);
+    S.online.uid = user.uid;
+    return true;
+  } catch {
+    toast('Online auth timeout. Check Firebase Auth anonymous sign-in.');
+    return false;
+  }
 }
 
 function roomCode() { return Math.random().toString(36).slice(2, 7).toUpperCase(); }
@@ -782,10 +812,7 @@ async function createOnlineRoom() {
     toast('Firebase config missing. Add your project credentials in FIREBASE_CONFIG.');
     return;
   }
-  if (!S.online.authReady) {
-    toast('Connecting online identity... try again in a second.');
-    return;
-  }
+  if (!(await ensureOnlineAuth())) return;
   if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
     toast('Set up your squad first! Visit Strategy Hub.');
     return;
@@ -804,7 +831,13 @@ async function createOnlineRoom() {
     createdAt: now(),
     updatedAt: now(),
   };
-  await S.online.db.ref(`rooms/${id}`).set(payload);
+  try {
+    await S.online.db.ref(`rooms/${id}`).set(payload);
+  } catch (err) {
+    toast(`Create room failed: ${err?.code || 'unknown error'}`);
+    console.error('Create room failed:', err);
+    return;
+  }
   S.online.roomId = id;
   S.online.role = 'host';
   toast(`Room ${code} created. Waiting for opponent...`);
@@ -816,16 +849,20 @@ async function joinOnlineRoomById(id) {
     toast('Firebase config missing. Add your project credentials in FIREBASE_CONFIG.');
     return;
   }
-  if (!S.online.authReady) {
-    toast('Connecting online identity... try again in a second.');
-    return;
-  }
+  if (!(await ensureOnlineAuth())) return;
   if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
     toast('Set up your squad first! Visit Strategy Hub.');
     return;
   }
   const ref = S.online.db.ref(`rooms/${id}`);
-  const snap = await ref.get();
+  let snap;
+  try {
+    snap = await ref.get();
+  } catch (err) {
+    toast(`Read room failed: ${err?.code || 'unknown error'}`);
+    console.error('Read room failed:', err);
+    return;
+  }
   const room = snap.val();
   if (!room || room.status !== 'open' || !room.hostDeck) {
     toast('Room unavailable.');
@@ -848,14 +885,20 @@ async function joinOnlineRoomById(id) {
     player: makePlayers(room.hostDeck.b, room.hostDeck.f, room.hostName || 'HOST'),
     cpu: makePlayers(S.deckBoxers, S.deckBuffs, guestName),
   };
-  await ref.update({
-    status: 'playing',
-    guestUid: S.online.uid,
-    guestName,
-    guestDeck: { b: S.deckBoxers, f: S.deckBuffs },
-    battle,
-    updatedAt: now(),
-  });
+  try {
+    await ref.update({
+      status: 'playing',
+      guestUid: S.online.uid,
+      guestName,
+      guestDeck: { b: S.deckBoxers, f: S.deckBuffs },
+      battle,
+      updatedAt: now(),
+    });
+  } catch (err) {
+    toast(`Join room failed: ${err?.code || 'unknown error'}`);
+    console.error('Join room failed:', err);
+    return;
+  }
   S.online.roomId = id;
   S.online.role = 'guest';
   watchRoom(id);
@@ -863,6 +906,7 @@ async function joinOnlineRoomById(id) {
 
 async function joinOnlineRoomByCode(codeRaw) {
   if (!initOnline()) return;
+  if (!(await ensureOnlineAuth())) return;
   const code = (codeRaw || '').trim().toUpperCase();
   if (!code) return;
   const snap = await S.online.db.ref('rooms').orderByChild('code').equalTo(code).get();
