@@ -139,6 +139,64 @@ body::after {
 .menu-btns { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
 .menu-note { color:#383838; font-size:.82rem; letter-spacing:.06em; }
 
+/* Arena mode select */
+.view-arena {
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 90% 60% at 20% 20%, rgba(220,20,60,.16), transparent 60%),
+    radial-gradient(ellipse 90% 60% at 85% 80%, rgba(255,215,0,.08), transparent 65%),
+    #020202;
+  padding: 20px;
+}
+.arena-panel {
+  width: min(700px, 100%);
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(155deg, rgba(255,255,255,.05) 0%, rgba(0,0,0,.45) 50%, rgba(220,20,60,.1) 100%);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.7), inset 0 0 40px rgba(220,20,60,.18);
+}
+.arena-title {
+  font-family: var(--font-d);
+  letter-spacing: .1em;
+  font-size: clamp(1.6rem, 5.4vw, 2.6rem);
+  margin-bottom: 6px;
+}
+.arena-sub {
+  color: #a3a3a3;
+  font-size: .9rem;
+  letter-spacing: .06em;
+  margin-bottom: 16px;
+}
+.arena-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.arena-card {
+  background: rgba(5,5,5,.85);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.arena-card:hover {
+  border-color: var(--red-light);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 26px rgba(220,20,60,.3);
+}
+.arena-card h3 {
+  font-family: var(--font-d);
+  letter-spacing: .08em;
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+.arena-card p { color: #999; font-size: .8rem; line-height: 1.25; }
+.arena-foot { display: flex; justify-content: flex-end; margin-top: 14px; }
+
 /* ════════════════════════════════════════
    DECK BUILDER
 ════════════════════════════════════════ */
@@ -181,7 +239,8 @@ body::after {
   align-content:start;
 }
 .m-card {
-  background:var(--bg3); border:1px solid var(--border); border-radius:8px;
+  background:linear-gradient(160deg,#0f0f0f 0%, #090909 48%, #120507 100%);
+  border:1px solid rgba(255,255,255,.12); border-radius:10px;
   cursor:pointer; transition:all .15s; opacity:.45; filter:grayscale(.4); position:relative;
   overflow:hidden;
 }
@@ -191,7 +250,10 @@ body::after {
   pointer-events:none;
 }
 .m-card:hover { opacity:.82; filter:grayscale(0); border-color:var(--border2); transform:translateY(-3px); }
-.m-card.sel { opacity:1; filter:grayscale(0); border-color:var(--red); box-shadow:0 0 18px rgba(220,20,60,.32); }
+.m-card.sel {
+  opacity:1; filter:grayscale(0); border-color:var(--red);
+  box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 0 20px rgba(220,20,60,.42), inset 0 0 24px rgba(220,20,60,.16);
+}
 .m-card-in { padding:11px 10px; display:flex; flex-direction:column; align-items:center; gap:4px; }
 .m-icon { font-size:2.4rem; line-height:1; margin-bottom:3px; filter:drop-shadow(0 2px 6px rgba(0,0,0,.8)); }
 .m-name { font-family:var(--font-d); font-size:.82rem; letter-spacing:.05em; text-align:center; color:#fff; line-height:1.1; }
@@ -259,9 +321,13 @@ body::after {
 
 .b-card {
   display:flex; align-items:center; gap:14px;
-  background:var(--bg2); border:1px solid var(--border);
+  background:
+    radial-gradient(ellipse 140% 120% at 0% 0%, rgba(220,20,60,.15) 0%, transparent 45%),
+    linear-gradient(155deg,#0f0f0f 0%, #040404 52%, #110608 100%);
+  border:1px solid rgba(255,255,255,.14);
   border-radius:12px; padding:10px 16px;
   width:100%; max-width:420px; position:relative; overflow:hidden;
+  box-shadow: 0 14px 30px rgba(0,0,0,.58);
 }
 .b-card::before {
   content:''; position:absolute; inset:0; pointer-events:none;
@@ -349,7 +415,7 @@ body::after {
 .buff-bar::-webkit-scrollbar { height:3px; }
 .buff-bar::-webkit-scrollbar-thumb { background:var(--border2); }
 .bf-card {
-  flex-shrink:0; width:76px; background:var(--bg2); border:1px solid var(--border);
+  flex-shrink:0; width:76px; background:linear-gradient(165deg,#111 0%, #080808 70%, #15060a 100%); border:1px solid rgba(255,255,255,.12);
   border-radius:8px; padding:7px 6px; display:flex; flex-direction:column;
   align-items:center; gap:3px; transition:all .14s; position:relative;
 }
@@ -387,6 +453,27 @@ body::after {
   .bf-card { width:68px; }
   .bc-name { font-size:1rem; }
   .bc-ico { font-size:2.3rem; }
+}
+@media (max-width:900px) {
+  .view-battle { grid-template-rows: auto 1fr auto 1fr auto; }
+  .b-card { max-width: 100%; }
+}
+@media (max-width:680px) {
+  .arena-grid { grid-template-columns: 1fr; }
+  .deck-hdr { flex-wrap: wrap; }
+  .deck-counts { width: 100%; justify-content: center; }
+  .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; gap: 8px; }
+  .b-opp-bar { padding: 8px 10px; }
+  .t-slot { width: 34px; height: 34px; font-size: 1.08rem; }
+  .b-card-wrap { padding: 6px 10px; }
+  .b-card { padding: 9px 12px; gap: 10px; }
+  .bc-ico { font-size: 2.2rem; }
+  .bc-name { font-size: 1.02rem; }
+  .b-controls { padding: 8px 10px; }
+  .ctrl-top { gap: 8px; margin-bottom: 8px; }
+  .punch-btn { font-size: 1.05rem; padding: 10px 14px; }
+  .buff-bar { gap: 6px; }
+  .bf-card { width: 66px; padding: 6px 4px; }
 }
 </style>
 </head>
@@ -467,6 +554,7 @@ const BUFFS = [
 ════════════════════════════════════════════════════════ */
 const S = {
   view:     'menu',
+  mode:     null,
   deckBoxers: [],
   deckBuffs:  [],
   deckTab:  'boxers',
@@ -512,6 +600,7 @@ function goto(v) { S.view = v; render(); }
 function render() {
   switch(S.view) {
     case 'menu':   renderMenu();   break;
+    case 'arena':  renderArena();  break;
     case 'deck':   renderDeck();   break;
     case 'battle': renderBattle(); break;
   }
@@ -535,11 +624,52 @@ function renderMenu() {
           <button class="btn-p" id="btn-arena">⚡ ENTER ARENA</button>
           <button class="btn-s" id="btn-deck">📦 STRATEGY HUB</button>
         </div>
-        <div class="menu-note">Single Player vs AI &nbsp;·&nbsp; Deck saves locally</div>
+        <div class="menu-note">Choose AI or Room Match &nbsp;·&nbsp; Optimized for mobile</div>
       </div>
     </div>`;
-  document.getElementById('btn-arena').addEventListener('click', startBattle);
+  document.getElementById('btn-arena').addEventListener('click', () => goto('arena'));
   document.getElementById('btn-deck').addEventListener('click', () => goto('deck'));
+}
+
+function renderArena() {
+  app().innerHTML = `
+    <div class="view view-arena">
+      <div class="arena-panel">
+        <div class="arena-title">Choose Your Match</div>
+        <div class="arena-sub">Enter the ring against AI, or set up a room match with another player.</div>
+        <div class="arena-grid">
+          <button class="arena-card" id="mode-ai">
+            <h3>🤖 Battle AI</h3>
+            <p>Classic single-player challenge with tactical buffs and smart CPU turns.</p>
+          </button>
+          <button class="arena-card" id="mode-create">
+            <h3>🏟️ Create Room</h3>
+            <p>Create a local room code and start a hotseat duel with another player.</p>
+          </button>
+          <button class="arena-card" id="mode-join">
+            <h3>🛰️ Join Room</h3>
+            <p>Join with a room code and challenge your friend on this device.</p>
+          </button>
+        </div>
+        <div class="arena-foot">
+          <button class="btn-back" id="arena-back">← Back to Menu</button>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('arena-back').addEventListener('click', () => goto('menu'));
+  document.getElementById('mode-ai').addEventListener('click', () => startBattle('ai'));
+  document.getElementById('mode-create').addEventListener('click', () => {
+    const code = Math.random().toString(36).slice(2, 7).toUpperCase();
+    toast(`Room ${code} created. Local duel mode ready.`);
+    startBattle('room');
+  });
+  document.getElementById('mode-join').addEventListener('click', () => {
+    const code = prompt('Enter room code:');
+    if (!code) return;
+    toast(`Joined room ${code.toUpperCase()}. Local duel mode ready.`);
+    startBattle('room');
+  });
 }
 
 /* ════════════════════════════════════════════════════════
@@ -630,7 +760,7 @@ function makePlayers(bIds, fIds, name) {
   };
 }
 
-function startBattle() {
+function startBattle(mode='ai') {
   if (S.deckBoxers.length !== 3 || S.deckBuffs.length !== 5) {
     toast('Set up your squad first! Visit Strategy Hub.');
     return;
@@ -639,6 +769,7 @@ function startBattle() {
   const aiBuffs  = [...BUFFS ].sort(()=>Math.random()-.5).slice(0,5).map(b=>b.id);
 
   S.battle = {
+    mode,
     status:   'playing',
     turn:     'player',
     thinking: false,
@@ -686,14 +817,18 @@ function renderTcPips(tc, isOpp) {
 function renderBattle() {
   const b = S.battle;
   const p = b.player, c = b.cpu;
-  const isMyTurn  = b.turn==='player' && !b.thinking;
-  const myActive  = p.boxers[p.activeIdx];
-  const oppActive = c.boxers[c.activeIdx];
+  const roomMode = b.mode === 'room';
+  const activeSide = roomMode ? (b.turn === 'player' ? p : c) : p;
+  const enemySide  = roomMode ? (b.turn === 'player' ? c : p) : c;
+  const isMyTurn  = roomMode ? true : (b.turn==='player' && !b.thinking);
+  const myActive  = activeSide.boxers[activeSide.activeIdx];
+  const oppActive = enemySide.boxers[enemySide.activeIdx];
   const logText   = b.log[b.log.length-1] || '';
 
   // turn display
   let turnLabel, turnCls;
-  if (b.thinking) { turnLabel='CPU THINKING <span class="thinking-dot">…</span>'; turnCls='thinking'; }
+  if (!roomMode && b.thinking) { turnLabel='CPU THINKING <span class="thinking-dot">…</span>'; turnCls='thinking'; }
+  else if (roomMode) { turnLabel = b.turn === 'player' ? 'PLAYER 1 TURN' : 'PLAYER 2 TURN'; turnCls = b.turn === 'player' ? 'mine' : 'theirs'; }
   else if (isMyTurn) { turnLabel='YOUR ROUND'; turnCls='mine'; }
   else { turnLabel='ENEMY MOVEMENT'; turnCls='theirs'; }
 
@@ -703,12 +838,12 @@ function renderBattle() {
       <!-- Opponent top bar -->
       <div class="b-opp-bar">
         <div class="team-slots">
-          ${c.boxers.map((bx,i)=>`
-            <div class="t-slot ${i===c.activeIdx?'theirs':''} ${bx.isDead?'dead':''}" title="${bx.name}">${bx.icon}</div>
+          ${enemySide.boxers.map((bx,i)=>`
+            <div class="t-slot ${i===enemySide.activeIdx?'theirs':''} ${bx.isDead?'dead':''}" title="${bx.name}">${bx.icon}</div>
           `).join('')}
-          <span class="p-tag">CPU</span>
+          <span class="p-tag">${roomMode ? (b.turn === 'player' ? 'PLAYER 2' : 'PLAYER 1') : 'CPU'}</span>
         </div>
-        <div class="tc-bar">${renderTcPips(c.tc, true)}</div>
+        <div class="tc-bar">${renderTcPips(enemySide.tc, true)}</div>
       </div>
 
       <!-- Opponent card -->
@@ -731,21 +866,21 @@ function renderBattle() {
       <div class="b-controls">
         <div class="ctrl-top">
           <div class="team-slots">
-            ${p.boxers.map((bx,i)=>`
-              <div class="t-slot ${i===p.activeIdx?'mine':''} ${bx.isDead?'dead':''} ${(!bx.isDead&&i!==p.activeIdx&&isMyTurn)?'switchable':''}"
+            ${activeSide.boxers.map((bx,i)=>`
+              <div class="t-slot ${i===activeSide.activeIdx?'mine':''} ${bx.isDead?'dead':''} ${(!bx.isDead&&i!==activeSide.activeIdx&&isMyTurn)?'switchable':''}"
                    data-sw="${i}" title="${bx.name}">${bx.icon}</div>
             `).join('')}
           </div>
           <div class="my-tc-wrap">
             <div class="tc-lbl">TACTICAL COST</div>
-            <div class="tc-bar">${renderTcPips(p.tc, false)}</div>
+            <div class="tc-bar">${renderTcPips(activeSide.tc, false)}</div>
           </div>
-          <button class="punch-btn ${isMyTurn?'on':'off'}" id="btn-punch" ${isMyTurn?'':'disabled'}>PUNCH</button>
+          <button class="punch-btn ${isMyTurn?'on':'off'}" id="btn-punch" ${isMyTurn?'':'disabled'}>${roomMode?'STRIKE':'PUNCH'}</button>
         </div>
 
         <div class="buff-bar">
-          ${p.buffs.map((bf,i)=>{
-            const canUse = isMyTurn && !bf.used && p.tc >= bf.cost;
+          ${activeSide.buffs.map((bf,i)=>{
+            const canUse = isMyTurn && !bf.used && activeSide.tc >= bf.cost;
             return `
               <div class="bf-card ${bf.used?'used':canUse?'usable':'disabled'}"
                    data-bi="${i}" ${canUse?'':'title="Not available"'}>
@@ -766,7 +901,8 @@ function renderBattle() {
     document.getElementById('btn-punch')?.addEventListener('click', () => { if(isMyTurn) doAttack(); });
     document.querySelectorAll('[data-sw]').forEach(el => el.addEventListener('click', () => {
       const i = +el.dataset.sw;
-      if (isMyTurn && i!==p.activeIdx && !p.boxers[i].isDead) doSwitch(i);
+      const actor = b.mode === 'room' ? (b.turn === 'player' ? b.player : b.cpu) : b.player;
+      if (isMyTurn && i!==actor.activeIdx && !actor.boxers[i].isDead) doSwitch(i);
     }));
     document.querySelectorAll('[data-bi]').forEach(el => el.addEventListener('click', () => {
       const i = +el.dataset.bi;
@@ -795,11 +931,14 @@ function renderVictory() {
 ════════════════════════════════════════════════════════ */
 function doAttack() {
   const b = S.battle;
-  if (b.status !== 'playing' || b.turn !== 'player' || b.thinking) return;
-  b.thinking = true;
+  if (b.status !== 'playing') return;
+  if (b.mode === 'ai' && (b.turn !== 'player' || b.thinking)) return;
+  if (b.mode === 'ai') b.thinking = true;
 
-  const atk = b.player.boxers[b.player.activeIdx];
-  const def = b.cpu.boxers[b.cpu.activeIdx];
+  const atkSide = b.turn === 'player' ? b.player : b.cpu;
+  const defSide = b.turn === 'player' ? b.cpu : b.player;
+  const atk = atkSide.boxers[atkSide.activeIdx];
+  const def = defSide.boxers[defSide.activeIdx];
   const dmg = Math.max(10, atk.atk - Math.floor(def.def / 2));
   def.hp = Math.max(0, def.hp - dmg);
 
@@ -807,20 +946,26 @@ function doAttack() {
   if (def.hp <= 0) {
     def.hp = 0; def.isDead = true;
     log = `KO! ${def.name} is down!`;
-    if (b.cpu.boxers.every(x=>x.isDead)) {
-      b.status='finished'; b.winner='player'; log='🏆 You win the match!'; b.thinking=false;
+    if (defSide.boxers.every(x=>x.isDead)) {
+      b.status='finished'; b.winner = b.turn; log = b.turn === 'player' ? '🏆 You win the match!' : '💀 CPU wins the match!'; b.thinking=false;
     } else {
-      b.cpu.activeIdx = b.cpu.boxers.findIndex(x=>!x.isDead);
+      defSide.activeIdx = defSide.boxers.findIndex(x=>!x.isDead);
     }
   }
 
   b.log.push(log); b.anim='atk';
-  b.player.tc = Math.min(8, b.player.tc + 1);
+  atkSide.tc = Math.min(8, atkSide.tc + 1);
   b.turnCount++;
   renderBattle();
 
   if (b.status === 'playing') {
-    b.anim = null; b.turn = 'cpu';
+    b.anim = null;
+    if (b.mode === 'room') {
+      b.turn = b.turn === 'player' ? 'cpu' : 'player';
+      renderBattle();
+      return;
+    }
+    b.turn = 'cpu';
     renderBattle();
     setTimeout(aiTurn, 1300);
   }
@@ -828,25 +973,26 @@ function doAttack() {
 
 function doUseBuff(idx) {
   const b = S.battle;
-  if (b.status!=='playing'||b.turn!=='player'||b.thinking) return;
-  const p  = b.player;
-  const bf = p.buffs[idx];
-  if (!bf || bf.used || p.tc < bf.cost) return;
+  if (b.status!=='playing') return;
+  if (b.mode === 'ai' && (b.turn!=='player' || b.thinking)) return;
+  const actor = b.turn === 'player' ? b.player : b.cpu;
+  const bf = actor.buffs[idx];
+  if (!bf || bf.used || actor.tc < bf.cost) return;
 
-  const active = p.boxers[p.activeIdx];
+  const active = actor.boxers[actor.activeIdx];
   // Condition checks
   if (bf.condition==='low_hp'       && active.hp > active.maxHp*.4) return toast('Wait for critical HP');
   if (bf.condition==='very_low_hp'  && active.hp > active.maxHp*.2) return toast('Near death only');
-  if (bf.condition==='teammate_down'&& p.boxers.filter(x=>x.isDead).length===0) return toast('Need a KO\'d ally');
+  if (bf.condition==='teammate_down'&& actor.boxers.filter(x=>x.isDead).length===0) return toast('Need a KO\'d ally');
   if (bf.condition==='early_game'   && b.turnCount>6)                return toast('Early rounds only');
-  if (bf.condition==='last_man'     && p.boxers.filter(x=>!x.isDead).length>1) return toast('Last survivor only');
-  if (bf.condition==='teammates_up' && p.boxers.filter(x=>!x.isDead).length<2) return toast('Need allies standing!');
+  if (bf.condition==='last_man'     && actor.boxers.filter(x=>!x.isDead).length>1) return toast('Last survivor only');
+  if (bf.condition==='teammates_up' && actor.boxers.filter(x=>!x.isDead).length<2) return toast('Need allies standing!');
   if (bf.condition==='high_hp'      && active.hp < active.maxHp*.8) return toast('Too bruised to focus');
   if (bf.condition==='took_dmg'     && active.hp >= active.maxHp)   return toast('Must be damaged first');
 
-  applyBuff(bf, p, active);
+  applyBuff(bf, actor, active);
   bf.used = true;
-  p.tc = Math.min(8, Math.max(0, p.tc - bf.cost));
+  actor.tc = Math.min(8, Math.max(0, actor.tc - bf.cost));
   b.log.push(`${active.name} uses ${bf.name}!`);
   b.anim = 'buff';
   renderBattle();
@@ -855,12 +1001,19 @@ function doUseBuff(idx) {
 
 function doSwitch(idx) {
   const b = S.battle;
-  if (b.status!=='playing'||b.turn!=='player'||b.thinking) return;
-  const p = b.player;
-  if (p.tc < 1) return toast('Need 1 TC to switch');
-  p.activeIdx = idx; p.tc -= 1;
-  b.log.push(`${p.boxers[idx].name} tags in!`);
-  b.thinking = true; b.turn = 'cpu'; b.turnCount++;
+  if (b.status!=='playing') return;
+  if (b.mode === 'ai' && (b.turn!=='player'||b.thinking)) return;
+  const actor = b.turn === 'player' ? b.player : b.cpu;
+  if (actor.tc < 1) return toast('Need 1 TC to switch');
+  actor.activeIdx = idx; actor.tc -= 1;
+  b.log.push(`${actor.boxers[idx].name} tags in!`);
+  b.turnCount++;
+  if (b.mode === 'room') {
+    b.turn = b.turn === 'player' ? 'cpu' : 'player';
+    renderBattle();
+    return;
+  }
+  b.thinking = true; b.turn = 'cpu';
   renderBattle();
   b.thinking = false;
   setTimeout(aiTurn, 1300);
