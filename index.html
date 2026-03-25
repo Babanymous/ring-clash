@@ -47,30 +47,32 @@
   @keyframes stunShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
   @keyframes logIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
   /* ── Battle action animations ── */
-  @keyframes fcPunchUp  {0%{transform:translateY(0) scale(1)}30%{transform:translateY(-7px) scale(1.05)}65%{transform:translateY(2px) scale(.97)}100%{transform:translateY(0) scale(1)}}
-  @keyframes fcPunchDn  {0%{transform:translateY(0) scale(1)}30%{transform:translateY(7px) scale(1.05)}65%{transform:translateY(-2px) scale(.97)}100%{transform:translateY(0) scale(1)}}
-  @keyframes fcHit      {0%{transform:translateX(0)}15%{transform:translateX(-9px)}35%{transform:translateX(9px)}55%{transform:translateX(-5px)}75%{transform:translateX(5px)}100%{transform:translateX(0)}}
-  @keyframes hitFlash   {0%,100%{opacity:0}35%{opacity:.6}}
-  @keyframes hitGold    {0%,100%{opacity:0}35%{opacity:.75}}
-  @keyframes healFlash  {0%,100%{opacity:0}35%{opacity:.4}}
-  @keyframes dmgFloat   {0%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}18%{opacity:1;transform:translateX(-50%) translateY(-16px) scale(1.12)}80%{opacity:.5;transform:translateX(-50%) translateY(-44px) scale(.88)}100%{opacity:0;transform:translateX(-50%) translateY(-62px) scale(.7)}}
-  @keyframes logSlide   {from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes sigBurst   {0%{transform:scale(1)}25%{transform:scale(1.07)}55%{transform:scale(.97)}80%{transform:scale(1.02)}100%{transform:scale(1)}}
-  @keyframes ctrlIn     {from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fcPunchUp  {0%{transform:translateY(0) scale(1)}25%{transform:translateY(-10px) scale(1.07)}60%{transform:translateY(3px) scale(.96)}100%{transform:translateY(0) scale(1)}}
+  @keyframes fcPunchDn  {0%{transform:translateY(0) scale(1)}25%{transform:translateY(10px) scale(1.07)}60%{transform:translateY(-3px) scale(.96)}100%{transform:translateY(0) scale(1)}}
+  @keyframes fcHit      {0%{transform:translateX(0)}12%{transform:translateX(-11px)}28%{transform:translateX(11px)}44%{transform:translateX(-7px)}60%{transform:translateX(7px)}78%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+  @keyframes hitFlash   {0%,100%{opacity:0}30%{opacity:.7}}
+  @keyframes hitGold    {0%,100%{opacity:0}30%{opacity:.85}}
+  @keyframes healFlash  {0%,100%{opacity:0}30%{opacity:.5}}
+  @keyframes koFlash    {0%{opacity:0}15%{opacity:.95}60%{opacity:.6}100%{opacity:0}}
+  @keyframes dmgFloat   {0%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}18%{opacity:1;transform:translateX(-50%) translateY(-18px) scale(1.15)}80%{opacity:.4;transform:translateX(-50%) translateY(-52px) scale(.85)}100%{opacity:0;transform:translateX(-50%) translateY(-72px) scale(.65)}}
+  @keyframes logSlide   {from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes sigBurst   {0%{transform:scale(1)}20%{transform:scale(1.09)}50%{transform:scale(.96)}75%{transform:scale(1.03)}100%{transform:scale(1)}}
+  @keyframes ctrlIn     {from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
   /* fight-card states */
-  .fight-card.punching-up   {animation:fcPunchUp .44s cubic-bezier(.3,0,.7,1) both}
-  .fight-card.punching-dn   {animation:fcPunchDn .44s cubic-bezier(.3,0,.7,1) both}
-  .fight-card.taking-hit    {animation:fcHit .37s cubic-bezier(.25,.8,.25,1) both}
-  .fight-card.sig-burst     {animation:sigBurst .5s cubic-bezier(.3,0,.7,1) both}
-  .hit-ov  {position:absolute;inset:0;border-radius:13px;pointer-events:none;z-index:6;background:rgba(239,68,68,.38);animation:hitFlash .4s ease both}
-  .hit-ov.gold {background:rgba(248,208,104,.45);animation:hitGold .52s ease both}
-  .hit-ov.heal {background:rgba(0,240,104,.28);animation:healFlash .42s ease both}
-  .dmg-float{position:absolute;z-index:20;pointer-events:none;font-family:var(--fd);letter-spacing:.04em;text-shadow:0 2px 8px rgba(0,0,0,.8),0 0 18px currentColor;animation:dmgFloat .95s cubic-bezier(.25,.8,.25,1) both;transform:translateX(-50%)}
-  .dmg-float.crit {font-size:2.1rem;color:#ff4060}
-  .dmg-float.sig  {font-size:1.9rem;color:var(--gold3)}
-  .dmg-float.norm {font-size:1.5rem;color:#ff9090}
-  .dmg-float.heal {font-size:1.4rem;color:#00f880}
-  .dmg-float.bleed{font-size:1.1rem;color:#ff6060}
+  .fight-card.punching-up   {animation:fcPunchUp .42s cubic-bezier(.3,0,.7,1) both!important}
+  .fight-card.punching-dn   {animation:fcPunchDn .42s cubic-bezier(.3,0,.7,1) both!important}
+  .fight-card.taking-hit    {animation:fcHit .38s cubic-bezier(.25,.8,.25,1) both!important}
+  .fight-card.sig-burst     {animation:sigBurst .5s cubic-bezier(.3,0,.7,1) both!important}
+  .hit-ov  {position:absolute;inset:0;border-radius:16px;pointer-events:none;z-index:8;background:rgba(239,68,68,.42);animation:hitFlash .42s ease both}
+  .hit-ov.gold {background:rgba(248,208,104,.5);animation:hitGold .55s ease both;box-shadow:inset 0 0 40px rgba(248,208,104,.3)}
+  .hit-ov.heal {background:rgba(0,240,104,.3);animation:healFlash .44s ease both}
+  .hit-ov.ko   {background:rgba(255,255,255,.85);animation:koFlash .6s ease both;border-radius:16px}
+  .dmg-float{position:absolute;z-index:20;pointer-events:none;font-family:var(--fd);letter-spacing:.04em;text-shadow:0 2px 12px rgba(0,0,0,.9),0 0 24px currentColor;animation:dmgFloat 1.05s cubic-bezier(.25,.8,.25,1) both;transform:translateX(-50%)}
+  .dmg-float.crit {font-size:2.4rem;color:#ff3060;text-shadow:0 0 20px rgba(255,48,96,.8),0 2px 8px rgba(0,0,0,.9)}
+  .dmg-float.sig  {font-size:2.2rem;color:var(--gold3);text-shadow:0 0 20px rgba(248,208,68,.9),0 2px 8px rgba(0,0,0,.9)}
+  .dmg-float.norm {font-size:1.7rem;color:#ff9090}
+  .dmg-float.heal {font-size:1.5rem;color:#00f880}
+  .dmg-float.bleed{font-size:1.2rem;color:#ff6060}
   .log-txt.slide{animation:logSlide .28s ease both}
   .ctrl.ctrl-in {animation:ctrlIn .32s ease both}
 
@@ -184,104 +186,208 @@
      BATTLE LAYOUT
   ══════════════════════════════════════ */
   .battle{
-    display:grid;grid-template-rows:auto 1fr auto 1fr auto;overflow:hidden;
-    background:radial-gradient(ellipse 160% 35% at 50% 0%,rgba(184,16,40,.1),transparent 50%),
-    radial-gradient(ellipse 160% 35% at 50% 100%,rgba(59,130,246,.06),transparent 50%),var(--bg);
+    display:grid;
+    grid-template-rows:auto 1fr auto 1fr auto;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 200% 40% at 50% 0%,rgba(184,16,40,.18),transparent 55%),
+      radial-gradient(ellipse 200% 40% at 50% 100%,rgba(59,130,246,.10),transparent 55%),
+      radial-gradient(ellipse 80% 60% at 50% 50%,rgba(10,15,30,.6),transparent 80%),
+      var(--bg);
+  }
+  /* Subtle arena scanlines */
+  .battle::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.012) 4px);
   }
 
   /* Opponent bar */
-  .bar{padding:6px 11px;background:linear-gradient(90deg,#080d1c,#0e1730);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .bar{
+    padding:6px 12px;
+    background:linear-gradient(90deg,rgba(5,8,18,.98),rgba(10,16,34,.95));
+    border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    position:relative;z-index:1;
+    box-shadow:0 2px 12px rgba(0,0,0,.5);
+  }
   .bar-left{display:flex;align-items:center;gap:8px}
   .bar-lbl{font-family:var(--fd);letter-spacing:.07em;font-size:.88rem}
   .bar-tc{font-family:var(--fd);font-size:.75rem;letter-spacing:.06em;background:linear-gradient(135deg,var(--gold2),#7a5c10);color:#120900;border-radius:999px;padding:2px 10px;font-weight:700}
   .slots{display:flex;gap:5px;align-items:center}
-  .slot{width:36px;height:36px;border:1px solid var(--border2);border-radius:9px;background:var(--bg3);display:grid;place-items:center;font-size:1.1rem;transition:all .14s}
+  .slot{width:34px;height:34px;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);display:grid;place-items:center;font-size:1.05rem;transition:all .14s}
   button.slot{cursor:pointer;touch-action:manipulation}
-  button.slot:not(:disabled):hover{border-color:var(--gold);background:var(--bg4);transform:scale(1.12)}
+  button.slot:not(:disabled):hover{border-color:var(--gold);background:var(--bg4);transform:scale(1.14);box-shadow:0 0 10px rgba(192,136,40,.4)}
   button.slot:not(:disabled):active{transform:scale(.88)}
-  .slot.dead{opacity:.16;filter:grayscale(1)}
-  .slot.active-slot{border-color:var(--sa,var(--border3));box-shadow:0 0 8px var(--sa3,transparent)}
+  .slot.dead{opacity:.14;filter:grayscale(1) blur(.5px)}
+  .slot.active-slot{border-color:var(--sa,var(--border3));box-shadow:0 0 10px var(--sa3,transparent),0 0 0 1px var(--sa,transparent)}
 
   /* ══════════════════════════════════════
-     FIGHT CARD — REDESIGNED
+     FIGHT CARD — PORTRAIT / FULL ART
   ══════════════════════════════════════ */
+  @keyframes cardGlow{0%,100%{box-shadow:0 0 18px var(--sa3,transparent),0 8px 32px rgba(0,0,0,.7)}50%{box-shadow:0 0 32px var(--sa3,transparent),0 8px 48px rgba(0,0,0,.8)}}
+  @keyframes koSlump{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-6px) rotate(-2deg)}60%{transform:translateY(4px) rotate(1deg)}80%{transform:translateY(-2px)}100%{transform:translateY(0) rotate(0)}}
+  @keyframes newBoxerIn{0%{opacity:0;transform:scale(.88) translateY(16px)}60%{opacity:1;transform:scale(1.04) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes shimmerSweep{0%{left:-60%}100%{left:130%}}
+
   .fight-card{
-    margin:6px 10px;border-radius:14px;overflow:hidden;
+    margin:5px 10px;
+    border-radius:16px;
+    overflow:hidden;
     border:1px solid var(--border2);
     display:flex;flex-direction:column;
-    background:linear-gradient(160deg,#14203a,#0c1428);
-    box-shadow:0 6px 24px rgba(0,0,0,.55);
     position:relative;
+    box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);
+    animation:cardGlow 4s ease-in-out infinite;
+    transition:border-color .3s;
+    /* Ensure children are above the bg */
+    isolation:isolate;
   }
+  /* Full-art background image fills the ENTIRE card */
+  .fc-fullart{
+    position:absolute;inset:0;z-index:0;
+    background:#060c1e center/cover no-repeat;
+    transition:transform .5s cubic-bezier(.25,.8,.25,1);
+  }
+  .fight-card:hover .fc-fullart{transform:scale(1.03)}
+  /* Dark gradient overlay — lighter at top so face is visible, heavier at bottom for UI */
+  .fc-overlay{
+    position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      linear-gradient(180deg,
+        rgba(4,8,20,.55) 0%,
+        rgba(4,8,20,.10) 28%,
+        rgba(4,8,20,.05) 50%,
+        rgba(4,8,20,.70) 72%,
+        rgba(4,8,20,.96) 100%
+      );
+  }
+  /* Vignette edge */
+  .fc-vignette{
+    position:absolute;inset:0;z-index:1;pointer-events:none;
+    box-shadow:inset 0 0 40px rgba(0,0,0,.6);
+  }
+  /* Color style tint overlay (subtle) */
+  .fc-tint{
+    position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse 90% 60% at 50% 110%,var(--sa3,transparent),transparent 70%);
+  }
+  /* Shimmer sweep on hover */
+  .fc-shimmer{
+    position:absolute;top:0;bottom:0;width:50%;z-index:2;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+    left:-60%;transition:none;
+  }
+  .fight-card:hover .fc-shimmer{animation:shimmerSweep .6s ease both}
+
+  /* All content sits above overlays */
+  .fc-content{position:relative;z-index:3;display:flex;flex-direction:column;height:100%}
+
   /* Animated top color band */
   .fc-band{
-    height:4px;flex-shrink:0;
-    background:linear-gradient(90deg,var(--sa,#3a4870),var(--sa2,#6070a8),var(--sa,#3a4870));
-    background-size:200% auto;animation:bandShimmer 3s linear infinite;
+    height:3px;flex-shrink:0;
+    background:linear-gradient(90deg,transparent,var(--sa,#5a70b8),var(--sa2,#8090d0),var(--sa,#5a70b8),transparent);
+    background-size:250% auto;animation:bandShimmer 2.5s linear infinite;
   }
-  /* Card header row */
+  /* Card header — name + style pill + momentum */
   .fc-hdr{
-    display:flex;align-items:center;gap:7px;padding:5px 10px 4px;flex-shrink:0;
-    background:linear-gradient(90deg,var(--sa4,rgba(0,0,0,.2)),transparent);
-    border-bottom:1px solid rgba(255,255,255,.05);
+    display:flex;align-items:center;gap:6px;padding:6px 10px 5px;flex-shrink:0;
+    background:linear-gradient(180deg,rgba(4,8,20,.78),transparent);
+    backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
   }
-  .fc-hdr-name{font-family:var(--fd);font-size:1.05rem;letter-spacing:.04em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1}
-  .fc-style-pill{font-size:.56rem;font-family:var(--fd);letter-spacing:.1em;border:1px solid var(--sa,var(--border2));color:var(--sa2,var(--muted2));background:var(--sa4,transparent);border-radius:999px;padding:2px 8px;white-space:nowrap;flex-shrink:0}
-  .fc-guard-pill{font-size:.56rem;font-family:var(--fd);letter-spacing:.07em;background:linear-gradient(135deg,#f59e0b,#c07800);color:#1a0e00;border-radius:999px;padding:2px 8px;flex-shrink:0}
-  /* Momentum pips */
-  .fc-mom{display:flex;gap:3px;align-items:center;flex-shrink:0;padding:0 2px}
-  .pip{width:9px;height:9px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);transition:all .2s}
-  .pip.on{background:#3a4f8a;border-color:#5a6fb0}
-  .pip.rdy{background:var(--gold2);border-color:var(--gold3);box-shadow:0 0 6px rgba(224,174,72,.65)}
-  .pip.max{background:#e83050;border-color:#ff3060;box-shadow:0 0 8px rgba(232,48,80,.8);animation:pipPop .8s ease-in-out infinite}
-  /* Body */
-  .fc-body{display:flex;flex:1;min-height:0}
-  .fc-art{
-    width:76px;min-width:76px;flex-shrink:0;
-    background:#0b1022 center/cover no-repeat;
-    border-right:1px solid var(--border);
-    display:grid;place-items:center;font-size:2.6rem;position:relative;
+  .fc-hdr-name{
+    font-family:var(--fd);font-size:1.1rem;letter-spacing:.05em;flex:1;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1;
+    text-shadow:0 1px 8px rgba(0,0,0,.9);
   }
-  .fc-art::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,rgba(0,0,0,.35));pointer-events:none}
-  .fc-data{flex:1;padding:5px 9px;display:flex;flex-direction:column;gap:3px;min-width:0;justify-content:center}
-  .fc-subtitle{font-size:.66rem;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  /* HP */
-  .fc-hprow{display:flex;align-items:center;gap:6px;margin:1px 0}
-  .hpb{flex:1;height:7px;border-radius:999px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.07);overflow:hidden}
-  .hpfill{height:100%;background:linear-gradient(90deg,#00c05a,#00f880);transition:width .4s cubic-bezier(.25,.8,.25,1);border-radius:999px}
-  .hpfill.mid{background:linear-gradient(90deg,#f59e0b,#fde08a)}
-  .hpfill.low{background:linear-gradient(90deg,#ef4444,#ff6882);animation:hpPulse 1s ease-in-out infinite}
-  .hp-num{font-family:var(--fd);font-size:.73rem;letter-spacing:.02em;white-space:nowrap;flex-shrink:0}
+  .fc-style-pill{
+    font-size:.52rem;font-family:var(--fd);letter-spacing:.12em;
+    border:1px solid var(--sa,var(--border2));color:var(--sa2,var(--muted2));
+    background:rgba(0,0,0,.55);border-radius:999px;padding:2px 8px;white-space:nowrap;flex-shrink:0;
+    backdrop-filter:blur(4px);
+  }
+  .fc-guard-pill{
+    font-size:.52rem;font-family:var(--fd);letter-spacing:.07em;
+    background:linear-gradient(135deg,rgba(245,158,11,.9),rgba(192,120,0,.8));
+    color:#1a0e00;border-radius:999px;padding:2px 8px;flex-shrink:0;
+    box-shadow:0 0 12px rgba(245,158,11,.5);
+  }
+  /* The main art zone — flexible spacer so image fills remaining space */
+  .fc-art-zone{flex:1;min-height:0;position:relative}
+  /* Emoji fallback when no image */
+  .fc-art-emoji{
+    position:absolute;inset:0;display:grid;place-items:center;
+    font-size:4.5rem;filter:drop-shadow(0 4px 16px rgba(0,0,0,.8));
+  }
+
+  /* Bottom stats panel */
+  .fc-stats-panel{
+    flex-shrink:0;
+    padding:6px 10px 8px;
+    background:linear-gradient(0deg,rgba(4,8,20,.97) 60%,rgba(4,8,20,.82) 85%,transparent);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  }
+  /* Subtitle (boxer title) */
+  .fc-subtitle{
+    font-size:.6rem;letter-spacing:.1em;color:var(--sa2,var(--muted2));
+    text-transform:uppercase;margin-bottom:4px;
+    text-shadow:0 1px 4px rgba(0,0,0,.8);
+  }
+  /* HP row */
+  .fc-hprow{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+  .hpb{
+    flex:1;height:6px;border-radius:999px;
+    background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.08);
+    overflow:hidden;position:relative;
+  }
+  .hpfill{
+    height:100%;
+    background:linear-gradient(90deg,#00a850,#00f070);
+    transition:width .45s cubic-bezier(.25,.8,.25,1);
+    border-radius:999px;position:relative;
+  }
+  .hpfill::after{
+    content:'';position:absolute;top:0;left:0;right:0;height:50%;
+    background:rgba(255,255,255,.25);border-radius:999px;
+  }
+  .hpfill.mid{background:linear-gradient(90deg,#c07800,#f8c040)}
+  .hpfill.low{background:linear-gradient(90deg,#b81028,#ff3060);animation:hpPulse .85s ease-in-out infinite}
+  .hp-num{font-family:var(--fd);font-size:.78rem;letter-spacing:.02em;white-space:nowrap;flex-shrink:0;text-shadow:0 1px 6px rgba(0,0,0,.9)}
   .hp-num.low{color:#ff5575}.hp-num.mid{color:#f59e0b}
+  /* Momentum pips */
+  .fc-mom{display:flex;gap:4px;align-items:center;margin-bottom:5px}
+  .pip{width:10px;height:10px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);transition:all .22s cubic-bezier(.25,.8,.25,1)}
+  .pip.on{background:#3a5090;border-color:#6080c8;box-shadow:0 0 5px rgba(96,128,200,.5)}
+  .pip.rdy{background:var(--gold2);border-color:var(--gold3);box-shadow:0 0 8px rgba(224,174,72,.8)}
+  .pip.max{background:#e83050;border-color:#ff4070;box-shadow:0 0 10px rgba(232,48,80,.9),0 0 20px rgba(232,48,80,.4);animation:pipPop .7s ease-in-out infinite}
   /* Stats row */
-  .fc-srow{display:flex;gap:8px;align-items:center}
-  .fst{display:flex;gap:2px;align-items:baseline}
-  .fst-l{font-size:.57rem;font-family:var(--fd);letter-spacing:.08em;color:var(--muted)}
-  .fst-v{font-size:.88rem;font-family:var(--fd);line-height:1}
+  .fc-srow{display:flex;gap:10px;align-items:center}
+  .fst{display:flex;gap:3px;align-items:baseline}
+  .fst-l{font-size:.52rem;font-family:var(--fd);letter-spacing:.1em;color:var(--muted)}
+  .fst-v{font-size:.9rem;font-family:var(--fd);line-height:1;text-shadow:0 1px 6px rgba(0,0,0,.8)}
   /* Status badges */
-  .fc-statuses{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
-  .sbadge{font-size:.56rem;font-family:var(--fd);letter-spacing:.05em;border-radius:999px;padding:2px 7px;white-space:nowrap}
-  .sb-bleed{background:rgba(220,38,38,.3);border:1px solid #ef4444;color:#fca5a5}
-  .sb-stun{background:rgba(234,179,8,.25);border:1px solid #eab308;color:#fde68a;animation:stunShake 1.8s ease-in-out infinite}
-  .sb-weaken{background:rgba(168,85,247,.25);border:1px solid #a855f7;color:#d8b4fe}
-  .sb-power{background:rgba(249,115,22,.28);border:1px solid #f97316;color:#fdba74}
+  .fc-statuses{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+  .sbadge{font-size:.54rem;font-family:var(--fd);letter-spacing:.05em;border-radius:999px;padding:2px 8px;white-space:nowrap;backdrop-filter:blur(4px)}
+  .sb-bleed{background:rgba(220,38,38,.35);border:1px solid #ef4444;color:#fca5a5;box-shadow:0 0 8px rgba(220,38,38,.3)}
+  .sb-stun{background:rgba(234,179,8,.3);border:1px solid #eab308;color:#fde68a;animation:stunShake 1.8s ease-in-out infinite;box-shadow:0 0 8px rgba(234,179,8,.3)}
+  .sb-weaken{background:rgba(168,85,247,.3);border:1px solid #a855f7;color:#d8b4fe;box-shadow:0 0 8px rgba(168,85,247,.3)}
+  .sb-power{background:rgba(249,115,22,.32);border:1px solid #f97316;color:#fdba74;box-shadow:0 0 8px rgba(249,115,22,.3)}
 
   /* ══════════════════════════════════════
      BATTLE LOG
   ══════════════════════════════════════ */
   .logbox{
     display:flex;align-items:center;justify-content:center;
-    padding:4px 14px;text-align:center;
-    background:linear-gradient(90deg,var(--bg),rgba(255,255,255,.015),var(--bg));
-    border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-    min-height:48px;position:relative;overflow:hidden;
+    padding:5px 16px;text-align:center;
+    background:linear-gradient(90deg,rgba(4,7,18,.97),rgba(8,12,28,.94),rgba(4,7,18,.97));
+    border-top:1px solid rgba(192,136,40,.18);border-bottom:1px solid rgba(192,136,40,.18);
+    min-height:46px;position:relative;overflow:hidden;z-index:1;
   }
-  .logbox::before{content:'';position:absolute;left:8%;right:8%;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(192,136,40,.12),transparent)}
+  .logbox::before{content:'';position:absolute;left:5%;right:5%;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(192,136,40,.2),transparent)}
   .log-inner{position:relative;z-index:1}
-  .turn-lbl{font-family:var(--fd);letter-spacing:.25em;font-size:.68rem;color:var(--muted);margin-bottom:1px}
-  .turn-lbl.yours{color:#ff5572;animation:turnBlink 1.15s ease-in-out infinite}
+  .turn-lbl{font-family:var(--fd);letter-spacing:.28em;font-size:.65rem;color:var(--muted);margin-bottom:2px}
+  .turn-lbl.yours{color:#ff5572;animation:turnBlink 1.15s ease-in-out infinite;text-shadow:0 0 12px rgba(255,85,114,.5)}
   .turn-lbl.stunned-lbl{color:#eab308;animation:turnBlink .8s ease-in-out infinite}
-  .log-txt{font-family:var(--fd);font-size:.96rem;letter-spacing:.03em;animation:logIn .22s ease both}
+  .log-txt{font-family:var(--fd);font-size:1rem;letter-spacing:.04em;animation:logIn .22s ease both;text-shadow:0 1px 8px rgba(0,0,0,.8)}
 
   /* ══════════════════════════════════════
      CONTROLS
@@ -342,17 +448,15 @@
     .grid3{grid-template-columns:1fr;gap:8px}
     .rooms{grid-template-columns:1fr}
     .cards{grid-template-columns:repeat(2,1fr);grid-auto-rows:260px;gap:8px}
-    .fc-art{width:66px;min-width:66px;font-size:2.2rem}
     .fc-hdr-name{font-size:.95rem}
   }
   @media(max-width:480px){
     .panel{margin:6px;padding:8px;gap:8px}
     .cards{grid-auto-rows:244px;gap:6px}
-    .fc-art{width:58px;min-width:58px;font-size:1.9rem}
-    .fc-hdr-name{font-size:.88rem}
+    .fc-hdr-name{font-size:.86rem}
     .act-row .btn{min-height:38px;font-size:.78rem;padding:7px 5px}
     .buff{min-width:96px;padding:5px 7px}
-    .slot{width:32px;height:32px;font-size:1rem}
+    .slot{width:30px;height:30px;font-size:.95rem}
     .bar{padding:5px 9px}
     .logbox{min-height:42px;padding:3px 10px}
     .ctrl{padding:5px 7px;gap:5px}
@@ -833,17 +937,23 @@ function fightCard(bx,cardId){
   const badges=statusBadges(bx.statuses);
   const idAttr=cardId?`id="${cardId}"` :"";
   return`<div class="fight-card sa-${bx.style}" ${idAttr}>
-    <div class="fc-band"></div>
-    <div class="fc-hdr">
-      <div class="fc-hdr-name">${bx.name}</div>
-      <div class="fc-style-pill">${bx.style.toUpperCase()}</div>
-      ${bx.guard?'<div class="fc-guard-pill">🛡 GUARD</div>':""}
-      <div class="fc-mom">${momPips(bx.momentum||0)}</div>
-    </div>
-    <div class="fc-body">
-      <div class="fc-art" ${artBg(bx.img)}>${bx.img?"":bx.icon}</div>
-      <div class="fc-data">
+    <div class="fc-fullart" ${artBg(bx.img)}></div>
+    <div class="fc-overlay"></div>
+    <div class="fc-vignette"></div>
+    <div class="fc-tint"></div>
+    <div class="fc-shimmer"></div>
+    <div class="fc-content">
+      <div class="fc-band"></div>
+      <div class="fc-hdr">
+        <div class="fc-hdr-name">${bx.name}</div>
+        <div class="fc-style-pill">${bx.style.toUpperCase()}</div>
+        ${bx.guard?'<div class="fc-guard-pill">🛡 GUARD</div>':""}
+      </div>
+      ${bx.img?"":`<div class="fc-art-emoji">${bx.icon}</div>`}
+      <div class="fc-art-zone"></div>
+      <div class="fc-stats-panel">
         <div class="fc-subtitle">${bx.title}</div>
+        <div class="fc-mom" ${cardId?`id="${cardId}-pips"`:""}>${momPips(bx.momentum||0)}</div>
         <div class="fc-hprow">
           <div class="hpb"><div class="hpfill ${hpC}" ${cardId?`id="${cardId}-fill"`:"" } style="width:${pct}%"></div></div>
           <div class="hp-num ${hpC}" ${cardId?`id="${cardId}-hpnum"`:""}>${bx.hp}<span style="color:var(--muted);font-size:.82em">/${bx.maxHp}</span></div>
@@ -869,14 +979,15 @@ function updateCard(bx,cardId){
   if(hpn){hpn.className="hp-num"+(hpC?" "+hpC:"");hpn.innerHTML=`${bx.hp}<span style="color:var(--muted);font-size:.82em">/${bx.maxHp}</span>`}
   const momEl=document.getElementById(`${cardId}-mom`);
   if(momEl){momEl.textContent=`${bx.momentum||0}/5`;momEl.style.color=bx.momentum>=3?"#f8d068":"var(--muted2)"}
-  const card=document.getElementById(cardId);
-  if(card){const momPipEl=card.querySelector(".fc-mom");if(momPipEl)momPipEl.innerHTML=momPips(bx.momentum||0)}
+  const pipsEl=document.getElementById(`${cardId}-pips`);
+  if(pipsEl)pipsEl.innerHTML=momPips(bx.momentum||0);
   const sts=document.getElementById(`${cardId}-sts`);if(sts)sts.innerHTML=statusBadges(bx.statuses);
   const atkEl=document.getElementById(`${cardId}-atk`);if(atkEl)atkEl.textContent=bx.atk;
   const defEl=document.getElementById(`${cardId}-def`);if(defEl)defEl.textContent=bx.def;
+  const card=document.getElementById(cardId);
   if(card){
     let gp=card.querySelector(".fc-guard-pill");
-    if(bx.guard&&!gp){const hdr=card.querySelector(".fc-hdr");if(hdr){gp=document.createElement("div");gp.className="fc-guard-pill";gp.textContent="🛡 GUARD";hdr.insertBefore(gp,hdr.querySelector(".fc-mom"))}}
+    if(bx.guard&&!gp){const hdr=card.querySelector(".fc-hdr");if(hdr){gp=document.createElement("div");gp.className="fc-guard-pill";gp.textContent="🛡 GUARD";hdr.appendChild(gp)}}
     if(!bx.guard&&gp)gp.remove();
   }
 }
@@ -885,18 +996,18 @@ function updateCard(bx,cardId){
 function replaceCard(bx,cardId){
   const old=document.getElementById(cardId);
   if(!old)return;
-  const tmp=document.createElement("div");
-  tmp.innerHTML=fightCard(bx,cardId);
-  const newCard=tmp.firstElementChild;
-  // Brief fade-in for the new boxer entering
-  newCard.style.opacity="0";
-  newCard.style.transform="translateY(10px)";
-  newCard.style.transition="opacity .35s ease, transform .35s cubic-bezier(.25,.8,.25,1)";
-  old.replaceWith(newCard);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    newCard.style.opacity="1";
-    newCard.style.transform="translateY(0)";
-  }));
+  // KO flash — card goes white/red then fades out
+  old.style.transition="opacity .3s ease, transform .3s cubic-bezier(.5,0,.5,1), filter .3s ease";
+  old.style.filter="brightness(3) saturate(0)";
+  old.style.transform="scale(.95) translateY(4px)";
+  old.style.opacity="0";
+  setTimeout(()=>{
+    const tmp=document.createElement("div");
+    tmp.innerHTML=fightCard(bx,cardId);
+    const newCard=tmp.firstElementChild;
+    newCard.style.animation="newBoxerIn .55s cubic-bezier(.3,0,.7,1) both";
+    old.replaceWith(newCard);
+  },320);
 }
 
 /* Floating damage number over a card element */
@@ -969,7 +1080,10 @@ function animateAction(result,isPlayerAction,afterDone){
       if(result.ko){
         const defId=isPlayerAction?"fc-op":"fc-me";
         const defSide=isPlayerAction?b[opKey]:b[myKey];
-        await ms(120);
+        // Brief white KO flash on the defeated card
+        const koCard=document.getElementById(defId);
+        if(koCard)flashCard(koCard,"ko");
+        await ms(220);
         replaceCard(defSide.boxers[defSide.active],defId);
         // Also update the attacker card (momentum reset etc.)
         updateCard(b[isPlayerAction?myKey:opKey].boxers[b[isPlayerAction?myKey:opKey].active],
