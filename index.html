@@ -259,6 +259,7 @@
   ════════════════════════════════ */
   .battle{
     display:grid;
+    grid-template-columns:1fr 88px;
     grid-template-rows:auto 1fr auto 1fr auto;
     overflow:hidden;
     position:relative;
@@ -285,6 +286,7 @@
   .card-zone{
     display:flex;align-items:center;justify-content:center;
     position:relative;z-index:1;overflow:hidden;
+    grid-column:1;
   }
 
   /* ════════════════════════════════
@@ -297,6 +299,7 @@
     display:flex;justify-content:space-between;align-items:center;gap:8px;
     position:relative;z-index:2;
     box-shadow:0 2px 16px rgba(0,0,0,.6);
+    grid-column:1;
   }
   .bar-left{display:flex;align-items:center;gap:9px}
   .bar-lbl{font-family:var(--fd);font-weight:600;letter-spacing:.1em;font-size:.82rem;color:var(--muted2)}
@@ -537,6 +540,7 @@
     border-bottom:1px solid rgba(200,150,40,.15);
     min-height:50px;position:relative;overflow:hidden;z-index:2;
     box-shadow:0 0 30px rgba(0,0,0,.8);
+    grid-column:1;
   }
   /* Decorative gold corners */
   .logbox::before{
@@ -567,6 +571,7 @@
     position:relative;z-index:2;
     box-shadow:0 -4px 24px rgba(0,0,0,.7);
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    grid-column:1;
   }
   .ctrl::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,150,40,.2),transparent)}
   .ctrl-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
@@ -589,27 +594,52 @@
   .act-row{display:flex;gap:7px}
   .act-row .btn{flex:1;min-height:44px;font-size:.78rem}
 
-  /* Buff cards */
-  .buffs{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-  .buffs::-webkit-scrollbar{height:3px}.buffs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
+  /* ════════════════════════════════
+     SIDE BUFF PANEL
+  ════════════════════════════════ */
+  .buff-side{
+    grid-column:2;
+    grid-row:1 / -1;
+    display:flex;flex-direction:column;gap:6px;
+    padding:8px 5px;
+    overflow-y:auto;overflow-x:hidden;
+    background:linear-gradient(180deg,rgba(4,7,18,.98),rgba(8,12,26,.96));
+    border-left:1px solid rgba(255,255,255,.05);
+    box-shadow:-4px 0 20px rgba(0,0,0,.5);
+    position:relative;z-index:3;
+    scroll-snap-type:y mandatory;
+    -webkit-overflow-scrolling:touch;
+  }
+  .buff-side::-webkit-scrollbar{width:2px}
+  .buff-side::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
+  .buff-side::before{
+    content:'BUFFS';
+    display:block;font-family:var(--fd);font-weight:700;font-size:.48rem;
+    letter-spacing:.18em;color:var(--muted);text-align:center;
+    padding-bottom:5px;border-bottom:1px solid rgba(200,150,40,.15);
+    flex-shrink:0;
+  }
+
+  /* Buff cards — vertical layout in side panel */
   .buff{
-    min-width:104px;flex-shrink:0;scroll-snap-align:start;
-    border:1px solid var(--border2);border-radius:var(--radius-sm);
+    width:100%;flex-shrink:0;scroll-snap-align:start;
+    border:1px solid var(--border2);border-radius:10px;
     background:linear-gradient(165deg,rgba(14,26,56,.95),rgba(8,14,32,.95));
-    padding:7px 9px;cursor:pointer;position:relative;overflow:hidden;
+    padding:7px 6px;cursor:pointer;position:relative;overflow:hidden;
     transition:transform .16s,border-color .16s,box-shadow .16s;touch-action:manipulation;
     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;
   }
   .buff::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#4455dd,#8890ff)}
   .buff::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 50%);pointer-events:none;border-radius:inherit}
-  .buff:not(.dis):hover{transform:translateY(-4px)scale(1.02);border-color:#5568cc;box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 0 1px #5568cc,0 0 16px rgba(85,104,204,.25)}
-  .buff:not(.dis):active{transform:scale(.96)}
-  .buff.dis{opacity:.18;cursor:not-allowed}
-  .buff-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-  .buff-ico{font-size:1.3rem;line-height:1}
-  .buff-tc{font-size:.6rem;font-family:var(--fd);font-weight:700;background:linear-gradient(135deg,var(--gold2),#7a5808);color:#0e0800;border-radius:999px;padding:2px 8px}
-  .buff-nm{font-family:var(--fd);font-weight:600;font-size:.82rem;letter-spacing:.05em;line-height:1}
-  .buff-dc{font-size:.6rem;color:var(--muted2);margin-top:2px;line-height:1.3}
+  .buff:not(.dis):hover{transform:scale(1.06);border-color:#5568cc;box-shadow:0 6px 20px rgba(0,0,0,.6),0 0 0 1px #5568cc,0 0 14px rgba(85,104,204,.3)}
+  .buff:not(.dis):active{transform:scale(.94)}
+  .buff.dis{opacity:.2;cursor:not-allowed}
+  .buff-top{display:flex;justify-content:center;align-items:center;flex-direction:column;gap:2px;margin-bottom:0}
+  .buff-ico{font-size:1.5rem;line-height:1}
+  .buff-tc{font-size:.55rem;font-family:var(--fd);font-weight:700;background:linear-gradient(135deg,var(--gold2),#7a5808);color:#0e0800;border-radius:999px;padding:1px 6px;margin-top:1px}
+  .buff-nm{font-family:var(--fd);font-weight:600;font-size:.6rem;letter-spacing:.03em;line-height:1.1;word-break:break-word}
+  .buff-dc{font-size:.52rem;color:var(--muted2);margin-top:1px;line-height:1.2;display:none}
 
   /* ════════════════════════════════
      VICTORY / DEFEAT OVERLAY
@@ -653,23 +683,29 @@
     .fc-hdr-name{font-size:.88rem}
     .fight-card{width:min(148px,40vw)}
     .fc-hp-bar{width:min(148px,40vw)}
+    .battle{grid-template-columns:1fr 80px}
+    .buff-side{padding:6px 4px;gap:5px}
   }
   @media(max-width:480px){
     .panel{margin:6px;padding:9px;gap:8px}
     .cards{grid-auto-rows:238px;gap:6px}
     .fc-hdr-name{font-size:.8rem}
     .act-row .btn{min-height:40px;font-size:.74rem;padding:8px 6px}
-    .buff{min-width:96px;padding:6px 8px}
     .slot{width:31px;height:31px;font-size:.95rem}
     .bar{padding:5px 10px}
     .logbox{min-height:44px;padding:4px 12px}
     .ctrl{padding:6px 8px;gap:6px}
-    .buffs{gap:5px}
     .ov-result{font-size:clamp(3.5rem,12vw,6rem)}
-    .fight-card{width:min(130px,36vw)}
-    .fc-hp-bar{width:min(130px,36vw)}
+    .fight-card{width:min(120px,33vw)}
+    .fc-hp-bar{width:min(120px,33vw)}
     .fc-stats-panel{padding:5px 8px 7px}
     .fc-hdr{padding:5px 8px 4px}
+    .battle{grid-template-columns:1fr 72px}
+    .buff-side{padding:5px 3px;gap:4px}
+    .buff{padding:5px 4px;border-radius:8px}
+    .buff-ico{font-size:1.3rem}
+    .buff-nm{font-size:.54rem}
+    .buff-tc{font-size:.5rem}
   }
   </style>
 </head>
@@ -1416,14 +1452,17 @@ function renderBattle(){
         <button class="btn" id="a-pass" ${can?"":"disabled"}>${(isStunned&&can)?"SHAKE OFF":"PASS"}</button>
         <button class="btn btn-p" id="a-hit" ${(can&&!isStunned)?"":"disabled"}>ATTACK</button>
       </div>
-      <div class="buffs">${me.buffs.map((f,i)=>{
+    </div>
+
+    <!-- Side buff panel -->
+    <div class="buff-side" id="buff-side-panel">
+      ${me.buffs.map((f,i)=>{
         const u=can&&!f.used&&me.tc>=f.cost&&!isStunned;
         return`<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}>
           <div class="buff-top"><div class="buff-ico">${f.icon}</div><div class="buff-tc">${f.cost}TC</div></div>
           <div class="buff-nm">${f.name}</div>
-          <div class="buff-dc">${f.desc}</div>
         </button>`
-      }).join("")}</div>
+      }).join("")}
     </div>
 
     <!-- Victory/Defeat overlay -->
@@ -1570,10 +1609,11 @@ function refreshTurnUI(){
     swRow.innerHTML=me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""} ${i===me.active?"active-slot":""}" data-sw="${i}" ${(!can||i===me.active||x.dead||isStunned)?"disabled":""}>${x.icon}</button>`).join("");
     ctrl.querySelectorAll("[data-sw]").forEach(el=>el.addEventListener("click",()=>act("switch",+el.dataset.sw)));
   }
-  const bufRow=ctrl.querySelector(".buffs");
-  if(bufRow){
-    bufRow.innerHTML=me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost&&!isStunned;return`<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="buff-top"><div class="buff-ico">${f.icon}</div><div class="buff-tc">${f.cost}TC</div></div><div class="buff-nm">${f.name}</div><div class="buff-dc">${f.desc}</div></button>`}).join("");
-    ctrl.querySelectorAll("[data-bf]").forEach(el=>el.addEventListener("click",()=>act("buff",+el.dataset.bf)));
+  // Rebuild side buff panel
+  const sidePanel=document.getElementById("buff-side-panel");
+  if(sidePanel){
+    sidePanel.innerHTML=me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost&&!isStunned;return`<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="buff-top"><div class="buff-ico">${f.icon}</div><div class="buff-tc">${f.cost}TC</div></div><div class="buff-nm">${f.name}</div></button>`}).join("");
+    sidePanel.querySelectorAll("[data-bf]").forEach(el=>el.addEventListener("click",()=>act("buff",+el.dataset.bf)));
   }
 }
 
