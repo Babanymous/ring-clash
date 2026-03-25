@@ -858,6 +858,24 @@ function updateCard(bx,cardId){
   }
 }
 
+/* Fully replace a fight card when a KO swaps the active boxer */
+function replaceCard(bx,cardId){
+  const old=document.getElementById(cardId);
+  if(!old)return;
+  const tmp=document.createElement("div");
+  tmp.innerHTML=fightCard(bx,cardId);
+  const newCard=tmp.firstElementChild;
+  // Brief fade-in for the new boxer entering
+  newCard.style.opacity="0";
+  newCard.style.transform="translateY(10px)";
+  newCard.style.transition="opacity .35s ease, transform .35s cubic-bezier(.25,.8,.25,1)";
+  old.replaceWith(newCard);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    newCard.style.opacity="1";
+    newCard.style.transform="translateY(0)";
+  }));
+}
+
 /* Floating damage number over a card element */
 function spawnFloat(cardEl,text,cls){
   if(!cardEl)return;
@@ -924,6 +942,17 @@ function animateAction(result,isPlayerAction,afterDone){
       if(atkCard)atkCard.classList.remove("punching-dn","punching-up","sig-burst");
       if(defCard)defCard.classList.remove("taking-hit");
 
+      // If a KO happened the active boxer changed — replace the whole card
+      if(result.ko){
+        const defId=isPlayerAction?"fc-op":"fc-me";
+        const defSide=isPlayerAction?b[opKey]:b[myKey];
+        await ms(120);
+        replaceCard(defSide.boxers[defSide.active],defId);
+        // Also update the attacker card (momentum reset etc.)
+        updateCard(b[isPlayerAction?myKey:opKey].boxers[b[isPlayerAction?myKey:opKey].active],
+                   isPlayerAction?"fc-me":"fc-op");
+      }
+
     }else if(isAtk&&result.dodged){
       if(defCard)defCard.classList.add("taking-hit");
       updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
@@ -932,11 +961,18 @@ function animateAction(result,isPlayerAction,afterDone){
       if(defCard)defCard.classList.remove("taking-hit");
 
     }else{
-      // Buff / guard / pass / switch
+      // Buff / guard / pass / switch — also handle switch KO (switch to new boxer)
       if(result.heal&&atkCard)flashCard(atkCard,"heal");
-      if(result.heal&&atkCard)spawnFloat(atkCard,"+",  "heal");
-      updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
-      updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
+      if(result.heal&&atkCard)spawnFloat(atkCard,"+","heal");
+      if(result.ko){
+        // KO from bleed etc.
+        const defId=isPlayerAction?"fc-op":"fc-me";
+        const defSide=isPlayerAction?b[opKey]:b[myKey];
+        replaceCard(defSide.boxers[defSide.active],defId);
+      } else {
+        updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
+        updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
+      }
       await ms(280);
     }
 
@@ -1190,4 +1226,3 @@ function refreshTurnUI(){
   </script>
 </body>
 </html>
-
