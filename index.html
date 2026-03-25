@@ -618,6 +618,8 @@ function onlineApplyAction(bb,role,kind,idx){
   if(isStunned&&kind!=="pass")return null;
 
   let log=null;
+  // Rich result object consumed by animateAction
+  const res={kind,ko:false,dmg:0,crit:false,isSig:false,dodged:false,heal:false,bleedDmg:0};
 
   if(kind==="attack"||kind==="special"){
     const isSpecial=kind==="special";
@@ -627,9 +629,14 @@ function onlineApplyAction(bb,role,kind,idx){
     }
     const r=resolveAttack(bb,myA,opA,`${bb.turnCount}|${myA.iid}|${opA.iid}`,isSpecial);
     log=r.log;
+    res.dmg=r.dmg||0;
+    res.crit=!!r.crit;
+    res.isSig=isSpecial;
+    res.dodged=!!r.dodged;
     if(!isSpecial)me.tc=Math.min(10,me.tc+1);
     if(opA.hp<=0){
       opA.hp=0;opA.dead=true;
+      res.ko=true;
       log=`🥊 KO! ${opA.name} is down!`;
       const ni=nextAlive(op);
       if(ni<0){bb.state="finished";bb.winner=role}
@@ -644,8 +651,10 @@ function onlineApplyAction(bb,role,kind,idx){
     if(typeof idx!=="number"||!me.buffs[idx])return null;
     const f=me.buffs[idx];
     if(f.used||me.tc<f.cost||!condOk(f,me))return null;
+    const hpBefore=myA.hp;
     applyBuff(f,me,op);
     f.used=true;me.tc-=f.cost;
+    res.heal=myA.hp>hpBefore;
     log=`✨ ${myA.name} uses ${f.name}!`
   }else if(kind==="guard"){
     myA.guard=true;myA.momentum=Math.min(5,myA.momentum+1);
@@ -663,8 +672,22 @@ function onlineApplyAction(bb,role,kind,idx){
 
   if(!log)return null;
   bb.log.push(log);
+
+  // Capture bleed damage that endTurn may apply, and detect KO from bleed
+  const prevHp=bb[bb.turn==="host"?"guest":"host"]?.boxers[bb[bb.turn==="host"?"guest":"host"]?.active]?.hp;
   endTurn(bb);
-  return true;
+  const afterSide=bb[bb.turn];
+  const afterBx=afterSide?.boxers[afterSide?.active];
+  if(afterBx&&afterBx.dead){res.ko=true}
+  // Detect bleed DoT damage that occurred during endTurn
+  const incomingSide=bb[bb.turn];
+  const incomingBx=incomingSide?.boxers[incomingSide?.active];
+  if(incomingBx&&!incomingBx.dead&&typeof prevHp==="number"){
+    const bleedDmg=prevHp-incomingBx.hp;
+    if(bleedDmg>0)res.bleedDmg=bleedDmg;
+  }
+
+  return res;
 }
 
 /* ══════════════════════════════════════════
@@ -1226,4 +1249,5 @@ function refreshTurnUI(){
   </script>
 </body>
 </html>
+
 
