@@ -725,36 +725,65 @@ const FIREBASE_CONFIG={apiKey:"AIzaSyDi-5UoX0hDw7O6UQY5pduKgxQMX5C4KY4",authDoma
    Unlocks at momentum ≥ 3 · costs 2 TC
 ══════════════════════════════════════════ */
 const SIGNATURES = {
-  ippo:    {name:"Dempsey Roll",    icon:"🌀", mult:1.9, effect:null},
-  takamura:{name:"Bear Mauling",    icon:"🐻", mult:1.7, effect:"stun"},
-  miyata:  {name:"Cross Counter",   icon:"⚡", mult:1.65, effect:null},
-  sendou:  {name:"Tiger Rush",      icon:"🐅", mult:1.6, effect:"bleed"},
-  volg:    {name:"White Fang",      icon:"🐺", mult:1.8, effect:null},
-  ricardo: {name:"Legendary Fist",  icon:"👑", mult:2.0, effect:null},
-  date:    {name:"Heartbreak Shot", icon:"💔", mult:1.55, effect:"weaken"},
-  mashiba: {name:"Reaping Hook",    icon:"💀", mult:1.55, effect:"bleed"},
-  itagaki: {name:"Speed Blitz",     icon:"🌪", mult:1.45, effect:null},
-  alfredo: {name:"Aztec Storm",     icon:"🌊", mult:1.75, effect:null},
-  aoki:    {name:"Frog Leap Jab",   icon:"🐸", mult:1.4, effect:"stun"},
-  kimura:  {name:"Dragon Tail",     icon:"🐟", mult:1.6, effect:null},
+  // Original 12
+  ippo:    {name:"Dempsey Roll",      icon:"🌀", mult:1.9,  effect:null},
+  takamura:{name:"Bear Mauling",      icon:"🐻", mult:1.7,  effect:"stun"},
+  miyata:  {name:"Cross Counter",     icon:"⚡", mult:1.65, effect:null},
+  sendou:  {name:"Tiger Rush",        icon:"🐅", mult:1.6,  effect:"bleed"},
+  volg:    {name:"White Fang",        icon:"🐺", mult:1.8,  effect:null},
+  ricardo: {name:"Legendary Fist",    icon:"👑", mult:2.0,  effect:null},
+  date:    {name:"Heartbreak Shot",   icon:"💔", mult:1.55, effect:"weaken"},
+  mashiba: {name:"Reaping Hook",      icon:"💀", mult:1.55, effect:"bleed"},
+  itagaki: {name:"Speed Blitz",       icon:"🌪", mult:1.45, effect:null},
+  alfredo: {name:"Aztec Storm",       icon:"🌊", mult:1.75, effect:null},
+  aoki:    {name:"Frog Leap Jab",     icon:"🐸", mult:1.4,  effect:"stun"},
+  kimura:  {name:"Dragon Tail",       icon:"🐟", mult:1.6,  effect:null},
+  // New additions
+  nao:     {name:"Hammer Fist",       icon:"🔨", mult:1.65, effect:"stun"},
+  sendo2:  {name:"Wild Smash",        icon:"💥", mult:1.5,  effect:"bleed"},
+  sawamura:{name:"Bullet Jab",        icon:"🔫", mult:1.5,  effect:"weaken"},
+  bryan:   {name:"Brawl Storm",       icon:"🌩", mult:1.55, effect:null},
+  sanada:  {name:"Iron Fist Combo",   icon:"🗜", mult:1.7,  effect:"weaken"},
+  david:   {name:"Blinding Cross",    icon:"😵", mult:1.6,  effect:"weaken"},
+  ozuma:   {name:"Death Blow",        icon:"☠", mult:1.85, effect:"stun"},
+  malcolm: {name:"Eagle Strike",      icon:"🦅", mult:1.6,  effect:null},
+  hammer:  {name:"Sledgehammer",      icon:"🔩", mult:1.8,  effect:"stun"},
+  shimabukuro:{name:"Southpaw Rush",  icon:"🌀", mult:1.55, effect:null},
+  wolf:    {name:"Savage Barrage",    icon:"🐗", mult:1.5,  effect:"bleed"},
+  ippo2:   {name:"Rising Smash",      icon:"⬆", mult:1.75, effect:null},
 };
 
 /* ══════════════════════════════════════════
    BOXER ROSTER — unchanged
 ══════════════════════════════════════════ */
 const BOXERS=[
-  {id:"ippo",   name:"Makunouchi Ippo",  title:"The Wind God",     style:"balanced",hp:245,atk:46,def:28,icon:"🥊",img:"assets/boxers/ippo.jpg"},
-  {id:"takamura",name:"Takamura Mamoru", title:"The Beast",        style:"slugger", hp:285,atk:50,def:30,icon:"🐻",img:"assets/boxers/takamura.jpg"},
-  {id:"miyata", name:"Miyata Ichiro",    title:"Counter King",     style:"counter", hp:90, atk:49,def:44,icon:"⚡",img:"assets/boxers/miyata.jpg"},
-  {id:"sendou", name:"Sendou Takeshi",   title:"Naniwa Tiger",     style:"slugger", hp:232,atk:55,def:20,icon:"🐅",img:"assets/boxers/sendou.jpg"},
-  {id:"volg",   name:"Volg Zangief",     title:"Red Wolf",         style:"balanced",hp:213,atk:44,def:42,icon:"🐺",img:"assets/boxers/volg.jpg"},
-  {id:"ricardo",name:"Ricardo Martinez", title:"The Legend",       style:"balanced",hp:318,atk:58,def:40,icon:"👑",img:"assets/boxers/ricardo.jpg"},
-  {id:"date",   name:"Date Eiji",        title:"The Veteran",      style:"tank",    hp:243,atk:42,def:48,icon:"🍷",img:"assets/boxers/date.jpg"},
-  {id:"mashiba",name:"Mashiba Ryo",      title:"The Reaper",       style:"counter", hp:194,atk:50,def:34,icon:"💀",img:"assets/boxers/mashiba.jpg"},
-  {id:"itagaki",name:"Itagaki Manabu",   title:"Speed Star",       style:"speed",   hp:86, atk:43,def:54,icon:"🌀",img:"assets/boxers/itagaki.jpg"},
-  {id:"alfredo",name:"Alfredo Gonzales", title:"Metztli",          style:"balanced",hp:266,atk:53,def:37,icon:"🇲🇽",img:"assets/boxers/alfredo.jpg"},
-  {id:"aoki",   name:"Aoki Masaru",      title:"Frog King",        style:"tank",    hp:230,atk:34,def:48,icon:"🐸",img:"assets/boxers/aoki.jpg"},
-  {id:"kimura", name:"Kimura Tatsuya",   title:"Dragon Fish Blow", style:"speed",   hp:217,atk:39,def:43,icon:"🐟",img:"assets/boxers/kimura.jpg"},
+  // ── Kamogawa Gym ──
+  {id:"ippo",   name:"Makunouchi Ippo",  title:"The Wind God",       style:"balanced",hp:245,atk:46,def:28,icon:"🥊",img:"assets/boxers/ippo.jpg"},
+  {id:"takamura",name:"Takamura Mamoru", title:"The Rampaging Bear", style:"slugger", hp:285,atk:50,def:30,icon:"🐻",img:"assets/boxers/takamura.jpg"},
+  {id:"aoki",   name:"Aoki Masaru",      title:"Frog King",          style:"tank",    hp:230,atk:34,def:48,icon:"🐸",img:"assets/boxers/aoki.jpg"},
+  {id:"kimura", name:"Kimura Tatsuya",   title:"Dragon Fish Blow",   style:"speed",   hp:217,atk:39,def:43,icon:"🐟",img:"assets/boxers/kimura.jpg"},
+  // ── Kawahara Gym ──
+  {id:"miyata", name:"Miyata Ichiro",    title:"Counter King",       style:"counter", hp:218,atk:49,def:44,icon:"⚡",img:"assets/boxers/miyata.jpg"},
+  {id:"itagaki",name:"Itagaki Manabu",   title:"Speed Star",         style:"speed",   hp:210,atk:43,def:46,icon:"🌀",img:"assets/boxers/itagaki.jpg"},
+  // ── Naniwa ──
+  {id:"sendou", name:"Sendou Takeshi",   title:"Naniwa Tiger",       style:"slugger", hp:232,atk:55,def:20,icon:"🐅",img:"assets/boxers/sendou.jpg"},
+  // ── Internationals ──
+  {id:"volg",   name:"Volg Zangief",     title:"White Fang",         style:"balanced",hp:235,atk:48,def:40,icon:"🐺",img:"assets/boxers/volg.jpg"},
+  {id:"ricardo",name:"Ricardo Martinez", title:"The Legend",         style:"counter", hp:260,atk:54,def:46,icon:"👑",img:"assets/boxers/ricardo.jpg"},
+  {id:"alfredo",name:"Alfredo Gonzales", title:"Metztli",            style:"balanced",hp:255,atk:51,def:36,icon:"🇲🇽",img:"assets/boxers/alfredo.jpg"},
+  {id:"bryan",  name:"Bryan Hawk",       title:"Wild Hawk",          style:"slugger", hp:268,atk:54,def:22,icon:"🦅",img:"assets/boxers/bryan.jpg"},
+  {id:"david",  name:"David Eagle",      title:"The Eagle",          style:"counter", hp:245,atk:50,def:42,icon:"🦅",img:"assets/boxers/david.jpg"},
+  {id:"ozuma",  name:"Hisato Ozuma",     title:"Death Row",          style:"slugger", hp:238,atk:56,def:20,icon:"☠️",img:"assets/boxers/ozuma.jpg"},
+  {id:"malcolm",name:"Malcolm Grid",     title:"The Professor",      style:"counter", hp:228,atk:47,def:44,icon:"🎓",img:"assets/boxers/malcolm.jpg"},
+  {id:"hammer", name:"Hammer Nao",       title:"Iron Hammer",        style:"tank",    hp:270,atk:52,def:38,icon:"🔨",img:"assets/boxers/hammer.jpg"},
+  {id:"wolf",   name:"Woli",             title:"African Wolf",       style:"slugger", hp:242,atk:53,def:22,icon:"🐗",img:"assets/boxers/wolf.jpg"},
+  {id:"shimabukuro",name:"Shimabukuro",  title:"Southpaw Stylist",   style:"speed",   hp:220,atk:44,def:44,icon:"🤙",img:"assets/boxers/shimabukuro.jpg"},
+  // ── Antagonists ──
+  {id:"date",   name:"Date Eiji",        title:"The Veteran",        style:"tank",    hp:250,atk:44,def:48,icon:"🍷",img:"assets/boxers/date.jpg"},
+  {id:"mashiba",name:"Mashiba Ryo",      title:"The Reaper",         style:"counter", hp:228,atk:50,def:36,icon:"💀",img:"assets/boxers/mashiba.jpg"},
+  {id:"sawamura",name:"Sawamura Ryuhei", title:"Bullet Speed",       style:"speed",   hp:215,atk:50,def:36,icon:"🔫",img:"assets/boxers/sawamura.jpg"},
+  {id:"sanada", name:"Sanada Kazuki",    title:"Southpaw Surgeon",   style:"counter", hp:235,atk:48,def:42,icon:"🗜️",img:"assets/boxers/sanada.jpg"},
+  {id:"nao",    name:"Hammer Nao",       title:"The Iron Hammer",    style:"tank",    hp:265,atk:50,def:40,icon:"🔨",img:"assets/boxers/nao.jpg"},
 ];
 
 /* ══════════════════════════════════════════
@@ -763,18 +792,31 @@ const BOXERS=[
    cleanse_hp · atk_risk · hp_pct · power_up · multi
 ══════════════════════════════════════════ */
 const BUFFS=[
-  {id:"corner",   name:"Corner Work",    cost:1,effect:"def",       val:22, icon:"🩹",desc:"+22 DEF"},
-  {id:"salts",    name:"Smelling Salts", cost:1,effect:"cleanse",   val:0,  icon:"💊",desc:"Remove all debuffs"},
-  {id:"steak",    name:"Protein Steak",  cost:2,effect:"hp",        val:55, icon:"🥩",desc:"+55 HP"},
-  {id:"rush",     name:"Adrenaline",     cost:2,effect:"atk_risk",  val:32, icon:"💉",desc:"+32 ATK, -18 HP",cost_hp:18},
-  {id:"plan",     name:"Game Plan",      cost:1,effect:"tc",        val:3,  icon:"📋",desc:"+3 TC"},
-  {id:"ice",      name:"Ice Pack",       cost:1,effect:"hp",        val:28, icon:"🧊",desc:"+28 HP"},
-  {id:"trainer",  name:"Trainer's Call", cost:0,effect:"multi",     val:0,  icon:"📣",desc:"+6 ATK, +8 DEF",extra:{atk:6,def:8}},
-  {id:"second",   name:"Second Wind",    cost:3,effect:"hp_pct",    val:.5, icon:"🌬",desc:"Restore 50% lost HP"},
-  {id:"warcry",   name:"War Cry",        cost:2,effect:"power_up",  val:0,  icon:"🔥",desc:"Next hit: 1.8× DMG",mult:1.8},
-  {id:"focus",    name:"Deep Focus",     cost:0,effect:"def",       val:10, icon:"🧘",desc:"+10 DEF"},
-  {id:"haymaker", name:"Haymaker Drill", cost:3,effect:"atk",       val:45, icon:"💢",desc:"+45 ATK"},
-  {id:"tape",     name:"Tape & Treat",   cost:1,effect:"cleanse_hp",val:20, icon:"🩺",desc:"Clear debuffs + +20 HP"},
+  // ── Recovery & Defense ──
+  {id:"corner",   name:"Corner Work",      cost:1, effect:"def",        val:22,  icon:"🩹", desc:"+22 DEF this round"},
+  {id:"ice",      name:"Ice Pack",         cost:1, effect:"hp",         val:30,  icon:"🧊", desc:"+30 HP"},
+  {id:"salts",    name:"Smelling Salts",   cost:1, effect:"cleanse",    val:0,   icon:"💊", desc:"Remove all debuffs"},
+  {id:"tape",     name:"Tape & Treat",     cost:1, effect:"cleanse_hp", val:22,  icon:"🩺", desc:"Clear debuffs +22 HP"},
+  {id:"steak",    name:"Protein Steak",    cost:2, effect:"hp",         val:58,  icon:"🥩", desc:"+58 HP"},
+  {id:"second",   name:"Second Wind",      cost:3, effect:"hp_pct",     val:.5,  icon:"🌬️", desc:"Restore 50% lost HP"},
+  {id:"focus",    name:"Deep Focus",       cost:0, effect:"def",        val:12,  icon:"🧘", desc:"+12 DEF"},
+  {id:"towel",    name:"Cold Towel",       cost:1, effect:"hp",         val:20,  icon:"🏳️", desc:"+20 HP & clear stun",special:"cleanse_stun"},
+  {id:"bandage",  name:"Hand Bandage",     cost:2, effect:"def",        val:35,  icon:"🤜", desc:"+35 DEF, knuckles armored"},
+  {id:"breathe",  name:"Controlled Breath",cost:1, effect:"def",        val:18,  icon:"💨", desc:"+18 DEF"},
+  // ── Offense ──
+  {id:"rush",     name:"Adrenaline",       cost:2, effect:"atk_risk",   val:34,  icon:"💉", desc:"+34 ATK, -18 HP", cost_hp:18},
+  {id:"warcry",   name:"War Cry",          cost:2, effect:"power_up",   val:0,   icon:"🔥", desc:"Next hit: 1.8× DMG", mult:1.8},
+  {id:"haymaker", name:"Haymaker Drill",   cost:3, effect:"atk",        val:46,  icon:"💢", desc:"+46 ATK"},
+  {id:"rage",     name:"Fighting Spirit",  cost:2, effect:"atk",        val:28,  icon:"😤", desc:"+28 ATK"},
+  {id:"killer",   name:"Killer Instinct",  cost:3, effect:"power_up",   val:0,   icon:"⚔️", desc:"Next hit: 2.0× DMG", mult:2.0},
+  {id:"feint",    name:"Feint Master",     cost:1, effect:"atk",        val:16,  icon:"🎭", desc:"+16 ATK this round"},
+  // ── Utility ──
+  {id:"plan",     name:"Game Plan",        cost:1, effect:"tc",         val:3,   icon:"📋", desc:"+3 TC"},
+  {id:"trainer",  name:"Trainer's Call",   cost:0, effect:"multi",      val:0,   icon:"📣", desc:"+6 ATK, +8 DEF", extra:{atk:6,def:8}},
+  {id:"kamogawa", name:"Kamogawa Fist",    cost:2, effect:"multi",      val:0,   icon:"👴", desc:"+18 ATK, +18 DEF", extra:{atk:18,def:18}},
+  {id:"rooting",  name:"Crowd Roar",       cost:0, effect:"tc",         val:2,   icon:"📣", desc:"+2 TC"},
+  {id:"tape2",    name:"Full Tape Job",    cost:2, effect:"multi",      val:0,   icon:"🩻", desc:"+12 DEF, +20 HP", extra:{def:12,hp:20}},
+  {id:"strategy", name:"Ring Strategy",    cost:1, effect:"def",        val:14,  icon:"♟️", desc:"+14 DEF"},
 ];
 
 /* ══════════════════════════════════════════
@@ -857,7 +899,13 @@ function applyBuff(f,s,opSide){
   else if(f.effect==="atk_risk"){a.atk+=f.val;a.hp=Math.max(1,a.hp-(f.cost_hp||15))}
   else if(f.effect==="hp_pct") {a.hp=Math.min(a.maxHp,a.hp+Math.floor((a.maxHp-a.hp)*(f.val||.5)))}
   else if(f.effect==="power_up"){a.statuses.power_up={mult:f.mult||1.8}}
-  else if(f.effect==="multi")  {a.atk+=(f.extra?.atk||0);a.def+=(f.extra?.def||0)}
+  else if(f.effect==="multi")  {
+    a.atk+=(f.extra?.atk||0);
+    a.def+=(f.extra?.def||0);
+    if(f.extra?.hp)a.hp=Math.min(a.maxHp,a.hp+(f.extra.hp));
+  }
+  // handle special side-effects
+  if(f.special==="cleanse_stun"){delete a.statuses.stun}
 }
 
 /* Core attack resolver — now supports special moves */
@@ -1622,4 +1670,5 @@ function refreshTurnUI(){
   </script>
 </body>
 </html>
+
 
