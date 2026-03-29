@@ -129,8 +129,8 @@
   }
   /* 7. Fist idle float after landing */
   @keyframes fistFloat{
-    0%,100%{transform:translateY(0) rotate(0deg)}
-    50%{transform:translateY(-6px) rotate(1.5deg)}
+    0%,100%{transform:translateY(0) rotate(0deg);opacity:.72}
+    50%{transform:translateY(-6px) rotate(1.5deg);opacity:.78}
   }
   /* 8. Motion blur trails */
   @keyframes trailFade{
@@ -206,7 +206,7 @@
      MENU — Cinematic Punch Intro
   ═══════════════════════════════════════ */
   .menu{
-    align-items:center;justify-content:center;text-align:center;
+    align-items:center;justify-content:flex-end;text-align:center;
     gap:0;padding:0;
     background:var(--paper);
     overflow:hidden;position:relative;
@@ -239,8 +239,15 @@
 
   /* ── THE PUNCH STAGE ── */
   .punch-stage{
-    position:absolute;inset:0;pointer-events:none;z-index:5;
+    position:absolute;inset:0;pointer-events:none;z-index:2;
     overflow:hidden;
+  }
+  /* Screen flash pulled out to its own layer so it appears above everything */
+  .menu-flash{
+    position:absolute;inset:0;z-index:15;
+    background:rgba(255,250,240,.95);
+    pointer-events:none;opacity:0;
+    animation:impactFlash .55s ease .6s both;
   }
 
   /* Speed-line streaks — 3 of them, staggered */
@@ -254,19 +261,26 @@
   .speed-line.sl2{width:35%;top:30%;height:50%;left:0;transform-origin:left center;animation:speedLineSweep .55s cubic-bezier(.4,0,.2,1) .14s both}
   .speed-line.sl3{width:22%;top:62%;height:38%;left:0;transform-origin:left center;animation:speedLineSweep .55s cubic-bezier(.4,0,.2,1) .08s both}
 
-  /* Fist SVG */
+  /* Fist / Glove emoji */
   .fist-wrap{
     position:absolute;
-    top:50%;left:50%;
+    top:42%;left:50%;
     transform:translate(-50%,-50%);
-    width:min(260px,68vw);
-    height:min(220px,58vw);
+    width:min(240px,55vw);
+    height:min(200px,46vw);
     animation:fistEntry .7s cubic-bezier(.15,0,.2,1.3) .05s both,
               fistFloat 2.8s ease-in-out 1.2s infinite;
     z-index:6;
-    filter:drop-shadow(4px 6px 0 rgba(24,14,4,.35));
+    display:flex;align-items:center;justify-content:center;
   }
-  .fist-svg{width:100%;height:100%;display:block}
+  .fist-emoji{
+    font-size:min(160px,38vw);
+    line-height:1;
+    display:block;
+    filter:drop-shadow(5px 7px 0 rgba(24,14,4,.45)) drop-shadow(-1px -1px 0 rgba(24,14,4,.15));
+    transform:scaleX(-1) rotate(-90deg);
+    user-select:none;
+  }
 
   /* Shockwave ring at impact */
   .shockwave{
@@ -312,12 +326,14 @@
 
   /* ── MENU CONTENT (fades in after punch) ── */
   .menu-content{
-    position:relative;z-index:4;
+    position:relative;z-index:10;
     display:flex;flex-direction:column;
     align-items:center;
-    gap:14px;
-    padding:28px 24px;
+    gap:clamp(6px,1.6vh,14px);
+    padding:clamp(14px,3.5vw,28px) clamp(12px,4vw,24px);
     width:100%;
+    margin-top:auto;
+    padding-bottom:clamp(18px,5vh,40px);
     animation:contentSlam .5s cubic-bezier(.2,0,.4,1.2) .95s both;
   }
 
@@ -328,8 +344,8 @@
     padding-right:.34em; /* compensate letter-spacing */
   }
   .t-main{
-    font-family:var(--fd);font-size:clamp(5.5rem,22vw,9.5rem);
-    line-height:.8;color:var(--ink);letter-spacing:.01em;
+    font-family:var(--fd);font-size:clamp(4.2rem,18vw,9.5rem);
+    line-height:.82;color:var(--ink);letter-spacing:.01em;
     text-shadow:5px 5px 0 var(--red),7px 7px 0 rgba(24,14,4,.2);
   }
 
@@ -603,6 +619,61 @@
     .buff-nm{font-size:.5rem}
     .buff-tc{font-size:.46rem}
   }
+
+  /* ── FULL-SCREEN RESPONSIVE ── */
+
+  /* Portrait phones — keep fist in upper 40%, content below */
+  @media(max-width:480px){
+    .fist-wrap{
+      width:min(200px,62vw);
+      height:min(168px,52vw);
+      top:38%;
+    }
+    .t-main{font-size:clamp(3.8rem,17vw,5.5rem)}
+    .t-stripe-text{font-size:clamp(1.1rem,5vw,1.8rem)}
+    .menu-content{padding-bottom:clamp(14px,4vh,28px)}
+  }
+
+  /* Landscape phones — fist drifts left, content on right */
+  @media(max-height:500px) and (orientation:landscape){
+    .menu{flex-direction:row;justify-content:flex-end;align-items:stretch}
+    .fist-wrap{
+      top:50%;left:28%;
+      width:min(160px,30vh);
+      height:min(134px,25vh);
+    }
+    .menu-content{
+      width:58%;
+      margin-top:0;
+      justify-content:center;
+      padding:clamp(6px,2vh,16px) clamp(10px,3vw,24px);
+      padding-bottom:clamp(6px,2vh,16px);
+      animation:contentSlam .5s cubic-bezier(.2,0,.4,1.2) .1s both;
+    }
+    .t-main{font-size:clamp(2.6rem,9vh,5rem)}
+    .t-stripe-text{font-size:clamp(.9rem,3.5vh,1.5rem);padding:3px 18px 3px}
+    .t-eyebrow{font-size:.65rem}
+    .ink-divider{width:min(180px,40vw)}
+    .menu-tagline{font-size:.65rem}
+  }
+
+  /* Tablets and larger — give fist more room */
+  @media(min-width:768px){
+    .fist-wrap{
+      width:min(310px,36vw);
+      height:min(260px,30vw);
+      top:40%;
+    }
+    .t-main{font-size:clamp(6rem,14vw,10rem)}
+  }
+
+  /* Large screens / desktop */
+  @media(min-width:1200px){
+    .fist-wrap{
+      width:320px;height:272px;
+    }
+    .menu-content{padding-bottom:60px}
+  }
   </style>
 </head>
 <body>
@@ -831,46 +902,6 @@ function render(){
 
 /* ── THE ICONIC PUNCH MENU ── */
 function renderMenu(){
-  /* Inline SVG boxing glove — drawn in manga ink style */
-  const fistSVG=`<svg class="fist-svg" viewBox="0 0 260 220" xmlns="http://www.w3.org/2000/svg">
-    <!-- Arm/sleeve -->
-    <rect x="0" y="138" width="148" height="62" rx="8" fill="#c00f1e" stroke="#180e04" stroke-width="3.5"/>
-    <!-- Sleeve highlight stripe -->
-    <rect x="0" y="148" width="148" height="14" rx="0" fill="#d81422" opacity=".6"/>
-    <!-- Wrist wrap / tape edge -->
-    <rect x="118" y="135" width="14" height="68" rx="3" fill="#e0d4b0" stroke="#180e04" stroke-width="2.5"/>
-    <!-- White tape cross -->
-    <line x1="118" y1="152" x2="132" y2="152" stroke="#180e04" stroke-width="1.5"/>
-    <line x1="118" y1="162" x2="132" y2="162" stroke="#180e04" stroke-width="1.5"/>
-    <line x1="118" y1="172" x2="132" y2="172" stroke="#180e04" stroke-width="1.5"/>
-    <!-- Main glove body -->
-    <path d="M128 16 C128 8 136 4 148 4 C180 4 248 20 256 68 C262 100 256 136 248 152 C240 168 224 176 200 178 C180 180 136 180 128 178 L128 16Z"
-          fill="#c00f1e" stroke="#180e04" stroke-width="4" stroke-linejoin="round"/>
-    <!-- Glove highlight — top curved shine -->
-    <path d="M148 10 C168 8 220 18 240 54 C246 66 248 80 246 96"
-          fill="none" stroke="#e83848" stroke-width="4" stroke-linecap="round" opacity=".55"/>
-    <path d="M152 14 C172 12 218 24 236 58 C240 68 242 80 240 94"
-          fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2.5" stroke-linecap="round"/>
-    <!-- Finger knuckle ridges -->
-    <path d="M190 12 C196 10 210 14 218 26" fill="none" stroke="#180e04" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
-    <path d="M210 16 C218 14 232 20 238 34" fill="none" stroke="#180e04" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
-    <path d="M228 28 C234 26 244 36 246 50" fill="none" stroke="#180e04" stroke-width="2" stroke-linecap="round" opacity=".6"/>
-    <!-- Front face of glove knuckles -->
-    <ellipse cx="244" cy="80" rx="14" ry="18" fill="#d81422" stroke="#180e04" stroke-width="3"/>
-    <ellipse cx="244" cy="80" rx="8" ry="10" fill="#e83848" opacity=".4"/>
-    <!-- Glove seam line -->
-    <path d="M132 178 C132 178 146 182 164 182 C186 182 218 178 236 168 C248 160 254 148 256 132"
-          fill="none" stroke="#180e04" stroke-width="2" stroke-dasharray="6 4" opacity=".5"/>
-    <!-- Thumb -->
-    <path d="M138 62 C130 50 126 36 132 24 C136 16 146 14 154 20 C160 26 160 40 156 52 L148 66Z"
-          fill="#c00f1e" stroke="#180e04" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M140 28 C144 22 150 20 154 24" fill="none" stroke="#e83848" stroke-width="2" stroke-linecap="round" opacity=".5"/>
-    <!-- "RC" brand on glove -->
-    <text x="164" y="108" font-family="Teko,sans-serif" font-size="22" font-weight="700" fill="#180e04" opacity=".35" letter-spacing="2">RC</text>
-    <!-- Shadow under glove -->
-    <ellipse cx="190" cy="188" rx="68" ry="10" fill="rgba(24,14,4,.18)"/>
-  </svg>`;
-
   /* Star-burst SVG for impact */
   const starSVG=`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <polygon points="50,2 56,38 90,20 68,48 98,56 62,62 76,96 50,72 24,96 38,62 2,56 32,48 10,20 44,38"
@@ -885,19 +916,21 @@ function renderMenu(){
     <div class="menu-bg-burst"></div>
     <div class="menu-corners"></div>
 
-    <!-- PUNCH ANIMATION STAGE -->
+    <!-- PUNCH ANIMATION STAGE (z-index:2, behind content) -->
     <div class="punch-stage">
       <div class="speed-line sl1"></div>
       <div class="speed-line sl2"></div>
       <div class="speed-line sl3"></div>
-      <div class="fist-wrap">${fistSVG}</div>
+      <div class="fist-wrap"><span class="fist-emoji">🥊</span></div>
       <div class="shockwave"></div>
       <div class="shockwave2"></div>
       <div class="impact-star">${starSVG}</div>
-      <div class="impact-flash"></div>
     </div>
 
-    <!-- TITLE CONTENT (appears after punch) -->
+    <!-- SCREEN FLASH — own layer (z-index:15) so it covers content on impact -->
+    <div class="menu-flash"></div>
+
+    <!-- TITLE CONTENT (appears after punch, z-index:10) -->
     <div class="menu-content">
       <div class="t-eyebrow">Hajime no</div>
       <div class="t-main">IPPO</div>
@@ -1334,4 +1367,5 @@ load();render();
 </script>
 </body>
 </html>
+
 
