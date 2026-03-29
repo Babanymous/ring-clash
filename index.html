@@ -6,1199 +6,602 @@
   <title>Hajime no Ippo · Ring Clash</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <style>
-  /* ═══════════════════════════════════════════
-     RING CLASH v3 — VINTAGE SHONEN ARENA
-     Aesthetic: Aged manga pages meet premium TCG.
-     Paper + ink + crimson + fighter's gold.
-  ═══════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════
+     RING CLASH v4 — CINEMATIC SHONEN PREMIUM
+     Paper + Crimson + Fighter Gold. Now with punch.
+  ═══════════════════════════════════════════════ */
   :root {
-    /* Paper palette */
-    --paper:   #f2ead8;
-    --paper2:  #e8dfc8;
-    --paper3:  #ddd3ba;
-    --ink:     #1a1208;
-    --ink2:    #2e2518;
-    --ink3:    #443a28;
-    --ink4:    #5c5040;
-
-    /* Crimson */
-    --red:     #bf1020;
-    --red2:    #d81428;
-    --red3:    #f01c34;
-    --red-dk:  #780010;
-
-    /* Fighter's gold */
-    --gold:    #b8820a;
-    --gold2:   #d49a14;
-    --gold3:   #f0b820;
-    --gold4:   #ffd84a;
-
-    /* Status colors */
-    --green:   #1a7a38;
-    --green2:  #22a84c;
-    --hp-mid:  #c87c10;
-    --hp-low:  #c01828;
-
-    /* Type accent tokens */
-    --sa: var(--ink3);
-    --sa2: var(--ink);
-    --sa3: rgba(26,18,8,.12);
-    --sag: 26,18,8;
-
+    --paper:    #f0e8d0;
+    --paper2:   #e6dcC4;
+    --paper3:   #d8ccb0;
+    --paper4:   #c8bc9c;
+    --ink:      #180e04;
+    --ink2:     #2a1e0c;
+    --ink3:     #3e3020;
+    --ink4:     #564838;
+    --red:      #c00f1e;
+    --red2:     #d81422;
+    --red3:     #f01830;
+    --red-dk:   #700008;
+    --red-glow: rgba(192,15,30,.4);
+    --gold:     #b07808;
+    --gold2:    #cc9210;
+    --gold3:    #ecb018;
+    --gold4:    #ffd040;
+    --green:    #186030;
+    --green2:   #20904c;
     --fd: "Teko", sans-serif;
     --fb: "Barlow Condensed", sans-serif;
     --fp: "Barlow", sans-serif;
   }
+  .sa-balanced{--sa:#1848c0;--sa2:#2060e0;--sa3:rgba(24,72,192,.18);--sag:24,72,192}
+  .sa-slugger {--sa:#c02808;--sa2:#e03818;--sa3:rgba(192,40,8,.2);  --sag:192,40,8}
+  .sa-counter {--sa:#6818b0;--sa2:#8828d0;--sa3:rgba(104,24,176,.18);--sag:104,24,176}
+  .sa-tank    {--sa:#106030;--sa2:#189040;--sa3:rgba(16,96,48,.18);  --sag:16,96,48}
+  .sa-speed   {--sa:#a87000;--sa2:#cc9010;--sa3:rgba(168,112,0,.2);  --sag:168,112,0}
+  .sa-buff    {--sa:#283888;--sa2:#3850a8;--sa3:rgba(40,56,136,.18); --sag:40,56,136}
 
-  /* Per-style color accents */
-  .sa-balanced { --sa:#1a4ec8; --sa2:#2260e8; --sa3:rgba(26,78,200,.18); --sag:26,78,200 }
-  .sa-slugger  { --sa:#c83010; --sa2:#e84020; --sa3:rgba(200,48,16,.2);  --sag:200,48,16 }
-  .sa-counter  { --sa:#7020b8; --sa2:#9030d8; --sa3:rgba(112,32,184,.18);--sag:112,32,184}
-  .sa-tank     { --sa:#126a30; --sa2:#189840; --sa3:rgba(18,106,48,.18);  --sag:18,106,48 }
-  .sa-speed    { --sa:#b87c00; --sa2:#d49a10; --sa3:rgba(184,124,0,.2);  --sag:184,124,0 }
-  .sa-buff     { --sa:#304898; --sa2:#4060b8; --sa3:rgba(48,72,152,.18);  --sag:48,72,152 }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);-webkit-tap-highlight-color:transparent}
+  body{font-family:var(--fb);font-weight:500}
+  #app{width:100vw;height:100dvh;position:relative}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
-  html, body {
-    width: 100%; height: 100%; overflow: hidden;
-    background: var(--paper);
-    color: var(--ink);
-    -webkit-tap-highlight-color: transparent;
-  }
-  body { font-family: var(--fb); font-weight: 500 }
-  #app { width: 100vw; height: 100dvh; position: relative }
-
-  /* ─────────────────────────────────────
-     GLOBAL PAPER TEXTURE OVERLAY
-  ───────────────────────────────────── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-    opacity: .028;
-    background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
+  /* Paper grain overlay — always on top */
+  body::after{
+    content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+    opacity:.032;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:192px 192px;
   }
 
-  /* ─────────────────────────────────────
-     KEYFRAMES
-  ───────────────────────────────────── */
-  .view { position: absolute; inset: 0; display: flex; flex-direction: column; animation: vIn .25s cubic-bezier(.2,0,.5,1) both }
-  @keyframes vIn         { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
-  @keyframes hpPulse     { 0%,100%{opacity:1} 50%{opacity:.45} }
-  @keyframes bandShimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
-  @keyframes selPop      { 0%{transform:scale(0)} 70%{transform:scale(1.25)} 100%{transform:scale(1)} }
-  @keyframes pipPop      { 0%,100%{transform:scale(1)} 50%{transform:scale(1.6)} }
-  @keyframes stunShake   { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-2px)} 80%{transform:translateX(2px)} }
-  @keyframes pulseGlow   { 0%,100%{opacity:.75} 50%{opacity:1} }
-  @keyframes shimmerPass { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
-  @keyframes logSlide    { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes ctrlIn      { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes newBoxerIn  { 0%{opacity:0;transform:scale(.86)translateY(16px)} 55%{opacity:1;transform:scale(1.04)translateY(-3px)} 100%{opacity:1;transform:scale(1)translateY(0)} }
-  @keyframes cardIdleP   { 0%,100%{box-shadow:3px 5px 0 rgba(26,18,8,.55),0 0 0 1.5px rgba(var(--sag),.5)} 50%{box-shadow:4px 7px 0 rgba(26,18,8,.7),0 0 0 2px rgba(var(--sag),.85),0 0 18px rgba(var(--sag),.12)} }
-  @keyframes titleSlam   { 0%{opacity:0;transform:scaleY(1.4)translateY(-20px)} 55%{opacity:1;transform:scaleY(.94)translateY(4px)} 80%{transform:scaleY(1.02)} 100%{transform:scaleY(1)translateY(0)} }
-  @keyframes subtitleIn  { 0%{opacity:0;letter-spacing:.5em} 100%{opacity:1;letter-spacing:.22em} }
-  @keyframes accentIn    { from{opacity:0;transform:scaleX(0)} to{opacity:1;transform:scaleX(1)} }
-  @keyframes stampIn     { 0%{opacity:0;transform:scale(1.6) rotate(-8deg)} 50%{opacity:1;transform:scale(.95) rotate(1deg)} 100%{transform:scale(1) rotate(0deg)} }
-  @keyframes actionLinesSweep { from{opacity:0;transform:translateX(-60%) skewX(-20deg)} to{opacity:.18;transform:translateX(120%) skewX(-20deg)} }
+  /* ────────── KEYFRAMES ────────── */
+  .view{position:absolute;inset:0;display:flex;flex-direction:column;animation:vIn .22s cubic-bezier(.2,0,.5,1) both}
+  @keyframes vIn        {from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes hpPulse    {0%,100%{opacity:1}50%{opacity:.42}}
+  @keyframes bandShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+  @keyframes selPop     {0%{transform:scale(0)}65%{transform:scale(1.3)}100%{transform:scale(1)}}
+  @keyframes pipPop     {0%,100%{transform:scale(1)}50%{transform:scale(1.65)}}
+  @keyframes stunShake  {0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+  @keyframes pulseGlow  {0%,100%{opacity:.72}50%{opacity:1}}
+  @keyframes shimmerPass{0%{transform:translateX(-100%)}100%{transform:translateX(210%)}}
+  @keyframes logSlide   {from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes ctrlIn     {from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes newBoxerIn {0%{opacity:0;transform:scale(.85)translateY(14px)}52%{opacity:1;transform:scale(1.04)translateY(-3px)}100%{opacity:1;transform:scale(1)translateY(0)}}
+  @keyframes cardIdleP  {0%,100%{box-shadow:3px 5px 0 rgba(24,14,4,.52),0 0 0 1.5px rgba(var(--sag),.48)}50%{box-shadow:4px 7px 0 rgba(24,14,4,.68),0 0 0 2px rgba(var(--sag),.8),0 0 16px rgba(var(--sag),.1)}}
+  @keyframes fcPunchUp  {0%{transform:translateY(0)scale(1)}22%{transform:translateY(-14px)scale(1.07)}65%{transform:translateY(3px)scale(.96)}100%{transform:translateY(0)scale(1)}}
+  @keyframes fcPunchDn  {0%{transform:translateY(0)scale(1)}22%{transform:translateY(14px)scale(1.07)}65%{transform:translateY(-3px)scale(.96)}100%{transform:translateY(0)scale(1)}}
+  @keyframes fcHit      {0%{transform:translateX(0)}10%{transform:translateX(-13px)}25%{transform:translateX(13px)}42%{transform:translateX(-8px)}58%{transform:translateX(8px)}74%{transform:translateX(-3px)}88%{transform:translateX(3px)}100%{transform:translateX(0)}}
+  @keyframes hitFlash   {0%,100%{opacity:0}30%{opacity:.62}}
+  @keyframes hitGold    {0%,100%{opacity:0}28%{opacity:.78}}
+  @keyframes healFlash  {0%,100%{opacity:0}28%{opacity:.48}}
+  @keyframes koFlash    {0%{opacity:0}12%{opacity:1}55%{opacity:.8}100%{opacity:0}}
+  @keyframes sigRipple  {0%{transform:scale(.5);opacity:.95}100%{transform:scale(2.8);opacity:0}}
+  @keyframes dmgFloat   {0%{opacity:1;transform:translateX(-50%)translateY(0)scale(1)}15%{opacity:1;transform:translateX(-50%)translateY(-20px)scale(1.18)}78%{opacity:.28;transform:translateX(-50%)translateY(-56px)scale(.82)}100%{opacity:0;transform:translateX(-50%)translateY(-74px)scale(.6)}}
+  @keyframes sigBurst   {0%{transform:scale(1)}18%{transform:scale(1.1)}48%{transform:scale(.96)}74%{transform:scale(1.03)}100%{transform:scale(1)}}
 
-  /* Battle card animations */
-  @keyframes fcPunchUp   { 0%{transform:translateY(0)scale(1)} 22%{transform:translateY(-14px)scale(1.07)} 65%{transform:translateY(3px)scale(.96)} 100%{transform:translateY(0)scale(1)} }
-  @keyframes fcPunchDn   { 0%{transform:translateY(0)scale(1)} 22%{transform:translateY(14px)scale(1.07)} 65%{transform:translateY(-3px)scale(.96)} 100%{transform:translateY(0)scale(1)} }
-  @keyframes fcHit       { 0%{transform:translateX(0)} 10%{transform:translateX(-13px)} 25%{transform:translateX(13px)} 42%{transform:translateX(-8px)} 58%{transform:translateX(8px)} 74%{transform:translateX(-3px)} 88%{transform:translateX(3px)} 100%{transform:translateX(0)} }
-  @keyframes hitFlash    { 0%,100%{opacity:0} 30%{opacity:.65} }
-  @keyframes hitGold     { 0%,100%{opacity:0} 28%{opacity:.8} }
-  @keyframes healFlash   { 0%,100%{opacity:0} 28%{opacity:.5} }
-  @keyframes koFlash     { 0%{opacity:0} 12%{opacity:1} 55%{opacity:.8} 100%{opacity:0} }
-  @keyframes sigRipple   { 0%{transform:scale(.5);opacity:.95} 100%{transform:scale(2.8);opacity:0} }
-  @keyframes dmgFloat    { 0%{opacity:1;transform:translateX(-50%)translateY(0)scale(1)} 15%{opacity:1;transform:translateX(-50%)translateY(-20px)scale(1.18)} 78%{opacity:.3;transform:translateX(-50%)translateY(-58px)scale(.82)} 100%{opacity:0;transform:translateX(-50%)translateY(-76px)scale(.6)} }
-  @keyframes sigBurst    { 0%{transform:scale(1)} 18%{transform:scale(1.1)} 48%{transform:scale(.96)} 74%{transform:scale(1.03)} 100%{transform:scale(1)} }
-
-  .fight-card.punching-up { animation: fcPunchUp .4s cubic-bezier(.3,0,.7,1) both !important }
-  .fight-card.punching-dn { animation: fcPunchDn .4s cubic-bezier(.3,0,.7,1) both !important }
-  .fight-card.taking-hit  { animation: fcHit .38s cubic-bezier(.25,.8,.25,1) both !important }
-  .fight-card.sig-burst   { animation: sigBurst .52s cubic-bezier(.3,0,.7,1) both !important }
-
-  .hit-ov { position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:10 }
-  .hit-ov.red  { background:rgba(220,20,40,.38); animation:hitFlash .42s ease both }
-  .hit-ov.gold { background:rgba(240,184,20,.45); animation:hitGold .52s ease both }
-  .hit-ov.heal { background:rgba(20,180,70,.28); animation:healFlash .42s ease both }
-  .hit-ov.ko   { background:rgba(255,255,255,.92); animation:koFlash .6s ease both }
-  .sig-ripple  { position:absolute; border-radius:50%; border:2.5px solid var(--gold3); pointer-events:none; z-index:11; animation:sigRipple .7s ease both; width:100%; height:100%; top:0; left:0 }
-
-  /* Damage floats — manga style with ink shadows */
-  .dmg-float { position:absolute; z-index:20; pointer-events:none; font-family:var(--fd); font-weight:700; animation:dmgFloat 1.1s cubic-bezier(.25,.8,.25,1) both; transform:translateX(-50%); letter-spacing:.02em }
-  .dmg-float.crit  { font-size:2.6rem; color:#e81030; text-shadow: 3px 3px 0 #fff, -1px -1px 0 #fff, 5px 5px 0 rgba(26,18,8,.6) }
-  .dmg-float.sig   { font-size:2.3rem; color:var(--gold3); text-shadow: 3px 3px 0 var(--ink), -1px -1px 0 var(--ink), 5px 5px 0 rgba(26,18,8,.5) }
-  .dmg-float.norm  { font-size:1.8rem; color:#c81020; text-shadow: 2px 2px 0 var(--paper), -1px -1px 0 var(--paper), 4px 4px 0 rgba(26,18,8,.5) }
-  .dmg-float.heal  { font-size:1.6rem; color:#188a3c; text-shadow: 2px 2px 0 var(--paper), -1px -1px 0 var(--paper) }
-  .dmg-float.bleed { font-size:1.3rem; color:#a01018; text-shadow: 2px 2px 0 var(--paper) }
-  .log-txt.slide { animation: logSlide .26s ease both }
-  .ctrl.ctrl-in  { animation: ctrlIn .3s ease both }
-
-  /* ─────────────────────────────────────
-     TOAST — ink-stamped
-  ───────────────────────────────────── */
-  .toast-wrap { position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:9998; pointer-events:none }
-  .toast {
-    background: var(--ink);
-    color: var(--paper);
-    border-radius: 2px;
-    padding: 9px 20px;
-    font-family: var(--fd);
-    font-size: 1rem;
-    letter-spacing: .1em;
-    white-space: nowrap;
-    box-shadow: 3px 3px 0 rgba(26,18,8,.5);
-    animation: vIn .18s ease both;
+  /* ── MENU-SPECIFIC ANIMATIONS ── */
+  /* 1. Fist rockets in from left */
+  @keyframes fistEntry{
+    0%  {transform:translateX(-130%) rotate(-12deg) scaleX(1.4);opacity:0;filter:blur(4px)}
+    18% {opacity:1}
+    55% {transform:translateX(-5%) rotate(-4deg) scaleX(1.02);filter:blur(0)}
+    68% {transform:translateX(0%) rotate(0deg) scaleX(1)}
+    80% {transform:translateX(2%) rotate(1deg) scaleX(.98)}
+    100%{transform:translateX(0%) rotate(0deg) scaleX(1)}
   }
-
-  /* ─────────────────────────────────────
-     BUTTONS — bold manga panel borders
-  ───────────────────────────────────── */
-  .btn {
-    background: var(--paper2);
-    border: 2.5px solid var(--ink);
-    color: var(--ink);
-    border-radius: 3px;
-    padding: 8px 14px;
-    font-family: var(--fd);
-    font-weight: 600;
-    font-size: .95rem;
-    letter-spacing: .1em;
-    cursor: pointer;
-    transition: transform .1s, box-shadow .1s, background .1s;
-    touch-action: manipulation;
-    min-height: 42px;
-    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-    user-select: none; -webkit-user-select: none;
-    position: relative; overflow: hidden;
-    box-shadow: 3px 3px 0 var(--ink);
+  /* 2. Impact shockwave ring */
+  @keyframes shockwave{
+    0%  {transform:translate(-50%,-50%) scale(0);opacity:.9;border-width:6px}
+    60% {opacity:.35;border-width:2px}
+    100%{transform:translate(-50%,-50%) scale(3.5);opacity:0;border-width:1px}
   }
-  .btn::after {
-    content: '';
-    position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
-    pointer-events: none;
+  /* 3. White screen flash on impact */
+  @keyframes impactFlash{
+    0%  {opacity:0}
+    6%  {opacity:.92}
+    35% {opacity:0}
+    100%{opacity:0}
   }
-  .btn:hover { background: var(--paper3); transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink) }
-  .btn:hover::after { animation: shimmerPass .4s ease both }
-  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink) }
-  .btn:disabled { opacity: .3; cursor: not-allowed; transform: none; box-shadow: 2px 2px 0 var(--ink3) }
-
-  /* Primary — crimson fill */
-  .btn-p {
-    background: var(--red);
-    border-color: var(--red-dk);
-    color: var(--paper);
-    box-shadow: 3px 3px 0 var(--red-dk);
+  /* 4. Speed lines sweep */
+  @keyframes speedLineSweep{
+    0%  {transform:translateX(-120%) skewX(-18deg);opacity:0}
+    10% {opacity:.55}
+    70% {opacity:.18}
+    100%{transform:translateX(110%) skewX(-18deg);opacity:0}
   }
-  .btn-p:not(:disabled):hover { background: var(--red2); transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--red-dk) }
-  .btn-p:not(:disabled):active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--red-dk) }
-
-  /* Signature — gold fill */
-  .btn-sig {
-    background: var(--gold);
-    border-color: var(--ink);
-    color: var(--ink);
-    box-shadow: 3px 3px 0 var(--ink);
+  /* 5. Title content slams in after impact */
+  @keyframes contentSlam{
+    0%  {opacity:0;transform:scale(1.12)translateY(-8px)}
+    25% {opacity:1}
+    65% {transform:scale(.98)translateY(2px)}
+    82% {transform:scale(1.01)}
+    100%{transform:scale(1)translateY(0)}
   }
-  .btn-sig.live {
-    background: var(--gold3);
-    animation: pulseGlow 1s ease-in-out infinite;
-    box-shadow: 3px 3px 0 var(--ink), 0 0 16px rgba(240,184,32,.5);
+  /* 6. Red stripe slides in */
+  @keyframes stripeSlide{
+    0%  {transform:scaleX(0) skewX(-6deg);transform-origin:left}
+    100%{transform:scaleX(1) skewX(-6deg);transform-origin:left}
   }
-  .btn-sig:not(:disabled):hover { background: var(--gold2); transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink) }
-
-  /* ─────────────────────────────────────
-     MENU — Vintage Shonen Magazine Cover
-  ───────────────────────────────────── */
-  .menu {
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 18px;
-    padding: 32px 24px;
-    background: var(--paper);
-    overflow: hidden;
-    position: relative;
+  /* 7. Fist idle float after landing */
+  @keyframes fistFloat{
+    0%,100%{transform:translateY(0) rotate(0deg)}
+    50%{transform:translateY(-6px) rotate(1.5deg)}
+  }
+  /* 8. Motion blur trails */
+  @keyframes trailFade{
+    0%  {opacity:.6;transform:translateX(-130%) scaleX(1.4)}
+    60% {opacity:0}
+    100%{opacity:0;transform:translateX(-20%)}
+  }
+  /* 9. Punch impact star burst */
+  @keyframes starBurst{
+    0%  {transform:translate(-50%,-50%) scale(0) rotate(0deg);opacity:1}
+    50% {opacity:.8}
+    100%{transform:translate(-50%,-50%) scale(1) rotate(15deg);opacity:0}
+  }
+  /* 10. Impact crack lines */
+  @keyframes crackIn{
+    0%  {stroke-dashoffset:200;opacity:0}
+    15% {opacity:1}
+    60% {opacity:.6}
+    100%{stroke-dashoffset:0;opacity:0}
   }
 
-  /* Repeating diagonal speed-line background */
-  .menu::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: repeating-linear-gradient(
-      -55deg,
-      transparent 0px, transparent 28px,
-      rgba(26,18,8,.028) 28px, rgba(26,18,8,.028) 29px
-    );
-  }
+  .fight-card.punching-up{animation:fcPunchUp .4s cubic-bezier(.3,0,.7,1) both!important}
+  .fight-card.punching-dn{animation:fcPunchDn .4s cubic-bezier(.3,0,.7,1) both!important}
+  .fight-card.taking-hit {animation:fcHit .38s cubic-bezier(.25,.8,.25,1) both!important}
+  .fight-card.sig-burst  {animation:sigBurst .52s cubic-bezier(.3,0,.7,1) both!important}
 
-  /* Bottom screentone half-circle (manga action panel) */
-  .menu::after {
-    content: '';
-    position: absolute;
-    bottom: -40%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 180%;
-    height: 80%;
-    border-radius: 50% 50% 0 0;
-    background: radial-gradient(ellipse at center bottom, rgba(191,16,32,.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
+  .hit-ov{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:10}
+  .hit-ov.red {background:rgba(210,18,36,.36);animation:hitFlash .42s ease both}
+  .hit-ov.gold{background:rgba(236,180,18,.44);animation:hitGold .52s ease both}
+  .hit-ov.heal{background:rgba(18,176,68,.26);animation:healFlash .42s ease both}
+  .hit-ov.ko  {background:rgba(255,255,255,.9);animation:koFlash .6s ease both}
+  .sig-ripple{position:absolute;border-radius:50%;border:2.5px solid var(--gold3);pointer-events:none;z-index:11;animation:sigRipple .7s ease both;width:100%;height:100%;top:0;left:0}
 
-  .menu > * { position: relative; z-index: 1 }
+  /* Damage floats */
+  .dmg-float{position:absolute;z-index:20;pointer-events:none;font-family:var(--fd);font-weight:700;animation:dmgFloat 1.1s cubic-bezier(.25,.8,.25,1) both;transform:translateX(-50%);letter-spacing:.02em}
+  .dmg-float.crit {font-size:2.6rem;color:#e00828;text-shadow:3px 3px 0 #fff,-1px -1px 0 #fff,5px 5px 0 rgba(24,14,4,.55)}
+  .dmg-float.sig  {font-size:2.3rem;color:var(--gold3);text-shadow:3px 3px 0 var(--ink),-1px -1px 0 var(--ink),5px 5px 0 rgba(24,14,4,.5)}
+  .dmg-float.norm {font-size:1.8rem;color:#c00f1e;text-shadow:2px 2px 0 var(--paper),-1px -1px 0 var(--paper),4px 4px 0 rgba(24,14,4,.45)}
+  .dmg-float.heal {font-size:1.6rem;color:#188a3c;text-shadow:2px 2px 0 var(--paper),-1px -1px 0 var(--paper)}
+  .dmg-float.bleed{font-size:1.3rem;color:#9c0f18;text-shadow:2px 2px 0 var(--paper)}
+  .log-txt.slide{animation:logSlide .25s ease both}
+  .ctrl.ctrl-in {animation:ctrlIn .3s ease both}
 
-  /* CORNER DECORATIONS */
-  .menu-corners {
-    position: absolute; inset: 16px; pointer-events: none; z-index: 0;
-  }
-  .menu-corners::before, .menu-corners::after {
-    content: '';
-    position: absolute;
-    width: 32px; height: 32px;
-    border-color: var(--red);
-    border-style: solid;
-  }
-  .menu-corners::before {
-    top: 0; left: 0;
-    border-width: 3px 0 0 3px;
-  }
-  .menu-corners::after {
-    bottom: 0; right: 0;
-    border-width: 0 3px 3px 0;
-  }
+  /* ────────── TOAST ────────── */
+  .toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9998;pointer-events:none}
+  .toast{background:var(--ink);color:var(--paper);border-radius:2px;padding:9px 20px;font-family:var(--fd);font-size:1rem;letter-spacing:.1em;white-space:nowrap;box-shadow:3px 3px 0 rgba(24,14,4,.5);animation:vIn .18s ease both}
 
-  .menu-logo { display: flex; flex-direction: column; align-items: center; gap: 4px }
+  /* ────────── BUTTONS ────────── */
+  .btn{
+    background:var(--paper2);border:2.5px solid var(--ink);color:var(--ink);
+    border-radius:3px;padding:8px 14px;
+    font-family:var(--fd);font-weight:600;font-size:.95rem;letter-spacing:.1em;
+    cursor:pointer;transition:transform .09s,box-shadow .09s,background .09s;
+    touch-action:manipulation;min-height:42px;
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;
+    user-select:none;-webkit-user-select:none;
+    position:relative;overflow:hidden;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+  .btn::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);pointer-events:none}
+  .btn:hover{background:var(--paper3);transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .btn:hover::after{animation:shimmerPass .38s ease both}
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .btn:disabled{opacity:.28;cursor:not-allowed;transform:none;box-shadow:2px 2px 0 var(--ink3)}
+  .btn-p{background:var(--red);border-color:var(--red-dk);color:var(--paper);box-shadow:3px 3px 0 var(--red-dk)}
+  .btn-p:not(:disabled):hover{background:var(--red2);transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--red-dk)}
+  .btn-p:not(:disabled):active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--red-dk)}
+  .btn-sig{background:var(--gold);border-color:var(--ink);color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+  .btn-sig.live{background:var(--gold3);animation:pulseGlow 1s ease-in-out infinite;box-shadow:3px 3px 0 var(--ink),0 0 14px rgba(236,176,24,.5)}
+  .btn-sig:not(:disabled):hover{background:var(--gold2);transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
 
-  .t-eyebrow {
-    font-family: var(--fb);
-    font-size: clamp(.7rem, 2.5vw, 1rem);
-    letter-spacing: .32em;
-    color: var(--ink3);
-    text-transform: uppercase;
-    animation: subtitleIn .7s ease both;
-    border-bottom: 1.5px solid var(--ink3);
-    padding-bottom: 3px;
+  /* ═══════════════════════════════════════
+     MENU — Cinematic Punch Intro
+  ═══════════════════════════════════════ */
+  .menu{
+    align-items:center;justify-content:center;text-align:center;
+    gap:0;padding:0;
+    background:var(--paper);
+    overflow:hidden;position:relative;
   }
-
-  .t-main {
-    font-family: var(--fd);
-    font-size: clamp(5.5rem, 22vw, 10rem);
-    line-height: .82;
-    color: var(--ink);
-    letter-spacing: .01em;
-    animation: titleSlam .5s cubic-bezier(.2,0,.3,1.4) .08s both;
-    /* Ink layered shadow */
-    text-shadow:
-      4px  4px 0 var(--red),
-      6px  6px 0 rgba(26,18,8,.25);
-  }
-
-  .t-sub-wrap {
-    display: inline-block;
-    background: var(--red);
-    padding: 5px 28px 4px;
-    transform: skewX(-5deg);
-    margin-top: 2px;
-    animation: stampIn .45s cubic-bezier(.2,0,.4,1.4) .2s both;
-    box-shadow: 4px 4px 0 var(--red-dk);
-  }
-  .t-sub {
-    font-family: var(--fd);
-    font-size: clamp(1.5rem, 6vw, 2.8rem);
-    color: var(--paper);
-    letter-spacing: .15em;
-    display: block;
-    transform: skewX(5deg);
-  }
-
-  .menu-tagline {
-    font-family: var(--fb);
-    font-size: .78rem;
-    letter-spacing: .16em;
-    color: var(--ink3);
-    text-transform: uppercase;
-    animation: vIn .4s ease .35s both;
-  }
-
-  .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center }
-
-  /* Ink divider with fists */
-  .ink-divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: min(280px, 80vw);
-    animation: accentIn .4s ease .3s both;
-    transform-origin: center;
-  }
-  .ink-divider::before, .ink-divider::after {
-    content: '';
-    flex: 1;
-    height: 2px;
-    background: var(--ink);
-  }
-  .ink-divider span {
-    font-size: 1rem;
-    opacity: .7;
-  }
-
-  /* ─────────────────────────────────────
-     PANEL (deck builder / arena)
-  ───────────────────────────────────── */
-  .panel {
-    background: var(--paper);
-    padding: 10px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .panel-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    padding-bottom: 8px;
-    border-bottom: 2.5px solid var(--ink);
-  }
-  .panel-title {
-    font-family: var(--fd);
-    font-size: 1.4rem;
-    letter-spacing: .16em;
-    color: var(--ink);
-  }
-  .tabs { display: flex; gap: 8px }
-  .tally { display: flex; gap: 6px; align-items: center }
-  .tally-chip {
-    font-family: var(--fd);
-    font-size: .85rem;
-    letter-spacing: .1em;
-    background: var(--paper2);
-    border: 2px solid var(--ink3);
-    border-radius: 2px;
-    padding: 2px 10px;
-    color: var(--ink3);
-    box-shadow: 2px 2px 0 rgba(26,18,8,.25);
-  }
-  .tally-chip.done {
-    background: var(--gold3);
-    border-color: var(--ink);
-    color: var(--ink);
-  }
-
-  /* ─────────────────────────────────────
-     TCG CARDS — Vintage manga trading cards
-  ───────────────────────────────────── */
-  .cards {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
-    grid-auto-rows: 274px;
-    gap: 10px;
-    align-content: start;
-    padding-bottom: 4px;
-  }
-  .cards::-webkit-scrollbar { width: 4px }
-  .cards::-webkit-scrollbar-track { background: var(--paper2) }
-  .cards::-webkit-scrollbar-thumb { background: var(--ink3); border-radius: 2px }
-
-  .tcg {
-    position: relative;
-    border-radius: 5px;
-    overflow: hidden;
-    cursor: pointer;
-    /* Aged paper card base */
-    background: linear-gradient(165deg, var(--paper) 0%, var(--paper2) 60%, var(--paper3) 100%);
-    border: 2.5px solid var(--ink);
-    box-shadow: 4px 4px 0 rgba(26,18,8,.6);
-    display: flex;
-    flex-direction: column;
-    transition: transform .15s, box-shadow .15s;
-    touch-action: manipulation;
-  }
-  /* Halftone screentone corner on card */
-  .tcg::before {
-    content: '';
-    position: absolute;
-    bottom: 0; right: 0;
-    width: 60px; height: 60px;
-    opacity: .06;
-    background-image: radial-gradient(circle, var(--ink) 1px, transparent 1px);
-    background-size: 5px 5px;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .tcg:hover { transform: translate(-2px,-3px); box-shadow: 6px 7px 0 rgba(26,18,8,.7) }
-  .tcg:active { transform: translate(1px,1px); box-shadow: 3px 3px 0 rgba(26,18,8,.6) }
-  .tcg.sel {
-    border-color: var(--red);
-    box-shadow: 4px 4px 0 var(--red-dk), 0 0 0 2px var(--red);
-    background: linear-gradient(165deg, #fff8f0, #ffeee8, #ffe0d0);
-  }
-  .tcg-band {
-    height: 4px;
-    flex-shrink: 0;
-    background: linear-gradient(90deg, transparent, rgba(var(--sag),.0) 0%, rgba(var(--sag),1) 20%, rgba(var(--sag),1) 80%, transparent);
-    background-size: 250% auto;
-    animation: bandShimmer 3s linear infinite;
-  }
-  .tcg.sel .tcg-band { animation: bandShimmer 1s linear infinite }
-  .tcg-hd {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 4px 8px 3px;
-    flex-shrink: 0;
-    background: rgba(26,18,8,.06);
-    border-bottom: 1px solid rgba(26,18,8,.15);
-    position: relative; z-index: 1;
-  }
-  .tcg-type {
-    font-family: var(--fd);
-    font-size: .6rem;
-    letter-spacing: .14em;
-    border: 1.5px solid rgba(var(--sag), .7);
-    color: rgba(var(--sag), 1);
-    background: rgba(var(--sag), .08);
-    border-radius: 2px;
-    padding: 1px 7px;
-    white-space: nowrap;
-  }
-  .tcg-icon-sm { font-size: .9rem; line-height: 1; flex-shrink: 0 }
-  .tcg-cost-badge {
-    font-family: var(--fd);
-    font-size: .72rem;
-    letter-spacing: .06em;
-    background: var(--gold3);
-    color: var(--ink);
-    border-radius: 2px;
-    padding: 1px 7px;
-    border: 1.5px solid var(--ink);
-  }
-  .tcg-art {
-    flex: 1;
-    margin: 5px 6px 0;
-    border-radius: 3px;
-    min-height: 0;
-    background: var(--paper3) center/cover no-repeat;
-    border: 1.5px solid var(--ink3);
-    display: grid; place-items: center;
-    font-size: 3.4rem;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-  }
-  /* Vintage photo vignette */
-  .tcg-art::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(26,18,8,.75));
-    pointer-events: none;
-  }
-  .tcg-buff-ico {
-    flex: 1; margin: 5px 6px 0;
-    border-radius: 3px; min-height: 0;
-    background: radial-gradient(ellipse at 50% 60%, rgba(var(--sag),.12), transparent 70%);
-    border: 1.5px solid rgba(var(--sag),.4);
-    display: grid; place-items: center;
-    font-size: 3.4rem;
-    position: relative; z-index: 1;
-  }
-  .tcg-plate {
-    padding: 4px 8px 3px;
-    flex-shrink: 0;
-    border-top: 1px solid rgba(26,18,8,.2);
-    background: rgba(26,18,8,.04);
-    position: relative; z-index: 1;
-  }
-  .tcg-name {
-    font-family: var(--fd);
-    font-size: .98rem;
-    letter-spacing: .03em;
-    line-height: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--ink);
-  }
-  .tcg-flavor {
-    font-family: var(--fb);
-    font-style: italic;
-    font-size: .62rem;
-    color: var(--ink3);
-    line-height: 1.2;
-    margin-top: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .tcg-stats {
-    display: flex; justify-content: space-around;
-    padding: 4px 6px 6px;
-    flex-shrink: 0; gap: 2px;
-    border-top: 1.5px solid rgba(26,18,8,.2);
-    background: rgba(26,18,8,.04);
-    position: relative; z-index: 1;
-  }
-  .ts { display: flex; flex-direction: column; align-items: center; gap: 0; flex: 1 }
-  .ts-l { font-family: var(--fd); font-size: .54rem; letter-spacing: .1em; color: var(--ink4) }
-  .ts-v { font-family: var(--fd); font-size: .95rem; letter-spacing: .02em; line-height: 1.1; color: var(--ink) }
-  .tcg-sig {
-    font-family: var(--fd);
-    font-size: .6rem;
-    letter-spacing: .08em;
-    color: var(--gold);
-    text-align: center;
-    padding: 2px 8px 5px;
-    border-top: 1px solid rgba(var(--sag),.2);
-    background: rgba(var(--sag),.04);
-    position: relative; z-index: 1;
-  }
-  .tcg-chk {
-    position: absolute; top: 7px; right: 7px;
-    width: 22px; height: 22px;
-    background: var(--red);
-    border: 2px solid var(--ink);
-    border-radius: 2px;
-    display: grid; place-items: center;
-    font-family: var(--fd);
-    font-size: .8rem;
-    color: var(--paper);
-    z-index: 4;
-    box-shadow: 2px 2px 0 rgba(26,18,8,.5);
-    animation: selPop .18s cubic-bezier(.35,0,.2,1.5) both;
-  }
-
-  /* ─────────────────────────────────────
-     ARENA LOBBY
-  ───────────────────────────────────── */
-  .arena-hd {
-    font-family: var(--fd);
-    letter-spacing: .18em;
-    font-size: 1rem;
-    color: var(--red);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .arena-hd::after { content: ''; flex: 1; height: 2.5px; background: var(--red) }
-  .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px }
-  .choice {
-    position: relative;
-    border: 2.5px solid var(--ink);
-    border-radius: 4px;
-    overflow: hidden;
-    background: linear-gradient(165deg, var(--paper), var(--paper2));
-    padding: 14px 12px;
-    cursor: pointer;
-    transition: transform .12s, box-shadow .12s;
-    touch-action: manipulation;
-    box-shadow: 3px 3px 0 var(--ink);
-  }
-  .choice::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--red);
-  }
-  .choice:hover { transform: translate(-1px,-2px); box-shadow: 4px 5px 0 var(--ink) }
-  .choice:active { transform: translate(1px,1px); box-shadow: 2px 2px 0 var(--ink) }
-  .choice-ico { font-size: 1.7rem; margin-bottom: 5px; display: block }
-  .choice h3 { font-family: var(--fd); letter-spacing: .1em; font-size: 1.05rem; color: var(--ink) }
-  .choice p { font-family: var(--fp); font-size: .7rem; color: var(--ink3); margin-top: 3px; line-height: 1.35 }
-  .rooms { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; max-height: 128px; overflow-y: auto }
-  .room {
-    border: 2px solid var(--ink3);
-    border-radius: 3px;
-    background: var(--paper2);
-    padding: 7px 10px;
-    cursor: pointer;
-    transition: border-color .1s, background .1s;
-    touch-action: manipulation;
-    box-shadow: 2px 2px 0 rgba(26,18,8,.3);
-  }
-  .room:hover { border-color: var(--red); background: var(--paper3) }
-  .room b { font-family: var(--fd); letter-spacing: .12em; font-size: .95rem; color: var(--red) }
-  .warn {
-    border: 2px solid var(--gold);
-    background: rgba(184,130,10,.08);
-    color: var(--gold);
-    border-radius: 3px;
-    padding: 7px 10px;
-    font-family: var(--fb);
-    font-size: .72rem;
-    box-shadow: 2px 2px 0 rgba(26,18,8,.2);
-  }
-
-  /* ─────────────────────────────────────
-     BATTLE LAYOUT
-  ───────────────────────────────────── */
-  .battle {
-    display: grid;
-    grid-template-columns: 1fr 78px;
-    grid-template-rows: auto 1fr auto 1fr auto;
-    overflow: hidden;
-    position: relative;
-    /* Aged paper background */
-    background: var(--paper2);
-  }
-  /* Diagonal action lines across arena */
-  .battle::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    background: repeating-linear-gradient(
+  /* Heavy diagonal speed-line BG */
+  .menu-bg-lines{
+    position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:repeating-linear-gradient(
       -52deg,
-      transparent 0px, transparent 32px,
-      rgba(26,18,8,.02) 32px, rgba(26,18,8,.02) 33px
+      transparent 0,transparent 24px,
+      rgba(24,14,4,.035) 24px,rgba(24,14,4,.035) 25px
     );
   }
-  /* Center rope — horizontal ink stroke */
-  .battle::after {
-    content: '';
-    position: absolute; left: 0; right: 0; top: 50%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 3%, var(--red) 15%, rgba(191,16,32,.6) 50%, var(--red) 85%, transparent 97%);
-    pointer-events: none; z-index: 0;
-    opacity: .35;
+  /* Radial burst from impact center */
+  .menu-bg-burst{
+    position:absolute;
+    top:42%;left:50%;
+    transform:translate(-50%,-50%);
+    width:220%;height:220%;
+    pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse at center,rgba(192,15,30,.08) 0%,transparent 60%);
+    opacity:0;
+    animation:impactFlash 1.6s ease .52s both;
   }
-  .card-zone {
-    display: flex; align-items: center; justify-content: center;
-    position: relative; z-index: 1;
-    overflow: hidden;
-    grid-column: 1;
+  /* Corner brackets */
+  .menu-corners{position:absolute;inset:14px;pointer-events:none;z-index:1}
+  .menu-corners::before,.menu-corners::after{content:'';position:absolute;width:28px;height:28px;border-color:var(--red);border-style:solid}
+  .menu-corners::before{top:0;left:0;border-width:3px 0 0 3px}
+  .menu-corners::after {bottom:0;right:0;border-width:0 3px 3px 0}
+
+  /* ── THE PUNCH STAGE ── */
+  .punch-stage{
+    position:absolute;inset:0;pointer-events:none;z-index:5;
+    overflow:hidden;
   }
 
-  /* ─────────────────────────────────────
-     STATUS BARS
-  ───────────────────────────────────── */
-  .bar {
-    padding: 5px 12px;
-    background: var(--ink);
-    display: flex; justify-content: space-between; align-items: center; gap: 8px;
-    position: relative; z-index: 2;
-    grid-column: 1;
+  /* Speed-line streaks — 3 of them, staggered */
+  .speed-line{
+    position:absolute;
+    top:0;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(24,14,4,.06) 30%,rgba(24,14,4,.12) 50%,rgba(24,14,4,.06) 70%,transparent);
+    pointer-events:none;
   }
-  .bar-left { display: flex; align-items: center; gap: 8px }
-  .bar-lbl {
-    font-family: var(--fd);
-    letter-spacing: .12em;
-    font-size: .82rem;
-    color: var(--paper2);
+  .speed-line.sl1{width:28%;top:-5%;height:40%;left:0;transform-origin:left center;animation:speedLineSweep .55s cubic-bezier(.4,0,.2,1) .1s both}
+  .speed-line.sl2{width:35%;top:30%;height:50%;left:0;transform-origin:left center;animation:speedLineSweep .55s cubic-bezier(.4,0,.2,1) .14s both}
+  .speed-line.sl3{width:22%;top:62%;height:38%;left:0;transform-origin:left center;animation:speedLineSweep .55s cubic-bezier(.4,0,.2,1) .08s both}
+
+  /* Fist SVG */
+  .fist-wrap{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:min(260px,68vw);
+    height:min(220px,58vw);
+    animation:fistEntry .7s cubic-bezier(.15,0,.2,1.3) .05s both,
+              fistFloat 2.8s ease-in-out 1.2s infinite;
+    z-index:6;
+    filter:drop-shadow(4px 6px 0 rgba(24,14,4,.35));
   }
-  .bar-lbl-name {
-    font-family: var(--fb);
-    font-size: .6rem;
-    color: rgba(242,234,216,.55);
-    letter-spacing: .05em;
+  .fist-svg{width:100%;height:100%;display:block}
+
+  /* Shockwave ring at impact */
+  .shockwave{
+    position:absolute;
+    top:50%;left:50%;
+    width:min(140px,36vw);height:min(140px,36vw);
+    border-radius:50%;
+    border:5px solid var(--red);
+    pointer-events:none;z-index:7;
+    opacity:0;
+    animation:shockwave .6s cubic-bezier(.2,0,.4,1) .62s both;
   }
-  .bar-tc {
-    font-family: var(--fd);
-    font-size: .78rem;
-    letter-spacing: .1em;
-    background: var(--gold3);
-    color: var(--ink);
-    border-radius: 2px;
-    padding: 2px 9px;
-    border: 1.5px solid var(--ink);
-    box-shadow: 2px 2px 0 rgba(26,18,8,.4);
-  }
-  .slots { display: flex; gap: 4px; align-items: center }
-  .slot {
-    width: 31px; height: 31px;
-    border: 2px solid rgba(242,234,216,.3);
-    border-radius: 3px;
-    background: rgba(242,234,216,.08);
-    display: grid; place-items: center;
-    font-size: .95rem;
-    transition: all .1s;
-  }
-  button.slot { cursor: pointer; touch-action: manipulation }
-  button.slot:not(:disabled):hover {
-    border-color: var(--gold3);
-    background: rgba(240,184,32,.2);
-    transform: scale(1.12);
-  }
-  button.slot:not(:disabled):active { transform: scale(.88) }
-  .slot.dead { opacity: .15; filter: grayscale(1) }
-  .slot.active-slot {
-    border-color: var(--gold3);
-    box-shadow: 0 0 0 1px var(--gold3), 0 0 8px rgba(240,184,32,.4);
+  .shockwave2{
+    position:absolute;
+    top:50%;left:50%;
+    width:min(80px,22vw);height:min(80px,22vw);
+    border-radius:50%;
+    border:4px solid var(--gold3);
+    pointer-events:none;z-index:7;
+    opacity:0;
+    animation:shockwave .5s cubic-bezier(.2,0,.4,1) .68s both;
   }
 
-  /* ─────────────────────────────────────
-     FIGHT CARD — Premium manga card
-  ───────────────────────────────────── */
-  .fight-card-wrap {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 4px 10px 0;
-    position: relative;
+  /* Impact star burst */
+  .impact-star{
+    position:absolute;
+    top:50%;left:50%;
+    width:min(110px,30vw);height:min(110px,30vw);
+    pointer-events:none;z-index:7;
+    opacity:0;
+    animation:starBurst .55s cubic-bezier(.2,0,.5,1) .6s both;
   }
-  .fight-card {
-    width: min(156px, 42vw);
-    aspect-ratio: 5/7;
-    border-radius: 7px;
-    overflow: hidden;
-    /* Layered card frame: thick ink border, color outline */
-    border: 3px solid var(--ink);
-    outline: 1.5px solid rgba(var(--sag), .55);
-    box-shadow: 4px 5px 0 var(--ink), 0 0 0 1px rgba(var(--sag), .2);
-    display: flex; flex-direction: column;
-    position: relative;
-    animation: cardIdleP 4s ease-in-out infinite;
-    isolation: isolate;
-    cursor: default;
-    flex-shrink: 0;
-    /* Aged paper card body */
-    background: linear-gradient(160deg, var(--paper) 0%, var(--paper2) 70%, var(--paper3) 100%);
-  }
-  /* Halftone screentone overlay */
-  .fight-card::before {
-    content: '';
-    position: absolute; inset: 0; z-index: 4;
-    pointer-events: none; border-radius: 4px;
-    opacity: .055;
-    background-image: radial-gradient(circle, var(--ink) 1px, transparent 1px);
-    background-size: 5px 5px;
-  }
-  /* Corner foil accents */
-  .fight-card::after {
-    content: '';
-    position: absolute; inset: 0; z-index: 5;
-    pointer-events: none; border-radius: 4px;
-    background:
-      linear-gradient(135deg, rgba(var(--sag),.18) 0%, transparent 22%),
-      linear-gradient(315deg, rgba(var(--sag),.12) 0%, transparent 18%);
-  }
-  .fc-fullart {
-    position: absolute; inset: 0; z-index: 0;
-    background: var(--paper3) center 25% / cover no-repeat;
-    transition: transform .5s cubic-bezier(.25,.8,.25,1);
-    /* Slight vintage desaturation */
-    filter: sepia(.15) contrast(1.05);
-  }
-  /* Halftone fade into paper at bottom */
-  .fc-overlay {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background: linear-gradient(
-      180deg,
-      rgba(242,234,216,.55) 0%,
-      rgba(242,234,216,.08) 22%,
-      transparent 38%,
-      transparent 52%,
-      rgba(242,234,216,.28) 65%,
-      rgba(232,223,200,.85) 80%,
-      var(--paper2) 100%
-    );
-  }
-  .fc-vignette {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    box-shadow: inset 0 0 30px rgba(26,18,8,.45), inset 0 0 8px rgba(26,18,8,.2);
-  }
-  /* Style color tint at base */
-  .fc-tint {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background: radial-gradient(ellipse 110% 55% at 50% 120%, rgba(var(--sag),.22), transparent 65%);
-  }
-  /* Shimmer sweep on hover */
-  .fc-shimmer {
-    position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
-    z-index: 2; pointer-events: none;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
-    transform: translateX(-100%);
-  }
-  .fight-card:hover .fc-fullart { transform: scale(1.04) translateY(-1.5%) }
-  .fight-card:hover .fc-shimmer { animation: shimmerPass .6s ease both }
-  .fc-content { position: relative; z-index: 3; display: flex; flex-direction: column; height: 100% }
+  .impact-star svg{width:100%;height:100%}
 
-  /* Ink band at top */
-  .fc-band {
-    height: 4px;
-    flex-shrink: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(var(--sag), .9) 15%,
-      rgba(var(--sag), 1) 40%,
-      rgba(255,255,255,.7) 50%,
-      rgba(var(--sag), 1) 60%,
-      rgba(var(--sag), .9) 85%,
-      transparent 100%
-    );
-    background-size: 250% auto;
-    animation: bandShimmer 2s linear infinite;
+  /* Screen flash */
+  .impact-flash{
+    position:absolute;inset:0;z-index:8;
+    background:rgba(255,250,240,.95);
+    pointer-events:none;
+    opacity:0;
+    animation:impactFlash .55s ease .6s both;
   }
 
-  /* Card header — printed on the art */
-  .fc-hdr {
-    display: flex; align-items: center; gap: 4px;
-    padding: 5px 7px 4px;
-    flex-shrink: 0;
-    background: linear-gradient(180deg, rgba(242,234,216,.92) 0%, rgba(242,234,216,.5) 70%, transparent);
-  }
-  .fc-hdr-name {
-    font-family: var(--fd);
-    font-size: .86rem;
-    letter-spacing: .04em;
-    flex: 1;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    line-height: 1;
-    color: var(--ink);
-    text-shadow: 1px 1px 0 rgba(242,234,216,.9);
-  }
-  .fc-type-pill {
-    font-family: var(--fd);
-    font-size: .42rem;
-    letter-spacing: .12em;
-    border: 1.5px solid rgba(var(--sag), .7);
-    color: rgba(var(--sag), 1);
-    background: rgba(242,234,216,.85);
-    border-radius: 2px;
-    padding: 2px 5px;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .fc-guard-pill {
-    font-family: var(--fd);
-    font-size: .42rem;
-    letter-spacing: .06em;
-    background: var(--gold3);
-    color: var(--ink);
-    border: 1.5px solid var(--ink);
-    border-radius: 2px;
-    padding: 2px 5px;
-    flex-shrink: 0;
-    box-shadow: 1px 1px 0 var(--ink);
-    animation: pulseGlow .9s ease-in-out infinite;
-  }
-  .fc-art-zone { flex: 1; min-height: 0; position: relative }
-  .fc-art-emoji {
-    position: absolute; inset: 0;
-    display: grid; place-items: center;
-    font-size: 3.8rem;
-    filter: drop-shadow(1px 2px 0 rgba(242,234,216,.8));
-    z-index: 2;
+  /* ── MENU CONTENT (fades in after punch) ── */
+  .menu-content{
+    position:relative;z-index:4;
+    display:flex;flex-direction:column;
+    align-items:center;
+    gap:14px;
+    padding:28px 24px;
+    width:100%;
+    animation:contentSlam .5s cubic-bezier(.2,0,.4,1.2) .95s both;
   }
 
-  /* Stats panel — inked onto paper at bottom */
-  .fc-stats-panel {
-    flex-shrink: 0;
-    padding: 5px 8px 7px;
-    background: linear-gradient(0deg, var(--paper2) 55%, rgba(232,223,200,.9) 78%, transparent);
-    border-top: 1.5px solid rgba(var(--sag), .2);
+  .t-eyebrow{
+    font-family:var(--fb);font-size:clamp(.7rem,2.5vw,.95rem);
+    letter-spacing:.34em;color:var(--ink3);text-transform:uppercase;
+    border-bottom:1.5px solid var(--ink3);padding-bottom:3px;
+    padding-right:.34em; /* compensate letter-spacing */
   }
-  .fc-subtitle {
-    font-family: var(--fb);
-    font-style: italic;
-    font-size: .47rem;
-    letter-spacing: .06em;
-    color: rgba(var(--sag), .9);
-    text-transform: uppercase;
-    margin-bottom: 3px;
+  .t-main{
+    font-family:var(--fd);font-size:clamp(5.5rem,22vw,9.5rem);
+    line-height:.8;color:var(--ink);letter-spacing:.01em;
+    text-shadow:5px 5px 0 var(--red),7px 7px 0 rgba(24,14,4,.2);
   }
 
-  /* Momentum pips — square ink marks */
-  .fc-mom { display: flex; gap: 3px; align-items: center; margin-bottom: 4px }
-  .pip {
-    width: 8px; height: 8px;
-    border-radius: 1px;
-    border: 1.5px solid var(--ink3);
-    background: transparent;
-    transition: all .2s;
+  /* Animated red stripe */
+  .t-stripe{
+    position:relative;
+    display:inline-block;
+    margin-top:4px;
   }
-  .pip.on   { background: rgba(var(--sag),.7); border-color: rgba(var(--sag),1) }
-  .pip.rdy  { background: var(--gold3); border-color: var(--ink); box-shadow: 0 0 6px rgba(240,184,32,.6) }
-  .pip.max  { background: var(--red); border-color: var(--ink); box-shadow: 0 0 10px rgba(191,16,32,.7); animation: pipPop .55s ease-in-out infinite }
+  .t-stripe-bg{
+    position:absolute;inset:0;
+    background:var(--red);
+    transform:scaleX(0) skewX(-6deg);
+    transform-origin:left;
+    animation:stripeSlide .35s cubic-bezier(.2,0,.4,1) 1.1s both;
+    box-shadow:5px 5px 0 var(--red-dk);
+  }
+  .t-stripe-text{
+    position:relative;z-index:1;
+    font-family:var(--fd);font-size:clamp(1.4rem,5.5vw,2.6rem);
+    color:var(--paper);letter-spacing:.16em;
+    display:block;padding:5px 28px 4px;
+    transform:skewX(6deg);
+    /* text hidden until stripe covers it */
+    clip-path:inset(0 100% 0 0);
+    animation:none;
+  }
+  /* Reveal text as stripe sweeps */
+  @keyframes textReveal{
+    0%  {clip-path:inset(0 100% 0 0)}
+    100%{clip-path:inset(0 0% 0 0)}
+  }
+  .t-stripe-text{animation:textReveal .35s linear 1.1s both}
 
-  .fc-srow { display: flex; gap: 10px; align-items: center }
-  .fst { display: flex; gap: 2px; align-items: baseline }
-  .fst-l { font-family: var(--fd); font-size: .44rem; letter-spacing: .1em; color: var(--ink4) }
-  .fst-v { font-family: var(--fd); font-size: .86rem; line-height: 1; color: var(--ink) }
+  /* Ink divider */
+  .ink-divider{display:flex;align-items:center;gap:10px;width:min(260px,78vw)}
+  .ink-divider::before,.ink-divider::after{content:'';flex:1;height:2px;background:var(--ink)}
+  .ink-divider span{font-size:.95rem;opacity:.65}
 
-  .fc-statuses { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 3px }
-  .sbadge {
-    font-family: var(--fd);
-    font-size: .44rem;
-    letter-spacing: .06em;
-    border-radius: 2px;
-    padding: 2px 5px;
-    white-space: nowrap;
-    border: 1.5px solid;
-  }
-  .sb-bleed  { background: rgba(180,20,20,.12); border-color: var(--red2); color: var(--red2) }
-  .sb-stun   { background: rgba(184,124,0,.12); border-color: var(--gold); color: var(--gold); animation: stunShake 1.6s ease-in-out infinite }
-  .sb-weaken { background: rgba(112,32,184,.1); border-color: #7020b8; color: #7020b8 }
-  .sb-power  { background: rgba(191,16,32,.1); border-color: var(--red); color: var(--red) }
+  .menu-tagline{font-family:var(--fb);font-size:.77rem;letter-spacing:.17em;color:var(--ink3);text-transform:uppercase}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 
-  /* ─────────────────────────────────────
-     HP BAR — below card, ink on paper
-  ───────────────────────────────────── */
-  .fc-hp-bar {
-    width: min(156px, 42vw);
-    margin-top: 4px;
-    padding: 3px 5px 3px;
-    background: var(--ink);
-    border: 2px solid var(--ink);
-    border-radius: 3px;
-    box-shadow: 2px 2px 0 rgba(26,18,8,.4);
-  }
-  .fc-hp-label {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-bottom: 2px;
-  }
-  .hp-name {
-    font-family: var(--fd);
-    font-size: .5rem;
-    letter-spacing: .06em;
-    color: rgba(242,234,216,.6);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 65%;
-  }
-  .hp-num     { font-family: var(--fd); font-size: .78rem; color: #4cef88 }
-  .hp-num.mid { color: var(--gold3) }
-  .hp-num.low { color: #ff4060; animation: hpPulse .85s ease-in-out infinite }
-  .hpb { height: 5px; background: rgba(242,234,216,.15); border-radius: 1px; overflow: hidden }
-  .hpfill {
-    height: 100%; background: #28d868;
-    border-radius: 1px;
-    transition: width .35s cubic-bezier(.4,0,.2,1);
-    box-shadow: 0 0 6px rgba(40,216,104,.6);
-  }
-  .hpfill.mid { background: var(--gold3); box-shadow: 0 0 6px rgba(240,184,32,.6) }
-  .hpfill.low { background: #f02040; box-shadow: 0 0 6px rgba(240,32,64,.6) }
+  /* ────────── PANEL ────────── */
+  .panel{background:var(--paper);padding:10px;overflow:hidden;display:flex;flex-direction:column;gap:8px}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:8px;border-bottom:2.5px solid var(--ink)}
+  .panel-title{font-family:var(--fd);font-size:1.4rem;letter-spacing:.16em;color:var(--ink)}
+  .tabs{display:flex;gap:8px}
+  .tally{display:flex;gap:6px;align-items:center}
+  .tally-chip{font-family:var(--fd);font-size:.85rem;letter-spacing:.1em;background:var(--paper2);border:2px solid var(--ink3);border-radius:2px;padding:2px 10px;color:var(--ink3);box-shadow:2px 2px 0 rgba(24,14,4,.22)}
+  .tally-chip.done{background:var(--gold3);border-color:var(--ink);color:var(--ink)}
 
-  /* ─────────────────────────────────────
-     LOG BOX — manga speech panel feel
-  ───────────────────────────────────── */
-  .logbox {
-    padding: 5px 12px;
-    background: var(--ink);
-    border-top: 2px solid rgba(242,234,216,.15);
-    border-bottom: 2px solid rgba(242,234,216,.15);
-    position: relative; z-index: 2;
-    grid-column: 1;
-    min-height: 44px;
-    display: flex; align-items: center;
-  }
-  /* Subtle diagonal lines in logbox */
-  .logbox::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none;
-    background: repeating-linear-gradient(
-      -45deg, transparent 0px, transparent 8px, rgba(242,234,216,.02) 8px, rgba(242,234,216,.02) 9px
-    );
-  }
-  .log-inner { display: flex; flex-direction: column; gap: 2px; width: 100%; position: relative; z-index: 1 }
-  .turn-lbl {
-    font-family: var(--fd);
-    font-size: .72rem;
-    letter-spacing: .16em;
-    color: rgba(242,234,216,.45);
-  }
-  .turn-lbl.yours {
-    color: #4cef88;
-    text-shadow: 0 0 12px rgba(76,239,136,.5);
-  }
-  .turn-lbl.stunned-lbl {
-    color: var(--gold3);
-    text-shadow: 0 0 10px rgba(240,184,32,.5);
-  }
-  .log-txt {
-    font-family: var(--fb);
-    font-size: .84rem;
-    color: var(--paper);
-    line-height: 1.25;
-  }
+  /* ────────── TCG CARDS ────────── */
+  .cards{flex:1;overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));grid-auto-rows:274px;gap:10px;align-content:start;padding-bottom:4px}
+  .cards::-webkit-scrollbar{width:4px}
+  .cards::-webkit-scrollbar-track{background:var(--paper2)}
+  .cards::-webkit-scrollbar-thumb{background:var(--ink3);border-radius:2px}
 
-  /* ─────────────────────────────────────
-     CONTROLS — bottom panel
-  ───────────────────────────────────── */
-  .ctrl {
-    padding: 6px 8px;
-    background: var(--paper);
-    border-top: 2.5px solid var(--ink);
-    display: flex; flex-direction: column; gap: 5px;
-    position: relative; z-index: 2;
-    grid-column: 1;
+  .tcg{
+    position:relative;border-radius:5px;overflow:hidden;cursor:pointer;
+    background:linear-gradient(165deg,var(--paper) 0%,var(--paper2) 60%,var(--paper3) 100%);
+    border:2.5px solid var(--ink);
+    box-shadow:4px 4px 0 rgba(24,14,4,.58);
+    display:flex;flex-direction:column;
+    transition:transform .14s,box-shadow .14s;
+    touch-action:manipulation;
   }
-  /* Subtle screentone in ctrl area */
-  .ctrl::before {
-    content: '';
-    position: absolute; inset: 0; pointer-events: none; z-index: 0;
-    opacity: .04;
-    background-image: radial-gradient(circle, var(--ink) 1px, transparent 1px);
-    background-size: 6px 6px;
-  }
-  .ctrl > * { position: relative; z-index: 1 }
-  .ctrl-top {
-    display: flex; justify-content: space-between; align-items: center; gap: 8px;
-  }
-  .ctrl-info {
-    display: flex; align-items: center; gap: 6px; flex: 1; overflow: hidden;
-  }
-  .ctrl-lbl {
-    font-family: var(--fd);
-    font-size: .8rem;
-    letter-spacing: .12em;
-    color: var(--ink3);
-    white-space: nowrap;
-  }
-  .ctrl-boxer-name {
-    font-family: var(--fb);
-    font-size: .58rem;
-    color: var(--ink4);
-    letter-spacing: .04em;
-    white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis;
-  }
-  .tc-badge {
-    font-family: var(--fd);
-    font-size: .75rem;
-    letter-spacing: .1em;
-    background: var(--gold3);
-    color: var(--ink);
-    border: 2px solid var(--ink);
-    border-radius: 2px;
-    padding: 1px 7px;
-    white-space: nowrap;
-    box-shadow: 2px 2px 0 var(--ink);
-  }
-  .stun-note {
-    font-family: var(--fd);
-    font-size: .65rem;
-    color: var(--gold);
-    letter-spacing: .08em;
-    border: 1.5px solid var(--gold);
-    border-radius: 2px;
-    padding: 1px 5px;
-  }
-  .act-row { display: flex; gap: 5px; flex-wrap: wrap }
-  .act-row .btn {
-    flex: 1; min-width: 0;
-    font-size: .82rem;
-    padding: 7px 5px;
-    min-height: 38px;
-    font-weight: 700;
-  }
+  /* Halftone dot corner */
+  .tcg::before{content:'';position:absolute;bottom:0;right:0;width:56px;height:56px;opacity:.06;background-image:radial-gradient(circle,var(--ink) 1px,transparent 1px);background-size:5px 5px;pointer-events:none;z-index:0}
+  .tcg:hover{transform:translate(-2px,-3px);box-shadow:6px 7px 0 rgba(24,14,4,.68)}
+  .tcg:active{transform:translate(1px,1px);box-shadow:3px 3px 0 rgba(24,14,4,.58)}
+  .tcg.sel{border-color:var(--red);box-shadow:4px 4px 0 var(--red-dk),0 0 0 2px var(--red);background:linear-gradient(165deg,#fff8f0,#ffeee8,#ffe2d4)}
+  .tcg-band{height:4px;flex-shrink:0;background:linear-gradient(90deg,transparent,rgba(var(--sag),.0) 0%,rgba(var(--sag),1) 20%,rgba(var(--sag),1) 80%,transparent);background-size:250% auto;animation:bandShimmer 3s linear infinite}
+  .tcg.sel .tcg-band{animation:bandShimmer 1s linear infinite}
+  .tcg-hd{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 3px;flex-shrink:0;background:rgba(24,14,4,.055);border-bottom:1px solid rgba(24,14,4,.14);position:relative;z-index:1}
+  .tcg-type{font-family:var(--fd);font-size:.6rem;letter-spacing:.14em;border:1.5px solid rgba(var(--sag),.68);color:rgba(var(--sag),1);background:rgba(var(--sag),.07);border-radius:2px;padding:1px 7px;white-space:nowrap}
+  .tcg-icon-sm{font-size:.88rem;line-height:1;flex-shrink:0}
+  .tcg-cost-badge{font-family:var(--fd);font-size:.72rem;letter-spacing:.06em;background:var(--gold3);color:var(--ink);border-radius:2px;padding:1px 7px;border:1.5px solid var(--ink)}
+  .tcg-art{flex:1;margin:5px 6px 0;border-radius:3px;min-height:0;background:var(--paper3) center/cover no-repeat;border:1.5px solid var(--ink3);display:grid;place-items:center;font-size:3.4rem;position:relative;overflow:hidden;z-index:1}
+  .tcg-art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(24,14,4,.72));pointer-events:none}
+  .tcg-buff-ico{flex:1;margin:5px 6px 0;border-radius:3px;min-height:0;background:radial-gradient(ellipse at 50% 60%,rgba(var(--sag),.11),transparent 70%);border:1.5px solid rgba(var(--sag),.38);display:grid;place-items:center;font-size:3.4rem;position:relative;z-index:1}
+  .tcg-plate{padding:4px 8px 3px;flex-shrink:0;border-top:1px solid rgba(24,14,4,.18);background:rgba(24,14,4,.04);position:relative;z-index:1}
+  .tcg-name{font-family:var(--fd);font-size:.98rem;letter-spacing:.03em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .tcg-flavor{font-family:var(--fb);font-style:italic;font-size:.62rem;color:var(--ink3);line-height:1.2;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tcg-stats{display:flex;justify-content:space-around;padding:4px 6px 6px;flex-shrink:0;gap:2px;border-top:1.5px solid rgba(24,14,4,.18);background:rgba(24,14,4,.04);position:relative;z-index:1}
+  .ts{display:flex;flex-direction:column;align-items:center;gap:0;flex:1}
+  .ts-l{font-family:var(--fd);font-size:.54rem;letter-spacing:.1em;color:var(--ink4)}
+  .ts-v{font-family:var(--fd);font-size:.95rem;letter-spacing:.02em;line-height:1.1;color:var(--ink)}
+  .tcg-sig{font-family:var(--fd);font-size:.6rem;letter-spacing:.08em;color:var(--gold);text-align:center;padding:2px 8px 5px;border-top:1px solid rgba(var(--sag),.18);background:rgba(var(--sag),.04);position:relative;z-index:1}
+  .tcg-chk{position:absolute;top:7px;right:7px;width:22px;height:22px;background:var(--red);border:2px solid var(--ink);border-radius:2px;display:grid;place-items:center;font-family:var(--fd);font-size:.8rem;color:var(--paper);z-index:4;box-shadow:2px 2px 0 rgba(24,14,4,.48);animation:selPop .18s cubic-bezier(.35,0,.2,1.5) both}
 
-  /* ─────────────────────────────────────
-     BUFF SIDE PANEL
-  ───────────────────────────────────── */
-  .buff-side {
-    grid-row: 1 / -1;
-    grid-column: 2;
-    background: var(--ink);
-    border-left: 2.5px solid var(--ink);
-    display: flex; flex-direction: column; gap: 5px;
-    padding: 7px 4px;
-    overflow-y: auto;
-  }
-  .buff-side::-webkit-scrollbar { width: 2px }
-  .buff-side::-webkit-scrollbar-thumb { background: rgba(242,234,216,.25); border-radius: 1px }
-  .buff {
-    background: rgba(242,234,216,.07);
-    border: 1.5px solid rgba(242,234,216,.2);
-    border-radius: 3px;
-    padding: 6px 4px;
-    cursor: pointer;
-    transition: border-color .1s, background .1s, transform .1s;
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    touch-action: manipulation;
-    text-align: center;
-  }
-  .buff:not(:disabled):hover {
-    border-color: var(--gold3);
-    background: rgba(240,184,32,.15);
-    transform: translateX(-1px);
-  }
-  .buff:not(:disabled):active { transform: scale(.93) }
-  .buff.dis { opacity: .2 }
-  .buff-top { display: flex; justify-content: space-between; width: 100%; align-items: center }
-  .buff-ico { font-size: 1.5rem }
-  .buff-tc {
-    font-family: var(--fd);
-    font-size: .55rem;
-    letter-spacing: .06em;
-    background: var(--gold3);
-    color: var(--ink);
-    border-radius: 2px;
-    padding: 1px 4px;
-    border: 1px solid var(--ink);
-  }
-  .buff-nm {
-    font-family: var(--fd);
-    font-size: .56rem;
-    letter-spacing: .06em;
-    color: rgba(242,234,216,.65);
-    line-height: 1.1;
-  }
+  /* ────────── ARENA ────────── */
+  .arena-hd{font-family:var(--fd);letter-spacing:.18em;font-size:1rem;color:var(--red);display:flex;align-items:center;gap:8px}
+  .arena-hd::after{content:'';flex:1;height:2.5px;background:var(--red)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .choice{position:relative;border:2.5px solid var(--ink);border-radius:4px;overflow:hidden;background:linear-gradient(165deg,var(--paper),var(--paper2));padding:14px 12px;cursor:pointer;transition:transform .1s,box-shadow .1s;touch-action:manipulation;box-shadow:3px 3px 0 var(--ink)}
+  .choice::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
+  .choice:hover{transform:translate(-1px,-2px);box-shadow:4px 5px 0 var(--ink)}
+  .choice:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+  .choice-ico{font-size:1.7rem;margin-bottom:5px;display:block}
+  .choice h3{font-family:var(--fd);letter-spacing:.1em;font-size:1.05rem;color:var(--ink)}
+  .choice p{font-family:var(--fp);font-size:.7rem;color:var(--ink3);margin-top:3px;line-height:1.35}
+  .rooms{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-height:126px;overflow-y:auto}
+  .room{border:2px solid var(--ink3);border-radius:3px;background:var(--paper2);padding:7px 10px;cursor:pointer;transition:border-color .1s,background .1s;touch-action:manipulation;box-shadow:2px 2px 0 rgba(24,14,4,.28)}
+  .room:hover{border-color:var(--red);background:var(--paper3)}
+  .room b{font-family:var(--fd);letter-spacing:.12em;font-size:.95rem;color:var(--red)}
+  .warn{border:2px solid var(--gold);background:rgba(176,120,8,.08);color:var(--gold);border-radius:3px;padding:7px 10px;font-family:var(--fb);font-size:.72rem;box-shadow:2px 2px 0 rgba(24,14,4,.18)}
 
-  /* ─────────────────────────────────────
-     RESULT OVERLAY
-  ───────────────────────────────────── */
-  .ov {
-    position: absolute; inset: 0; z-index: 50;
-    background: rgba(26,18,8,.85);
-    display: flex; align-items: center; justify-content: center;
-    backdrop-filter: blur(2px);
+  /* ────────── BATTLE LAYOUT ────────── */
+  .battle{
+    display:grid;grid-template-columns:1fr 78px;grid-template-rows:auto 1fr auto 1fr auto;
+    overflow:hidden;position:relative;background:var(--paper2);
   }
-  .ov-box {
-    display: flex; flex-direction: column; align-items: center; gap: 14px;
-    padding: 36px 32px;
-    border: 3.5px solid var(--ink);
-    background: var(--paper);
-    box-shadow: 6px 6px 0 var(--ink);
-    min-width: 240px; max-width: 88vw;
-    position: relative;
-    overflow: hidden;
+  .battle::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:repeating-linear-gradient(-52deg,transparent 0,transparent 30px,rgba(24,14,4,.022) 30px,rgba(24,14,4,.022) 31px);
   }
-  /* Corner decoration on result box */
-  .ov-box::before, .ov-box::after {
-    content: '';
-    position: absolute;
-    width: 24px; height: 24px;
-    border-color: var(--red);
-    border-style: solid;
+  /* Center rope divider with aged look */
+  .battle::after{
+    content:'';position:absolute;left:0;right:0;top:50%;pointer-events:none;z-index:0;
+    height:3px;
+    background:linear-gradient(90deg,transparent 3%,var(--red-dk) 12%,var(--red) 30%,rgba(192,15,30,.5) 50%,var(--red) 70%,var(--red-dk) 88%,transparent 97%);
+    opacity:.28;
   }
-  .ov-box::before { top: 8px; left: 8px; border-width: 2.5px 0 0 2.5px }
-  .ov-box::after  { bottom: 8px; right: 8px; border-width: 0 2.5px 2.5px 0 }
-  .ov-result {
-    font-family: var(--fd);
-    font-size: clamp(3.5rem, 14vw, 6rem);
-    letter-spacing: .04em;
-    line-height: .9;
-  }
-  .ov-result.win  {
-    color: var(--gold3);
-    text-shadow: 4px 4px 0 var(--gold), 6px 6px 0 rgba(26,18,8,.3);
-  }
-  .ov-result.lose {
-    color: var(--red3);
-    text-shadow: 4px 4px 0 var(--red-dk), 6px 6px 0 rgba(26,18,8,.3);
-  }
-  .ov-rule { width: 56px; height: 3px; background: var(--ink) }
-  .ov-sub  { font-family: var(--fd); font-size: 1rem; letter-spacing: .2em; color: var(--ink3) }
-  .ov-stats { display: flex; gap: 20px }
-  .ov-stat  { display: flex; flex-direction: column; align-items: center; gap: 2px }
-  .ov-stat b    { font-family: var(--fd); font-size: 1.3rem; color: var(--ink) }
-  .ov-stat span { font-family: var(--fd); font-size: .65rem; letter-spacing: .12em; color: var(--ink3) }
+  .card-zone{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;overflow:hidden;grid-column:1}
 
-  /* ─────────────────────────────────────
-     RESPONSIVE
-  ───────────────────────────────────── */
-  @media (max-height: 680px) {
-    .fight-card   { width: min(132px, 36vw) }
-    .fc-hp-bar    { width: min(132px, 36vw) }
-    .fc-stats-panel { padding: 4px 7px 5px }
-    .battle       { grid-template-columns: 1fr 68px }
-    .buff         { padding: 5px 3px }
-    .buff-ico     { font-size: 1.25rem }
-    .buff-nm      { font-size: .5rem }
-    .buff-tc      { font-size: .48rem }
+  /* ────────── STATUS BARS ────────── */
+  .bar{
+    padding:5px 11px;background:var(--ink);
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    position:relative;z-index:2;grid-column:1;
+    border-bottom:2px solid rgba(240,232,208,.08);
+  }
+  .bar-left{display:flex;align-items:center;gap:8px}
+  .bar-lbl{font-family:var(--fd);letter-spacing:.12em;font-size:.82rem;color:var(--paper2)}
+  .bar-lbl-name{font-family:var(--fb);font-size:.58rem;color:rgba(240,232,208,.5);letter-spacing:.05em}
+  .bar-tc{font-family:var(--fd);font-size:.78rem;letter-spacing:.1em;background:var(--gold3);color:var(--ink);border-radius:2px;padding:2px 9px;border:1.5px solid var(--ink);box-shadow:2px 2px 0 rgba(24,14,4,.38)}
+  .slots{display:flex;gap:4px;align-items:center}
+  .slot{width:31px;height:31px;border:2px solid rgba(240,232,208,.28);border-radius:3px;background:rgba(240,232,208,.07);display:grid;place-items:center;font-size:.95rem;transition:all .09s}
+  button.slot{cursor:pointer;touch-action:manipulation}
+  button.slot:not(:disabled):hover{border-color:var(--gold3);background:rgba(236,176,24,.18);transform:scale(1.12)}
+  button.slot:not(:disabled):active{transform:scale(.88)}
+  .slot.dead{opacity:.14;filter:grayscale(1)}
+  .slot.active-slot{border-color:var(--gold3);box-shadow:0 0 0 1px var(--gold3),0 0 7px rgba(236,176,24,.38)}
+
+  /* ────────── FIGHT CARD ────────── */
+  .fight-card-wrap{display:flex;flex-direction:column;align-items:center;padding:4px 10px 0;position:relative}
+  .fight-card{
+    width:min(156px,42vw);aspect-ratio:5/7;border-radius:7px;overflow:hidden;
+    border:3px solid var(--ink);outline:1.5px solid rgba(var(--sag),.52);
+    box-shadow:4px 5px 0 var(--ink),0 0 0 1px rgba(var(--sag),.18);
+    display:flex;flex-direction:column;position:relative;
+    animation:cardIdleP 4s ease-in-out infinite;
+    isolation:isolate;cursor:default;flex-shrink:0;
+    background:linear-gradient(160deg,var(--paper) 0%,var(--paper2) 70%,var(--paper3) 100%);
+  }
+  /* Halftone */
+  .fight-card::before{content:'';position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:4px;opacity:.05;background-image:radial-gradient(circle,var(--ink) 1px,transparent 1px);background-size:5px 5px}
+  /* Corner tint */
+  .fight-card::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:4px;background:linear-gradient(135deg,rgba(var(--sag),.16) 0%,transparent 22%),linear-gradient(315deg,rgba(var(--sag),.1) 0%,transparent 18%)}
+  .fc-fullart{position:absolute;inset:0;z-index:0;background:var(--paper3) center 25%/cover no-repeat;transition:transform .5s cubic-bezier(.25,.8,.25,1);filter:sepia(.12) contrast(1.06)}
+  .fc-overlay{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(240,232,208,.52) 0%,rgba(240,232,208,.07) 22%,transparent 38%,transparent 52%,rgba(240,232,208,.26) 65%,rgba(230,220,196,.83) 80%,var(--paper2) 100%)}
+  .fc-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 28px rgba(24,14,4,.42),inset 0 0 7px rgba(24,14,4,.18)}
+  .fc-tint{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 110% 55% at 50% 120%,rgba(var(--sag),.2),transparent 65%)}
+  .fc-shimmer{position:absolute;top:0;bottom:0;left:0;width:45%;z-index:2;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%)}
+  .fight-card:hover .fc-fullart{transform:scale(1.04) translateY(-1.5%)}
+  .fight-card:hover .fc-shimmer{animation:shimmerPass .58s ease both}
+  .fc-content{position:relative;z-index:3;display:flex;flex-direction:column;height:100%}
+  .fc-band{height:4px;flex-shrink:0;background:linear-gradient(90deg,transparent 0%,rgba(var(--sag),.88) 15%,rgba(var(--sag),1) 40%,rgba(255,255,255,.65) 50%,rgba(var(--sag),1) 60%,rgba(var(--sag),.88) 85%,transparent 100%);background-size:250% auto;animation:bandShimmer 2s linear infinite}
+  .fc-hdr{display:flex;align-items:center;gap:4px;padding:5px 7px 4px;flex-shrink:0;background:linear-gradient(180deg,rgba(240,232,208,.9) 0%,rgba(240,232,208,.48) 70%,transparent)}
+  .fc-hdr-name{font-family:var(--fd);font-size:.86rem;letter-spacing:.04em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1;color:var(--ink);text-shadow:1px 1px 0 rgba(240,232,208,.88)}
+  .fc-type-pill{font-family:var(--fd);font-size:.42rem;letter-spacing:.12em;border:1.5px solid rgba(var(--sag),.68);color:rgba(var(--sag),1);background:rgba(240,232,208,.82);border-radius:2px;padding:2px 5px;white-space:nowrap;flex-shrink:0}
+  .fc-guard-pill{font-family:var(--fd);font-size:.42rem;letter-spacing:.06em;background:var(--gold3);color:var(--ink);border:1.5px solid var(--ink);border-radius:2px;padding:2px 5px;flex-shrink:0;box-shadow:1px 1px 0 var(--ink);animation:pulseGlow .9s ease-in-out infinite}
+  .fc-art-zone{flex:1;min-height:0;position:relative}
+  .fc-art-emoji{position:absolute;inset:0;display:grid;place-items:center;font-size:3.8rem;filter:drop-shadow(1px 2px 0 rgba(240,232,208,.75));z-index:2}
+  .fc-stats-panel{flex-shrink:0;padding:5px 8px 7px;background:linear-gradient(0deg,var(--paper2) 55%,rgba(228,218,194,.9) 78%,transparent);border-top:1.5px solid rgba(var(--sag),.18)}
+  .fc-subtitle{font-family:var(--fb);font-style:italic;font-size:.47rem;letter-spacing:.06em;color:rgba(var(--sag),.88);text-transform:uppercase;margin-bottom:3px}
+  .fc-mom{display:flex;gap:3px;align-items:center;margin-bottom:4px}
+  .pip{width:8px;height:8px;border-radius:1px;border:1.5px solid var(--ink3);background:transparent;transition:all .2s}
+  .pip.on {background:rgba(var(--sag),.68);border-color:rgba(var(--sag),1)}
+  .pip.rdy{background:var(--gold3);border-color:var(--ink);box-shadow:0 0 6px rgba(236,176,24,.58)}
+  .pip.max{background:var(--red);border-color:var(--ink);box-shadow:0 0 10px rgba(192,15,30,.68);animation:pipPop .55s ease-in-out infinite}
+  .fc-srow{display:flex;gap:10px;align-items:center}
+  .fst{display:flex;gap:2px;align-items:baseline}
+  .fst-l{font-family:var(--fd);font-size:.44rem;letter-spacing:.1em;color:var(--ink4)}
+  .fst-v{font-family:var(--fd);font-size:.86rem;line-height:1;color:var(--ink)}
+  .fc-statuses{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+  .sbadge{font-family:var(--fd);font-size:.44rem;letter-spacing:.06em;border-radius:2px;padding:2px 5px;white-space:nowrap;border:1.5px solid}
+  .sb-bleed {background:rgba(176,18,18,.1);border-color:var(--red2);color:var(--red2)}
+  .sb-stun  {background:rgba(176,112,0,.1);border-color:var(--gold);color:var(--gold);animation:stunShake 1.6s ease-in-out infinite}
+  .sb-weaken{background:rgba(104,24,176,.08);border-color:#6818b0;color:#6818b0}
+  .sb-power {background:rgba(192,15,30,.08);border-color:var(--red);color:var(--red)}
+
+  /* ────────── HP BAR ────────── */
+  .fc-hp-bar{width:min(156px,42vw);margin-top:4px;padding:3px 5px 3px;background:var(--ink);border:2px solid var(--ink);border-radius:3px;box-shadow:2px 2px 0 rgba(24,14,4,.38)}
+  .fc-hp-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+  .hp-name{font-family:var(--fd);font-size:.5rem;letter-spacing:.06em;color:rgba(240,232,208,.58);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
+  .hp-num    {font-family:var(--fd);font-size:.78rem;color:#40e878}
+  .hp-num.mid{color:var(--gold3)}
+  .hp-num.low{color:#f0203a;animation:hpPulse .85s ease-in-out infinite}
+  .hpb{height:5px;background:rgba(240,232,208,.14);border-radius:1px;overflow:hidden}
+  .hpfill{height:100%;background:#28c860;border-radius:1px;transition:width .34s cubic-bezier(.4,0,.2,1);box-shadow:0 0 5px rgba(40,200,96,.55)}
+  .hpfill.mid{background:var(--gold3);box-shadow:0 0 5px rgba(236,176,24,.55)}
+  .hpfill.low{background:#f0203a;box-shadow:0 0 5px rgba(240,32,58,.55)}
+
+  /* ────────── LOG BOX ────────── */
+  .logbox{
+    padding:5px 12px;background:var(--ink);
+    border-top:2px solid rgba(240,232,208,.1);border-bottom:2px solid rgba(240,232,208,.1);
+    position:relative;z-index:2;grid-column:1;min-height:44px;display:flex;align-items:center;
+  }
+  .logbox::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(-45deg,transparent 0,transparent 8px,rgba(240,232,208,.018) 8px,rgba(240,232,208,.018) 9px)}
+  .log-inner{display:flex;flex-direction:column;gap:2px;width:100%;position:relative;z-index:1}
+  .turn-lbl{font-family:var(--fd);font-size:.72rem;letter-spacing:.16em;color:rgba(240,232,208,.42)}
+  .turn-lbl.yours{color:#40e878;text-shadow:0 0 10px rgba(64,232,120,.45)}
+  .turn-lbl.stunned-lbl{color:var(--gold3);text-shadow:0 0 8px rgba(236,176,24,.45)}
+  .log-txt{font-family:var(--fb);font-size:.84rem;color:var(--paper);line-height:1.25}
+
+  /* ────────── CONTROLS ────────── */
+  .ctrl{
+    padding:6px 8px;background:var(--paper);border-top:2.5px solid var(--ink);
+    display:flex;flex-direction:column;gap:5px;position:relative;z-index:2;grid-column:1;
+  }
+  .ctrl::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.038;background-image:radial-gradient(circle,var(--ink) 1px,transparent 1px);background-size:6px 6px}
+  .ctrl>*{position:relative;z-index:1}
+  .ctrl-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .ctrl-info{display:flex;align-items:center;gap:6px;flex:1;overflow:hidden}
+  .ctrl-lbl{font-family:var(--fd);font-size:.8rem;letter-spacing:.12em;color:var(--ink3);white-space:nowrap}
+  .ctrl-boxer-name{font-family:var(--fb);font-size:.58rem;color:var(--ink4);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tc-badge{font-family:var(--fd);font-size:.75rem;letter-spacing:.1em;background:var(--gold3);color:var(--ink);border:2px solid var(--ink);border-radius:2px;padding:1px 7px;white-space:nowrap;box-shadow:2px 2px 0 var(--ink)}
+  .stun-note{font-family:var(--fd);font-size:.65rem;color:var(--gold);letter-spacing:.08em;border:1.5px solid var(--gold);border-radius:2px;padding:1px 5px}
+  .act-row{display:flex;gap:5px;flex-wrap:wrap}
+  .act-row .btn{flex:1;min-width:0;font-size:.82rem;padding:7px 5px;min-height:38px;font-weight:700}
+
+  /* ────────── BUFF SIDE ────────── */
+  .buff-side{grid-row:1/-1;grid-column:2;background:var(--ink2);border-left:2.5px solid var(--ink);display:flex;flex-direction:column;gap:5px;padding:7px 4px;overflow-y:auto}
+  .buff-side::-webkit-scrollbar{width:2px}
+  .buff-side::-webkit-scrollbar-thumb{background:rgba(240,232,208,.22);border-radius:1px}
+  .buff{background:rgba(240,232,208,.06);border:1.5px solid rgba(240,232,208,.18);border-radius:3px;padding:6px 4px;cursor:pointer;transition:border-color .09s,background .09s,transform .09s;display:flex;flex-direction:column;align-items:center;gap:2px;touch-action:manipulation;text-align:center}
+  .buff:not(:disabled):hover{border-color:var(--gold3);background:rgba(236,176,24,.14);transform:translateX(-1px)}
+  .buff:not(:disabled):active{transform:scale(.93)}
+  .buff.dis{opacity:.2}
+  .buff-top{display:flex;justify-content:space-between;width:100%;align-items:center}
+  .buff-ico{font-size:1.5rem}
+  .buff-tc{font-family:var(--fd);font-size:.55rem;letter-spacing:.06em;background:var(--gold3);color:var(--ink);border-radius:2px;padding:1px 4px;border:1px solid var(--ink)}
+  .buff-nm{font-family:var(--fd);font-size:.56rem;letter-spacing:.06em;color:rgba(240,232,208,.62);line-height:1.1}
+
+  /* ────────── RESULT OVERLAY ────────── */
+  .ov{position:absolute;inset:0;z-index:50;background:rgba(24,14,4,.82);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+  .ov-box{display:flex;flex-direction:column;align-items:center;gap:14px;padding:36px 32px;border:3.5px solid var(--ink);background:var(--paper);box-shadow:6px 6px 0 var(--ink);min-width:240px;max-width:88vw;position:relative;overflow:hidden}
+  .ov-box::before,.ov-box::after{content:'';position:absolute;width:22px;height:22px;border-color:var(--red);border-style:solid}
+  .ov-box::before{top:8px;left:8px;border-width:2.5px 0 0 2.5px}
+  .ov-box::after {bottom:8px;right:8px;border-width:0 2.5px 2.5px 0}
+  /* Halftone in result box */
+  .ov-box-dots{position:absolute;inset:0;opacity:.035;background-image:radial-gradient(circle,var(--ink) 1px,transparent 1px);background-size:8px 8px;pointer-events:none}
+  .ov-result{font-family:var(--fd);font-size:clamp(3.5rem,14vw,6rem);letter-spacing:.04em;line-height:.9;position:relative}
+  .ov-result.win {color:var(--gold3);text-shadow:4px 4px 0 var(--gold),6px 6px 0 rgba(24,14,4,.28)}
+  .ov-result.lose{color:var(--red3);text-shadow:4px 4px 0 var(--red-dk),6px 6px 0 rgba(24,14,4,.28)}
+  .ov-rule{width:52px;height:3px;background:var(--ink)}
+  .ov-sub{font-family:var(--fd);font-size:1rem;letter-spacing:.2em;color:var(--ink3)}
+  .ov-stats{display:flex;gap:20px}
+  .ov-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .ov-stat b{font-family:var(--fd);font-size:1.3rem;color:var(--ink)}
+  .ov-stat span{font-family:var(--fd);font-size:.65rem;letter-spacing:.12em;color:var(--ink3)}
+
+  @media(max-height:680px){
+    .fight-card{width:min(130px,35vw)}
+    .fc-hp-bar{width:min(130px,35vw)}
+    .battle{grid-template-columns:1fr 68px}
+    .buff{padding:5px 3px}
+    .buff-ico{font-size:1.2rem}
+    .buff-nm{font-size:.5rem}
+    .buff-tc{font-size:.46rem}
   }
   </style>
 </head>
@@ -1211,78 +614,76 @@
 const FIREBASE_CONFIG={apiKey:"AIzaSyDi-5UoX0hDw7O6UQY5pduKgxQMX5C4KY4",authDomain:"ringclash1.firebaseapp.com",databaseURL:"https://ringclash1-default-rtdb.europe-west1.firebasedatabase.app",projectId:"ringclash1",storageBucket:"ringclash1.firebasestorage.app",messagingSenderId:"373910829853",appId:"1:373910829853:web:319a0093fedf3ef7123ff4"};
 
 const SIGNATURES={
-  ippo:    {name:"Dempsey Roll",      icon:"🌀",mult:1.9, effect:null},
-  takamura:{name:"Bear Mauling",      icon:"🐻",mult:1.75,effect:"stun"},
-  aoki:    {name:"Frog Leap Jab",     icon:"🐸",mult:1.35,effect:"stun"},
-  kimura:  {name:"Dragon Fish Blow",  icon:"🐟",mult:1.45,effect:null},
-  miyata:  {name:"Cross Counter",     icon:"⚡",mult:1.7, effect:null},
-  itagaki: {name:"Speed Blitz",       icon:"💨",mult:1.4, effect:null},
-  sendou:  {name:"Tiger Rush",        icon:"🐅",mult:1.65,effect:"bleed"},
-  volg:    {name:"White Fang",        icon:"🐺",mult:1.75,effect:null},
-  ricardo: {name:"Legendary Fist",    icon:"👑",mult:2.1, effect:"weaken"},
-  alfredo: {name:"Aztec Storm",       icon:"🌊",mult:1.7, effect:null},
-  bryan:   {name:"Hawk Claw",         icon:"🦅",mult:1.6, effect:"bleed"},
-  david:   {name:"Eagle Eye Cross",   icon:"🦅",mult:1.55,effect:"weaken"},
-  ozuma:   {name:"Death Row Blast",   icon:"☠", mult:1.8, effect:"stun"},
-  malcolm: {name:"Southpaw Feint",    icon:"🎭",mult:1.55,effect:"weaken"},
-  hammer:  {name:"Sledgehammer",      icon:"🔨",mult:1.85,effect:"stun"},
-  wolf:    {name:"Wolf Fang",         icon:"🐺",mult:1.6, effect:"bleed"},
-  shimabukuro:{name:"Southpaw Rush",  icon:"🌀",mult:1.5, effect:null},
-  date:    {name:"Heartbreak Shot",   icon:"💔",mult:1.6, effect:"weaken"},
-  mashiba: {name:"Reaping Hook",      icon:"💀",mult:1.55,effect:"bleed"},
-  sawamura:{name:"Bullet Jab",        icon:"🔫",mult:1.5, effect:"weaken"},
-  sanada:  {name:"Iron Fist Combo",   icon:"🗜",mult:1.65,effect:"weaken"},
-  sendo2:  {name:"Smash",             icon:"💥",mult:1.55,effect:"bleed"},
-  nao:     {name:"Hammer Fist",       icon:"🔨",mult:1.65,effect:"stun"},
+  ippo:       {name:"Dempsey Roll",     icon:"🌀",mult:1.9, effect:null},
+  takamura:   {name:"Bear Mauling",     icon:"🐻",mult:1.75,effect:"stun"},
+  aoki:       {name:"Frog Leap Jab",    icon:"🐸",mult:1.35,effect:"stun"},
+  kimura:     {name:"Dragon Fish Blow", icon:"🐟",mult:1.45,effect:null},
+  miyata:     {name:"Cross Counter",    icon:"⚡",mult:1.7, effect:null},
+  itagaki:    {name:"Speed Blitz",      icon:"💨",mult:1.4, effect:null},
+  sendou:     {name:"Tiger Rush",       icon:"🐅",mult:1.65,effect:"bleed"},
+  volg:       {name:"White Fang",       icon:"🐺",mult:1.75,effect:null},
+  ricardo:    {name:"Legendary Fist",   icon:"👑",mult:2.1, effect:"weaken"},
+  alfredo:    {name:"Aztec Storm",      icon:"🌊",mult:1.7, effect:null},
+  bryan:      {name:"Hawk Claw",        icon:"🦅",mult:1.6, effect:"bleed"},
+  david:      {name:"Eagle Eye Cross",  icon:"🦅",mult:1.55,effect:"weaken"},
+  ozuma:      {name:"Death Row Blast",  icon:"☠", mult:1.8, effect:"stun"},
+  malcolm:    {name:"Southpaw Feint",   icon:"🎭",mult:1.55,effect:"weaken"},
+  hammer:     {name:"Sledgehammer",     icon:"🔨",mult:1.85,effect:"stun"},
+  wolf:       {name:"Wolf Fang",        icon:"🐺",mult:1.6, effect:"bleed"},
+  shimabukuro:{name:"Southpaw Rush",    icon:"🌀",mult:1.5, effect:null},
+  date:       {name:"Heartbreak Shot",  icon:"💔",mult:1.6, effect:"weaken"},
+  mashiba:    {name:"Reaping Hook",     icon:"💀",mult:1.55,effect:"bleed"},
+  sawamura:   {name:"Bullet Jab",       icon:"🔫",mult:1.5, effect:"weaken"},
+  sanada:     {name:"Iron Fist Combo",  icon:"🗜",mult:1.65,effect:"weaken"},
 };
 
 const BOXERS=[
-  {id:"ippo",   name:"Makunouchi Ippo",  title:"The Wind God",       style:"balanced",hp:252,atk:54,def:30,icon:"🥊",img:"assets/boxers/ippo.jpg"},
-  {id:"takamura",name:"Takamura Mamoru", title:"The Rampaging Bear", style:"slugger", hp:295,atk:62,def:36,icon:"🐻",img:"assets/boxers/takamura.jpg"},
-  {id:"aoki",   name:"Aoki Masaru",      title:"Frog King",          style:"tank",    hp:248,atk:32,def:52,icon:"🐸",img:"assets/boxers/aoki.jpg"},
-  {id:"kimura", name:"Kimura Tatsuya",   title:"Dragon Fish Blow",   style:"speed",   hp:228,atk:40,def:40,icon:"🐟",img:"assets/boxers/kimura.jpg"},
-  {id:"miyata", name:"Miyata Ichiro",    title:"Counter King",       style:"counter", hp:222,atk:50,def:50,icon:"⚡",img:"assets/boxers/miyata.jpg"},
-  {id:"itagaki",name:"Itagaki Manabu",   title:"Speed Star",         style:"speed",   hp:210,atk:42,def:50,icon:"🌀",img:"assets/boxers/itagaki.jpg"},
-  {id:"sendou", name:"Sendou Takeshi",   title:"Naniwa Tiger",       style:"slugger", hp:252,atk:58,def:18,icon:"🐅",img:"assets/boxers/sendou.jpg"},
-  {id:"volg",   name:"Volg Zangief",     title:"White Fang",         style:"balanced",hp:242,atk:52,def:44,icon:"🐺",img:"assets/boxers/volg.jpg"},
-  {id:"ricardo",name:"Ricardo Martinez", title:"The Legend",         style:"counter", hp:268,atk:62,def:60,icon:"👑",img:"assets/boxers/ricardo.jpg"},
-  {id:"alfredo",name:"Alfredo Gonzales", title:"Metztli",            style:"balanced",hp:262,atk:54,def:38,icon:"🇲🇽",img:"assets/boxers/alfredo.jpg"},
-  {id:"bryan",  name:"Bryan Hawk",       title:"Wild Hawk",          style:"slugger", hp:272,atk:58,def:26,icon:"🦅",img:"assets/boxers/bryan.jpg"},
-  {id:"david",  name:"David Eagle",      title:"The Eagle",          style:"counter", hp:250,atk:50,def:48,icon:"🦅",img:"assets/boxers/david.jpg"},
-  {id:"ozuma",  name:"Hisato Ozuma",     title:"Death Row",          style:"slugger", hp:244,atk:58,def:22,icon:"☠️",img:"assets/boxers/ozuma.jpg"},
-  {id:"malcolm",name:"Malcolm Grid",     title:"The Professor",      style:"counter", hp:232,atk:46,def:48,icon:"🎓",img:"assets/boxers/malcolm.jpg"},
-  {id:"hammer", name:"Hammer Nao",       title:"Iron Hammer",        style:"tank",    hp:278,atk:54,def:40,icon:"🔨",img:"assets/boxers/hammer.jpg"},
-  {id:"wolf",   name:"Wally",            title:"African Wolf",       style:"slugger", hp:245,atk:55,def:24,icon:"🐗",img:"assets/boxers/wolf.jpg"},
-  {id:"shimabukuro",name:"Shimabukuro",  title:"Southpaw Stylist",   style:"speed",   hp:222,atk:44,def:46,icon:"🤙",img:"assets/boxers/shimabukuro.jpg"},
-  {id:"date",   name:"Date Eiji",        title:"The Veteran",        style:"tank",    hp:262,atk:46,def:52,icon:"🍷",img:"assets/boxers/date.jpg"},
-  {id:"mashiba",name:"Mashiba Ryo",      title:"The Reaper",         style:"counter", hp:232,atk:52,def:38,icon:"💀",img:"assets/boxers/mashiba.jpg"},
-  {id:"sawamura",name:"Sawamura Ryuhei", title:"Bullet Speed",       style:"speed",   hp:218,atk:48,def:40,icon:"🔫",img:"assets/boxers/sawamura.jpg"},
-  {id:"sanada", name:"Sanada Kazuki",    title:"Southpaw Surgeon",   style:"counter", hp:238,atk:50,def:44,icon:"🗜️",img:"assets/boxers/sanada.jpg"},
+  {id:"ippo",       name:"Makunouchi Ippo",  title:"The Wind God",       style:"balanced",hp:252,atk:54,def:30,icon:"🥊",img:"assets/boxers/ippo.jpg"},
+  {id:"takamura",   name:"Takamura Mamoru",  title:"The Rampaging Bear", style:"slugger", hp:295,atk:62,def:36,icon:"🐻",img:"assets/boxers/takamura.jpg"},
+  {id:"aoki",       name:"Aoki Masaru",      title:"Frog King",          style:"tank",    hp:248,atk:32,def:52,icon:"🐸",img:"assets/boxers/aoki.jpg"},
+  {id:"kimura",     name:"Kimura Tatsuya",   title:"Dragon Fish Blow",   style:"speed",   hp:228,atk:40,def:40,icon:"🐟",img:"assets/boxers/kimura.jpg"},
+  {id:"miyata",     name:"Miyata Ichiro",    title:"Counter King",       style:"counter", hp:222,atk:50,def:50,icon:"⚡",img:"assets/boxers/miyata.jpg"},
+  {id:"itagaki",    name:"Itagaki Manabu",   title:"Speed Star",         style:"speed",   hp:210,atk:42,def:50,icon:"🌀",img:"assets/boxers/itagaki.jpg"},
+  {id:"sendou",     name:"Sendou Takeshi",   title:"Naniwa Tiger",       style:"slugger", hp:252,atk:58,def:18,icon:"🐅",img:"assets/boxers/sendou.jpg"},
+  {id:"volg",       name:"Volg Zangief",     title:"White Fang",         style:"balanced",hp:242,atk:52,def:44,icon:"🐺",img:"assets/boxers/volg.jpg"},
+  {id:"ricardo",    name:"Ricardo Martinez", title:"The Legend",         style:"counter", hp:268,atk:62,def:60,icon:"👑",img:"assets/boxers/ricardo.jpg"},
+  {id:"alfredo",    name:"Alfredo Gonzales", title:"Metztli",            style:"balanced",hp:262,atk:54,def:38,icon:"🇲🇽",img:"assets/boxers/alfredo.jpg"},
+  {id:"bryan",      name:"Bryan Hawk",       title:"Wild Hawk",          style:"slugger", hp:272,atk:58,def:26,icon:"🦅",img:"assets/boxers/bryan.jpg"},
+  {id:"david",      name:"David Eagle",      title:"The Eagle",          style:"counter", hp:250,atk:50,def:48,icon:"🦅",img:"assets/boxers/david.jpg"},
+  {id:"ozuma",      name:"Hisato Ozuma",     title:"Death Row",          style:"slugger", hp:244,atk:58,def:22,icon:"☠️",img:"assets/boxers/ozuma.jpg"},
+  {id:"malcolm",    name:"Malcolm Grid",     title:"The Professor",      style:"counter", hp:232,atk:46,def:48,icon:"🎓",img:"assets/boxers/malcolm.jpg"},
+  {id:"hammer",     name:"Hammer Nao",       title:"Iron Hammer",        style:"tank",    hp:278,atk:54,def:40,icon:"🔨",img:"assets/boxers/hammer.jpg"},
+  {id:"wolf",       name:"Wally",            title:"African Wolf",       style:"slugger", hp:245,atk:55,def:24,icon:"🐗",img:"assets/boxers/wolf.jpg"},
+  {id:"shimabukuro",name:"Shimabukuro",      title:"Southpaw Stylist",   style:"speed",   hp:222,atk:44,def:46,icon:"🤙",img:"assets/boxers/shimabukuro.jpg"},
+  {id:"date",       name:"Date Eiji",        title:"The Veteran",        style:"tank",    hp:262,atk:46,def:52,icon:"🍷",img:"assets/boxers/date.jpg"},
+  {id:"mashiba",    name:"Mashiba Ryo",      title:"The Reaper",         style:"counter", hp:232,atk:52,def:38,icon:"💀",img:"assets/boxers/mashiba.jpg"},
+  {id:"sawamura",   name:"Sawamura Ryuhei",  title:"Bullet Speed",       style:"speed",   hp:218,atk:48,def:40,icon:"🔫",img:"assets/boxers/sawamura.jpg"},
+  {id:"sanada",     name:"Sanada Kazuki",    title:"Southpaw Surgeon",   style:"counter", hp:238,atk:50,def:44,icon:"🗜️",img:"assets/boxers/sanada.jpg"},
 ];
 
 const BUFFS=[
-  {id:"corner",  name:"Corner Work",      cost:1,effect:"def",      val:20, icon:"🩹",desc:"+20 DEF this round"},
-  {id:"ice",     name:"Ice Pack",         cost:1,effect:"hp",       val:28, icon:"🧊",desc:"+28 HP"},
-  {id:"salts",   name:"Smelling Salts",   cost:1,effect:"cleanse",  val:0,  icon:"💊",desc:"Remove all debuffs"},
-  {id:"tape",    name:"Tape & Treat",     cost:1,effect:"cleanse_hp",val:20,icon:"🩺",desc:"Clear debuffs +20 HP"},
-  {id:"steak",   name:"Protein Steak",    cost:2,effect:"hp",       val:55, icon:"🥩",desc:"+55 HP"},
-  {id:"second",  name:"Second Wind",      cost:3,effect:"hp_pct",   val:.5, icon:"🌬️",desc:"Restore 50% lost HP"},
-  {id:"focus",   name:"Deep Focus",       cost:0,effect:"def",      val:10, icon:"🧘",desc:"+10 DEF"},
-  {id:"towel",   name:"Cold Towel",       cost:1,effect:"hp",       val:18, icon:"🏳️",desc:"+18 HP & clear stun",special:"cleanse_stun"},
-  {id:"bandage", name:"Hand Bandage",     cost:2,effect:"def",      val:32, icon:"🤜",desc:"+32 DEF armored"},
-  {id:"breathe", name:"Controlled Breath",cost:1,effect:"def",      val:16, icon:"💨",desc:"+16 DEF"},
-  {id:"rush",    name:"Adrenaline",       cost:2,effect:"atk_risk", val:32, icon:"💉",desc:"+32 ATK, -16 HP",cost_hp:16},
-  {id:"warcry",  name:"War Cry",          cost:2,effect:"power_up", val:0,  icon:"🔥",desc:"Next hit: 1.75× DMG",mult:1.75},
-  {id:"haymaker",name:"Haymaker Drill",   cost:3,effect:"atk",      val:42, icon:"💢",desc:"+42 ATK"},
-  {id:"rage",    name:"Fighting Spirit",  cost:2,effect:"atk",      val:26, icon:"😤",desc:"+26 ATK"},
-  {id:"killer",  name:"Killer Instinct",  cost:3,effect:"power_up", val:0,  icon:"⚔️",desc:"Next hit: 2.0× DMG",mult:2.0},
-  {id:"feint",   name:"Feint Master",     cost:1,effect:"atk",      val:14, icon:"🎭",desc:"+14 ATK this round"},
-  {id:"plan",    name:"Game Plan",        cost:1,effect:"tc",       val:3,  icon:"📋",desc:"+3 TC"},
-  {id:"trainer", name:"Trainer's Call",   cost:0,effect:"multi",    val:0,  icon:"📣",desc:"+6 ATK +8 DEF",extra:{atk:6,def:8}},
-  {id:"kamogawa",name:"Kamogawa Fist",    cost:2,effect:"multi",    val:0,  icon:"👴",desc:"+18 ATK +18 DEF",extra:{atk:18,def:18}},
-  {id:"rooting", name:"Crowd Roar",       cost:0,effect:"tc",       val:2,  icon:"📣",desc:"+2 TC"},
-  {id:"tape2",   name:"Full Tape Job",    cost:2,effect:"multi",    val:0,  icon:"🩻",desc:"+12 DEF +20 HP",extra:{def:12,hp:20}},
-  {id:"strategy",name:"Ring Strategy",   cost:1,effect:"def",      val:12, icon:"♟️",desc:"+12 DEF"},
+  {id:"corner",  name:"Corner Work",      cost:1,effect:"def",       val:20, icon:"🩹",desc:"+20 DEF this round"},
+  {id:"ice",     name:"Ice Pack",         cost:1,effect:"hp",        val:28, icon:"🧊",desc:"+28 HP"},
+  {id:"salts",   name:"Smelling Salts",   cost:1,effect:"cleanse",   val:0,  icon:"💊",desc:"Remove all debuffs"},
+  {id:"tape",    name:"Tape & Treat",     cost:1,effect:"cleanse_hp",val:20, icon:"🩺",desc:"Clear debuffs +20 HP"},
+  {id:"steak",   name:"Protein Steak",    cost:2,effect:"hp",        val:55, icon:"🥩",desc:"+55 HP"},
+  {id:"second",  name:"Second Wind",      cost:3,effect:"hp_pct",    val:.5, icon:"🌬️",desc:"Restore 50% lost HP"},
+  {id:"focus",   name:"Deep Focus",       cost:0,effect:"def",       val:10, icon:"🧘",desc:"+10 DEF"},
+  {id:"towel",   name:"Cold Towel",       cost:1,effect:"hp",        val:18, icon:"🏳️",desc:"+18 HP & clear stun",special:"cleanse_stun"},
+  {id:"bandage", name:"Hand Bandage",     cost:2,effect:"def",       val:32, icon:"🤜",desc:"+32 DEF armored"},
+  {id:"breathe", name:"Controlled Breath",cost:1,effect:"def",       val:16, icon:"💨",desc:"+16 DEF"},
+  {id:"rush",    name:"Adrenaline",       cost:2,effect:"atk_risk",  val:32, icon:"💉",desc:"+32 ATK, -16 HP",cost_hp:16},
+  {id:"warcry",  name:"War Cry",          cost:2,effect:"power_up",  val:0,  icon:"🔥",desc:"Next hit: 1.75× DMG",mult:1.75},
+  {id:"haymaker",name:"Haymaker Drill",   cost:3,effect:"atk",       val:42, icon:"💢",desc:"+42 ATK"},
+  {id:"rage",    name:"Fighting Spirit",  cost:2,effect:"atk",       val:26, icon:"😤",desc:"+26 ATK"},
+  {id:"killer",  name:"Killer Instinct",  cost:3,effect:"power_up",  val:0,  icon:"⚔️",desc:"Next hit: 2.0× DMG",mult:2.0},
+  {id:"feint",   name:"Feint Master",     cost:1,effect:"atk",       val:14, icon:"🎭",desc:"+14 ATK this round"},
+  {id:"plan",    name:"Game Plan",        cost:1,effect:"tc",        val:3,  icon:"📋",desc:"+3 TC"},
+  {id:"trainer", name:"Trainer's Call",   cost:0,effect:"multi",     val:0,  icon:"📣",desc:"+6 ATK +8 DEF",extra:{atk:6,def:8}},
+  {id:"kamogawa",name:"Kamogawa Fist",    cost:2,effect:"multi",     val:0,  icon:"👴",desc:"+18 ATK +18 DEF",extra:{atk:18,def:18}},
+  {id:"rooting", name:"Crowd Roar",       cost:0,effect:"tc",        val:2,  icon:"📣",desc:"+2 TC"},
+  {id:"tape2",   name:"Full Tape Job",    cost:2,effect:"multi",     val:0,  icon:"🩻",desc:"+12 DEF +20 HP",extra:{def:12,hp:20}},
+  {id:"strategy",name:"Ring Strategy",   cost:1,effect:"def",       val:12, icon:"♟️",desc:"+12 DEF"},
 ];
 
 const S={
@@ -1293,7 +694,9 @@ const S={
   online:{db:null,uid:null,roomNode:"rooms",roomId:null,role:null,roomCb:null,listCb:null,lock:false}
 };
 
-const app=()=>document.getElementById("app"),deep=x=>JSON.parse(JSON.stringify(x)),now=()=>Date.now(),
+const app=()=>document.getElementById("app"),
+  deep=x=>JSON.parse(JSON.stringify(x)),
+  now=()=>Date.now(),
   hasCfg=()=>!!(FIREBASE_CONFIG.apiKey&&!FIREBASE_CONFIG.apiKey.startsWith("PASTE_")),
   roomsRef=(p="")=>S.online.db.ref(p?`${S.online.roomNode}/${p}`:S.online.roomNode),
   rid=()=>`r_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
@@ -1331,29 +734,24 @@ function applyEffect(effect,target,src){
   if(effect==="weaken"){target.statuses.weaken={turns:2};return"🛡 WEAKENED!"}
   return null
 }
-
 function applyBuff(f,s){
   const a=s.boxers[s.active];if(!a.statuses)a.statuses={};
-  if(f.effect==="hp")            a.hp=Math.min(a.maxHp,a.hp+f.val);
-  else if(f.effect==="atk")      a.atk+=f.val;
-  else if(f.effect==="def")      a.def+=f.val;
-  else if(f.effect==="tc")       s.tc=Math.min(10,s.tc+f.val);
-  else if(f.effect==="cleanse")  a.statuses={};
+  if(f.effect==="hp")           a.hp=Math.min(a.maxHp,a.hp+f.val);
+  else if(f.effect==="atk")     a.atk+=f.val;
+  else if(f.effect==="def")     a.def+=f.val;
+  else if(f.effect==="tc")      s.tc=Math.min(10,s.tc+f.val);
+  else if(f.effect==="cleanse") a.statuses={};
   else if(f.effect==="cleanse_hp"){a.statuses={};a.hp=Math.min(a.maxHp,a.hp+f.val)}
-  else if(f.effect==="atk_risk") {a.atk+=f.val;a.hp=Math.max(1,a.hp-(f.cost_hp||14))}
-  else if(f.effect==="hp_pct")   a.hp=Math.min(a.maxHp,a.hp+Math.floor((a.maxHp-a.hp)*(f.val||.5)));
-  else if(f.effect==="power_up") a.statuses.power_up={mult:f.mult||1.75};
-  else if(f.effect==="multi")    {a.atk+=(f.extra?.atk||0);a.def+=(f.extra?.def||0);if(f.extra?.hp)a.hp=Math.min(a.maxHp,a.hp+f.extra.hp)}
-  if(f.special==="cleanse_stun") delete a.statuses.stun;
+  else if(f.effect==="atk_risk"){a.atk+=f.val;a.hp=Math.max(1,a.hp-(f.cost_hp||14))}
+  else if(f.effect==="hp_pct")  a.hp=Math.min(a.maxHp,a.hp+Math.floor((a.maxHp-a.hp)*(f.val||.5)));
+  else if(f.effect==="power_up")a.statuses.power_up={mult:f.mult||1.75};
+  else if(f.effect==="multi"){a.atk+=(f.extra?.atk||0);a.def+=(f.extra?.def||0);if(f.extra?.hp)a.hp=Math.min(a.maxHp,a.hp+f.extra.hp)}
+  if(f.special==="cleanse_stun")delete a.statuses.stun;
 }
-
 function resolveAttack(state,atk,def,salt,isSpecial){
   const sig=isSpecial?SIGNATURES[atk.id]:null;
   if(!atk.statuses)atk.statuses={};if(!def.statuses)def.statuses={};
-  if(!isSpecial){
-    const dc=def.style==="speed"?.17:.06;
-    if(hashRoll(`${salt}|dodge`)<dc){atk.momentum=Math.min(5,atk.momentum+1);return{log:`${def.name} slips the punch!`}}
-  }
+  if(!isSpecial){const dc=def.style==="speed"?.17:.06;if(hashRoll(`${salt}|dodge`)<dc){atk.momentum=Math.min(5,atk.momentum+1);return{log:`${def.name} slips the punch!`}}}
   let dmg=Math.max(8,atk.atk-Math.floor(def.def*.60))+styleBonus(atk.style)+(atk.momentum*2);
   if(sig)dmg=Math.floor(dmg*sig.mult);
   if(atk.statuses.power_up){dmg=Math.floor(dmg*(atk.statuses.power_up.mult||1.75));delete atk.statuses.power_up}
@@ -1371,7 +769,6 @@ function resolveAttack(state,atk,def,salt,isSpecial){
   if(sig?.effect){const fx=applyEffect(sig.effect,def,atk);if(fx)parts.push(fx)}
   return{log:parts.join(" — "),dmg,crit}
 }
-
 function endTurn(bb){
   bb.turn=bb.turn==="host"?"guest":"host";bb.turnCount++;
   if(bb.state!=="playing")return;
@@ -1384,7 +781,6 @@ function endTurn(bb){
     if(bx.hp<=0){bx.hp=0;bx.dead=true;const ni=nextAlive(inc);if(ni<0){bb.state="finished";bb.winner=bb.turn==="host"?"guest":"host"}else{inc.active=ni;bb.log.push(`${bx.name} collapses! ${inc.boxers[ni].name} steps up!`)}}
   }
 }
-
 function onlineApplyAction(bb,role,kind,idx){
   const me=bb[role],op=bb[role==="host"?"guest":"host"];
   const myA=me.boxers[me.active],opA=op.boxers[op.active];
@@ -1423,24 +819,101 @@ function onlineApplyAction(bb,role,kind,idx){
   return res
 }
 
-/* ────────────────── RENDER ────────────────── */
-function render(){if(S.view==="menu")return renderMenu();if(S.view==="deck")return renderDeck();if(S.view==="arena")return renderArena();if(S.view==="battle")return renderBattle()}
+/* ══════════════════════════════════
+   RENDER
+══════════════════════════════════ */
+function render(){
+  if(S.view==="menu")return renderMenu();
+  if(S.view==="deck")return renderDeck();
+  if(S.view==="arena")return renderArena();
+  if(S.view==="battle")return renderBattle();
+}
 
+/* ── THE ICONIC PUNCH MENU ── */
 function renderMenu(){
+  /* Inline SVG boxing glove — drawn in manga ink style */
+  const fistSVG=`<svg class="fist-svg" viewBox="0 0 260 220" xmlns="http://www.w3.org/2000/svg">
+    <!-- Arm/sleeve -->
+    <rect x="0" y="138" width="148" height="62" rx="8" fill="#c00f1e" stroke="#180e04" stroke-width="3.5"/>
+    <!-- Sleeve highlight stripe -->
+    <rect x="0" y="148" width="148" height="14" rx="0" fill="#d81422" opacity=".6"/>
+    <!-- Wrist wrap / tape edge -->
+    <rect x="118" y="135" width="14" height="68" rx="3" fill="#e0d4b0" stroke="#180e04" stroke-width="2.5"/>
+    <!-- White tape cross -->
+    <line x1="118" y1="152" x2="132" y2="152" stroke="#180e04" stroke-width="1.5"/>
+    <line x1="118" y1="162" x2="132" y2="162" stroke="#180e04" stroke-width="1.5"/>
+    <line x1="118" y1="172" x2="132" y2="172" stroke="#180e04" stroke-width="1.5"/>
+    <!-- Main glove body -->
+    <path d="M128 16 C128 8 136 4 148 4 C180 4 248 20 256 68 C262 100 256 136 248 152 C240 168 224 176 200 178 C180 180 136 180 128 178 L128 16Z"
+          fill="#c00f1e" stroke="#180e04" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Glove highlight — top curved shine -->
+    <path d="M148 10 C168 8 220 18 240 54 C246 66 248 80 246 96"
+          fill="none" stroke="#e83848" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+    <path d="M152 14 C172 12 218 24 236 58 C240 68 242 80 240 94"
+          fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Finger knuckle ridges -->
+    <path d="M190 12 C196 10 210 14 218 26" fill="none" stroke="#180e04" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
+    <path d="M210 16 C218 14 232 20 238 34" fill="none" stroke="#180e04" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
+    <path d="M228 28 C234 26 244 36 246 50" fill="none" stroke="#180e04" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+    <!-- Front face of glove knuckles -->
+    <ellipse cx="244" cy="80" rx="14" ry="18" fill="#d81422" stroke="#180e04" stroke-width="3"/>
+    <ellipse cx="244" cy="80" rx="8" ry="10" fill="#e83848" opacity=".4"/>
+    <!-- Glove seam line -->
+    <path d="M132 178 C132 178 146 182 164 182 C186 182 218 178 236 168 C248 160 254 148 256 132"
+          fill="none" stroke="#180e04" stroke-width="2" stroke-dasharray="6 4" opacity=".5"/>
+    <!-- Thumb -->
+    <path d="M138 62 C130 50 126 36 132 24 C136 16 146 14 154 20 C160 26 160 40 156 52 L148 66Z"
+          fill="#c00f1e" stroke="#180e04" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M140 28 C144 22 150 20 154 24" fill="none" stroke="#e83848" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+    <!-- "RC" brand on glove -->
+    <text x="164" y="108" font-family="Teko,sans-serif" font-size="22" font-weight="700" fill="#180e04" opacity=".35" letter-spacing="2">RC</text>
+    <!-- Shadow under glove -->
+    <ellipse cx="190" cy="188" rx="68" ry="10" fill="rgba(24,14,4,.18)"/>
+  </svg>`;
+
+  /* Star-burst SVG for impact */
+  const starSVG=`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="50,2 56,38 90,20 68,48 98,56 62,62 76,96 50,72 24,96 38,62 2,56 32,48 10,20 44,38"
+             fill="#ecb018" stroke="#180e04" stroke-width="2" stroke-linejoin="round"/>
+    <polygon points="50,14 54,38 74,26 62,46 86,52 62,56 70,78 50,62 30,78 38,56 14,52 38,46 26,26 46,38"
+             fill="#ffd040" opacity=".7"/>
+    <circle cx="50" cy="50" r="10" fill="white" opacity=".8"/>
+  </svg>`;
+
   app().innerHTML=`<div class="view menu">
+    <div class="menu-bg-lines"></div>
+    <div class="menu-bg-burst"></div>
     <div class="menu-corners"></div>
-    <div class="menu-logo">
+
+    <!-- PUNCH ANIMATION STAGE -->
+    <div class="punch-stage">
+      <div class="speed-line sl1"></div>
+      <div class="speed-line sl2"></div>
+      <div class="speed-line sl3"></div>
+      <div class="fist-wrap">${fistSVG}</div>
+      <div class="shockwave"></div>
+      <div class="shockwave2"></div>
+      <div class="impact-star">${starSVG}</div>
+      <div class="impact-flash"></div>
+    </div>
+
+    <!-- TITLE CONTENT (appears after punch) -->
+    <div class="menu-content">
       <div class="t-eyebrow">Hajime no</div>
       <div class="t-main">IPPO</div>
-      <div class="t-sub-wrap"><span class="t-sub">RING CLASH</span></div>
-    </div>
-    <div class="ink-divider"><span>🥊</span></div>
-    <div class="menu-tagline">Strategic TCG · Signature Moves · Online Battles</div>
-    <div class="row">
-      <button class="btn btn-p" id="m-ar">⚔ ENTER ARENA</button>
-      <button class="btn" id="m-de">📋 DECK BUILDER</button>
+      <div class="t-stripe">
+        <div class="t-stripe-bg"></div>
+        <span class="t-stripe-text">RING CLASH</span>
+      </div>
+      <div class="ink-divider"><span>🥊</span></div>
+      <div class="menu-tagline">Strategic TCG · Signature Moves · Online Battles</div>
+      <div class="row">
+        <button class="btn btn-p" id="m-ar">⚔ ENTER ARENA</button>
+        <button class="btn" id="m-de">📋 DECK BUILDER</button>
+      </div>
     </div>
   </div>`;
+
   document.getElementById("m-ar").onclick=()=>goto("arena");
   document.getElementById("m-de").onclick=()=>goto("deck");
 }
@@ -1459,8 +932,8 @@ function renderDeck(){
         <div class="tcg-plate"><div class="tcg-name">${x.name}</div><div class="tcg-flavor">${x.title}</div></div>
         <div class="tcg-stats">
           <div class="ts"><span class="ts-l">HP</span><span class="ts-v" style="color:#a01018">${x.hp}</span></div>
-          <div class="ts"><span class="ts-l">ATK</span><span class="ts-v" style="color:#b88010">${x.atk}</span></div>
-          <div class="ts"><span class="ts-l">DEF</span><span class="ts-v" style="color:#1a4e78">${x.def}</span></div>
+          <div class="ts"><span class="ts-l">ATK</span><span class="ts-v" style="color:#b08010">${x.atk}</span></div>
+          <div class="ts"><span class="ts-l">DEF</span><span class="ts-v" style="color:#1a4870">${x.def}</span></div>
         </div>
         <div class="tcg-sig">${sig.icon} ${sig.name}</div>
         ${selected?'<div class="tcg-chk">✓</div>':""}
@@ -1472,7 +945,7 @@ function renderDeck(){
         <div class="tcg-buff-ico">${x.icon}</div>
         <div class="tcg-plate"><div class="tcg-name">${x.name}</div><div class="tcg-flavor">${x.desc}</div></div>
         <div class="tcg-stats">
-          <div class="ts"><span class="ts-l">EFFECT</span><span class="ts-v" style="color:#126a30;font-size:.75rem">${x.effect.toUpperCase()}</span></div>
+          <div class="ts"><span class="ts-l">EFFECT</span><span class="ts-v" style="color:#186030;font-size:.75rem">${x.effect.toUpperCase()}</span></div>
           <div class="ts"><span class="ts-l">COST</span><span class="ts-v" style="color:var(--gold)">${x.cost} TC</span></div>
         </div>
         ${selected?'<div class="tcg-chk">✓</div>':""}
@@ -1522,7 +995,7 @@ async function renderArena(){
       <div class="choice" id="a-jn"><span class="choice-ico">🔑</span><h3>JOIN BY CODE</h3><p>Enter a room code.</p></div>
     </div>
     <div class="arena-hd">OPEN ROOMS</div>
-    <div class="rooms">${S.roomList.length?S.roomList.map(r=>`<div class="room" data-r="${r.id}"><b>${r.code}</b><div style="font-size:.68rem;color:var(--ink3);margin-top:2px;font-family:var(--fp)">${r.hostName}</div></div>`).join(""):`<div style="color:var(--ink3);font-size:.78rem;padding:6px;font-family:var(--fp)">No open rooms.</div>`}</div>
+    <div class="rooms">${S.roomList.length?S.roomList.map(r=>`<div class="room" data-r="${r.id}"><b>${r.code}</b><div style="font-size:.66rem;color:var(--ink3);margin-top:2px;font-family:var(--fp)">${r.hostName}</div></div>`).join(""):`<div style="color:var(--ink3);font-size:.78rem;padding:6px;font-family:var(--fp)">No open rooms.</div>`}</div>
     ${cfg?`<div class="warn">⚡ Node: ${S.online.roomNode}</div>`:`<div class="warn">⚠ Fill FIREBASE_CONFIG to enable online play.</div>`}
   </div>`;
   document.getElementById("a-bk").onclick=()=>goto("menu");
@@ -1532,17 +1005,15 @@ async function renderArena(){
   app().querySelectorAll("[data-r]").forEach(el=>el.onclick=()=>joinRoom(el.dataset.r));
 }
 
-function startAI(){if(!readyDeck())return;const me={b:S.deckBoxers,f:S.deckBuffs},ai=mkAiDeck();S.battle=mkBattle("ai",me,ai,"YOU","CPU");goto("battle")}
+function startAI(){if(!readyDeck())return;S.battle=mkBattle("ai",{b:S.deckBoxers,f:S.deckBuffs},mkAiDeck(),"YOU","CPU");goto("battle")}
 async function createRoom(){if(!readyDeck())return;if(!(await initOnline()))return;await detectNode();const id=rid(),code=rcode(),hostName="Host-"+S.online.uid.slice(-4).toUpperCase();const room={code,status:"open",createdAt:now(),updatedAt:now(),hostUid:S.online.uid,hostName,hostDeck:{b:S.deckBoxers,f:S.deckBuffs},guestUid:null,guestName:null,guestDeck:null,battle:null};try{await roomsRef(id).set(room);S.online.roomId=id;S.online.role="host";watchRoom(id);toast(`Room ${code} created.`)}catch(e){console.error(e);toast(`Create failed: ${e.code||"unknown"}`)}}
 async function joinByCode(){if(!readyDeck())return;if(!(await initOnline()))return;await detectNode();const code=(prompt("Enter room code:")||"").trim().toUpperCase();if(!code)return;try{const s=await roomsRef().orderByChild("code").equalTo(code).get();let id=null;s.forEach(c=>{const v=c.val()||{};if(!id&&v.status==="open")id=c.key});if(!id)return toast("No open room with that code.");await joinRoom(id)}catch(e){console.error(e);toast(`Join failed: ${e.code||"unknown"}`)}}
 async function joinRoom(id){if(!readyDeck())return;if(!(await initOnline()))return;await detectNode();const ref=roomsRef(id);try{const tx=await ref.transaction(room=>{if(!room||room.status!=="open"||room.guestUid)return;room.guestUid=S.online.uid;room.guestName="Guest-"+S.online.uid.slice(-4).toUpperCase();room.guestDeck={b:S.deckBoxers,f:S.deckBuffs};room.status="playing";room.battle=mkBattle("online",room.hostDeck,room.guestDeck,room.hostName,room.guestName);room.updatedAt=now();return room},undefined,false);if(!tx.committed)return toast("Room not available.");S.online.roomId=id;S.online.role="guest";watchRoom(id)}catch(e){console.error(e);toast(`Join failed: ${e.code||"unknown"}`)}}
 function subscribeRooms(){if(!S.online.db||S.online.listCb)return;const q=roomsRef().orderByChild("status").equalTo("open");const cb=snap=>{const rows=[];snap.forEach(ch=>{const v=ch.val()||{};rows.push({id:ch.key,code:v.code||"-----",hostName:v.hostName||"Host",createdAt:v.createdAt||0})});rows.sort((a,b)=>b.createdAt-a.createdAt);S.roomList=rows.slice(0,40);if(S.view==="arena")renderArena()};q.on("value",cb);S.online.listCb=cb}
 function watchRoom(id){if(S.online.roomCb&&S.online.roomId)roomsRef(S.online.roomId).off("value",S.online.roomCb);const cb=snap=>{const room=snap.val();if(!room){toast("Room closed.");S.online.roomId=null;S.online.role=null;goto("arena");return}if(room.battle){S.battle=deep(room.battle);S.battle.mode="online";if(S.view!=="battle")goto("battle");else renderBattle()}};roomsRef(id).on("value",cb);S.online.roomCb=cb;if(S.view!=="battle")goto("battle")}
 
-/* ────── FIGHT CARD COMPONENTS ────── */
-function momPips(mom){
-  return Array.from({length:5},(_,i)=>{let c="";if(i<mom){c=mom>=5?"max":mom>=3?"rdy":"on"}return`<div class="pip ${c}"></div>`}).join("")
-}
+/* ── FIGHT CARD ── */
+function momPips(mom){return Array.from({length:5},(_,i)=>{let c="";if(i<mom){c=mom>=5?"max":mom>=3?"rdy":"on"}return`<div class="pip ${c}"></div>`}).join("")}
 function statusBadges(st){
   if(!st)return"";const b=[];
   if(st.bleed) b.push(`<span class="sbadge sb-bleed">🩸 BLEED ×${st.bleed.turns}</span>`);
@@ -1551,7 +1022,6 @@ function statusBadges(st){
   if(st.power_up)b.push(`<span class="sbadge sb-power">💢 POWERED</span>`);
   return b.join("")
 }
-
 function fightCard(bx,cardId){
   const pct=Math.max(0,(bx.hp/bx.maxHp)*100).toFixed(1);
   const hpC=hpClass(bx.hp,bx.maxHp);
@@ -1561,10 +1031,8 @@ function fightCard(bx,cardId){
   return`<div class="fight-card-wrap sa-${bx.style}" ${wA}>
     <div class="fight-card sa-${bx.style}" ${idA}>
       <div class="fc-fullart" ${artBg(bx.img)}></div>
-      <div class="fc-overlay"></div>
-      <div class="fc-vignette"></div>
-      <div class="fc-tint"></div>
-      <div class="fc-shimmer"></div>
+      <div class="fc-overlay"></div><div class="fc-vignette"></div>
+      <div class="fc-tint"></div><div class="fc-shimmer"></div>
       <div class="fc-content">
         <div class="fc-band"></div>
         <div class="fc-hdr">
@@ -1579,7 +1047,7 @@ function fightCard(bx,cardId){
           <div class="fc-mom" ${cardId?`id="${cardId}-pips"`:""}>${momPips(bx.momentum||0)}</div>
           <div class="fc-srow">
             <div class="fst"><span class="fst-l">ATK</span><span class="fst-v" style="color:#b08010" ${cardId?`id="${cardId}-atk"`:""}>${bx.atk}</span></div>
-            <div class="fst"><span class="fst-l">DEF</span><span class="fst-v" style="color:#1a4e78" ${cardId?`id="${cardId}-def"`:""}>${bx.def}</span></div>
+            <div class="fst"><span class="fst-l">DEF</span><span class="fst-v" style="color:#1a4870" ${cardId?`id="${cardId}-def"`:""}>${bx.def}</span></div>
             <div class="fst"><span class="fst-l">MOM</span><span class="fst-v" ${cardId?`id="${cardId}-mom"`:""} style="color:${bx.momentum>=3?"var(--gold)":"var(--ink4)"}">${bx.momentum||0}/5</span></div>
           </div>
           <div class="fc-statuses" ${cardId?`id="${cardId}-sts"`:""}>${statusBadges(bx.statuses)}</div>
@@ -1589,18 +1057,17 @@ function fightCard(bx,cardId){
     <div class="fc-hp-bar sa-${bx.style}" ${cardId?`id="${cardId}-hpbar"`:""}>
       <div class="fc-hp-label">
         <span class="hp-name">${bx.name}</span>
-        <span class="hp-num ${hpC}" ${cardId?`id="${cardId}-hpnum"`:""}>${bx.hp}<span style="color:rgba(242,234,216,.4);font-size:.82em">/${bx.maxHp}</span></span>
+        <span class="hp-num ${hpC}" ${cardId?`id="${cardId}-hpnum"`:""}>${bx.hp}<span style="color:rgba(240,232,208,.38);font-size:.82em">/${bx.maxHp}</span></span>
       </div>
       <div class="hpb"><div class="hpfill ${hpC}" ${cardId?`id="${cardId}-fill"`:""} style="width:${pct}%"></div></div>
     </div>
   </div>`
 }
-
 function updateCard(bx,cid){
   const pct=Math.max(0,(bx.hp/bx.maxHp)*100).toFixed(1);
   const hpC=hpClass(bx.hp,bx.maxHp);
   const fill=document.getElementById(`${cid}-fill`);if(fill){fill.style.width=pct+"%";fill.className="hpfill"+(hpC?" "+hpC:"")}
-  const hpn=document.getElementById(`${cid}-hpnum`);if(hpn){hpn.className="hp-num"+(hpC?" "+hpC:"");hpn.innerHTML=`${bx.hp}<span style="color:rgba(242,234,216,.4);font-size:.82em">/${bx.maxHp}</span>`}
+  const hpn=document.getElementById(`${cid}-hpnum`);if(hpn){hpn.className="hp-num"+(hpC?" "+hpC:"");hpn.innerHTML=`${bx.hp}<span style="color:rgba(240,232,208,.38);font-size:.82em">/${bx.maxHp}</span>`}
   const mo=document.getElementById(`${cid}-mom`);if(mo){mo.textContent=`${bx.momentum||0}/5`;mo.style.color=bx.momentum>=3?"var(--gold)":"var(--ink4)"}
   const pi=document.getElementById(`${cid}-pips`);if(pi)pi.innerHTML=momPips(bx.momentum||0);
   const st=document.getElementById(`${cid}-sts`);if(st)st.innerHTML=statusBadges(bx.statuses);
@@ -1613,33 +1080,24 @@ function updateCard(bx,cid){
     if(!bx.guard&&gp)gp.remove();
   }
 }
-
 function replaceCard(bx,cid){
   const old=document.getElementById(cid);if(!old)return;
   const wrap=document.getElementById(cid+"-wrap")||old;
-  wrap.style.transition="opacity .28s ease,transform .28s ease,filter .28s ease";
+  wrap.style.transition="opacity .26s ease,transform .26s ease,filter .26s ease";
   wrap.style.filter="sepia(1) brightness(2)";wrap.style.transform="scale(.94) translateY(4px)";wrap.style.opacity="0";
-  setTimeout(()=>{
-    const tmp=document.createElement("div");tmp.innerHTML=fightCard(bx,cid);
-    const nw=tmp.firstElementChild;nw.style.animation="newBoxerIn .5s cubic-bezier(.3,0,.7,1) both";wrap.replaceWith(nw);
-  },290);
+  setTimeout(()=>{const tmp=document.createElement("div");tmp.innerHTML=fightCard(bx,cid);const nw=tmp.firstElementChild;nw.style.animation="newBoxerIn .48s cubic-bezier(.3,0,.7,1) both";wrap.replaceWith(nw)},280);
 }
-
 function spawnFloat(el,text,cls){
-  if(!el)return;
-  const f=document.createElement("div");f.className="dmg-float "+cls;f.textContent=text;
+  if(!el)return;const f=document.createElement("div");f.className="dmg-float "+cls;f.textContent=text;
   f.style.left=(28+Math.random()*44)+"%";f.style.top="26%";
-  el.style.overflow="visible";el.appendChild(f);
-  setTimeout(()=>f.remove(),1060);
+  el.style.overflow="visible";el.appendChild(f);setTimeout(()=>f.remove(),1060);
 }
-
 function flashCard(el,type){
-  if(!el)return;
-  const ov=document.createElement("div");ov.className="hit-ov"+(type?" "+type:"");
-  el.appendChild(ov);setTimeout(()=>ov.remove(),510);
+  if(!el)return;const ov=document.createElement("div");ov.className="hit-ov"+(type?" "+type:"");
+  el.appendChild(ov);setTimeout(()=>ov.remove(),505);
 }
 
-/* ────── ANIMATION ENGINE ────── */
+/* ── ANIMATION ENGINE ── */
 function animateAction(result,isPA,done){
   const b=S.battle;
   const opC=document.getElementById("fc-op"),myC=document.getElementById("fc-me");
@@ -1651,22 +1109,22 @@ function animateAction(result,isPA,done){
     const kind=result?.kind||"pass",isAtk=kind==="attack"||kind==="special";
     if(isAtk&&!result.dodged){
       if(atkC){atkC.classList.add(isPA?"punching-dn":"punching-up");if(result.isSig)atkC.classList.add("sig-burst")}
-      await ms(155);
+      await ms(152);
       if(defC){
         defC.classList.add("taking-hit");flashCard(defC,result.isSig?"gold":"red");
-        if(result.isSig){const rip=document.createElement("div");rip.className="sig-ripple";defC.appendChild(rip);setTimeout(()=>rip.remove(),750)}
+        if(result.isSig){const rip=document.createElement("div");rip.className="sig-ripple";defC.appendChild(rip);setTimeout(()=>rip.remove(),740)}
         if(result.dmg>0)spawnFloat(defC,"-"+result.dmg,result.isSig?"sig":result.crit?"crit":"norm");
       }
-      await ms(88);
+      await ms(85);
       updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
       updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
-      await ms(245);
+      await ms(240);
       if(atkC)atkC.classList.remove("punching-dn","punching-up","sig-burst");
       if(defC)defC.classList.remove("taking-hit");
       if(result.ko){
         const dI=isPA?"fc-op":"fc-me",dS=isPA?b[opKey]:b[myKey];
         const kC=document.getElementById(dI);if(kC)flashCard(kC,"ko");
-        await ms(205);
+        await ms(200);
         replaceCard(dS.boxers[dS.active],dI);
         updateCard(b[isPA?myKey:opKey].boxers[b[isPA?myKey:opKey].active],isPA?"fc-me":"fc-op");
       }
@@ -1674,28 +1132,25 @@ function animateAction(result,isPA,done){
       if(defC)defC.classList.add("taking-hit");
       updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
       updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
-      await ms(370);if(defC)defC.classList.remove("taking-hit");
+      await ms(362);if(defC)defC.classList.remove("taking-hit");
     }else{
       if(result.heal&&atkC){flashCard(atkC,"heal");spawnFloat(atkC,"+","heal")}
       if(result.ko){const dI=isPA?"fc-op":"fc-me",dS=isPA?b[opKey]:b[myKey];replaceCard(dS.boxers[dS.active],dI)}
       else{updateCard(b[opKey].boxers[b[opKey].active],"fc-op");updateCard(b[myKey].boxers[b[myKey].active],"fc-me")}
-      await ms(265);
+      await ms(258);
     }
     if(result.bleedDmg>0){
       const bT=isPA?opC:myC;spawnFloat(bT,"🩸 -"+result.bleedDmg,"bleed");
-      await ms(62);
-      updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
-      updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
-      await ms(285);
+      await ms(60);updateCard(b[opKey].boxers[b[opKey].active],"fc-op");updateCard(b[myKey].boxers[b[myKey].active],"fc-me");await ms(280);
     }
     const lt=document.querySelector(".log-txt");
     if(lt){lt.classList.remove("slide");void lt.offsetWidth;lt.textContent=b.log[b.log.length-1]||"";lt.classList.add("slide")}
-    await ms(100);done();
+    await ms(98);done();
   }
   run().catch(console.error);
 }
 
-/* ────── RENDER BATTLE ────── */
+/* ── RENDER BATTLE ── */
 function renderBattle(){
   const b=S.battle;if(!b)return goto("menu");
   const myRole=b.mode==="online"?S.online.role:"host";
@@ -1710,7 +1165,6 @@ function renderBattle(){
   const isWin=(b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole);
   let turnLbl,turnClass="turn-lbl";
   if(!can){turnLbl="○ OPPONENT TURN"}else if(isStunned){turnLbl="⚡ STUNNED — PASS TO RECOVER";turnClass="turn-lbl stunned-lbl"}else{turnLbl="● YOUR TURN";turnClass="turn-lbl yours"}
-
   app().innerHTML=`<div class="view battle">
     <div class="bar">
       <div class="bar-left">
@@ -1749,6 +1203,7 @@ function renderBattle(){
       ${me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost&&!isStunned;return`<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="buff-top"><div class="buff-ico">${f.icon}</div><div class="buff-tc">${f.cost}TC</div></div><div class="buff-nm">${f.name}</div></button>`}).join("")}
     </div>
     ${b.state==="finished"?`<div class="ov"><div class="ov-box">
+      <div class="ov-box-dots"></div>
       <div class="ov-result ${isWin?"win":"lose"}">${isWin?"VICTORY":"DEFEAT"}</div>
       <div class="ov-rule"></div>
       <div class="ov-sub">${isWin?"THE CROWD GOES WILD":"THE BELL HAS RUNG"}</div>
@@ -1756,7 +1211,6 @@ function renderBattle(){
       <button class="btn btn-p" id="b-ex" style="font-size:1.1rem;padding:12px 28px">RETURN TO MENU</button>
     </div></div>`:""}
   </div>`;
-
   if(b.state==="finished"){
     document.getElementById("b-ex").onclick=()=>{
       if(S.online.roomCb&&S.online.roomId)roomsRef(S.online.roomId).off("value",S.online.roomCb);
@@ -1771,7 +1225,7 @@ function renderBattle(){
   app().querySelectorAll("[data-bf]").forEach(el=>el.addEventListener("click",()=>act("buff",+el.dataset.bf)));
 }
 
-/* ────── ACTION ROUTER ────── */
+/* ── ACTION ROUTER ── */
 async function act(kind,idx){
   const b=S.battle;if(!b||b.state!=="playing")return;
   if(b.mode==="ai")return actAI(kind,idx);
@@ -1789,7 +1243,6 @@ async function act(kind,idx){
   }catch(e){console.error(e);toast(`Sync error: ${e.code||"unknown"}`)}
   finally{S.online.lock=false}
 }
-
 function actAI(kind,idx){
   const b=S.battle;if(!b||b.state!=="playing"||b.turn!=="host"||S.animating)return;
   S.animating=true;setCtrlEnabled(false);
@@ -1798,10 +1251,9 @@ function actAI(kind,idx){
   animateAction(result,true,()=>{
     S.animating=false;if(b.state==="finished"){renderBattle();return}
     setCtrlEnabled(true);refreshTurnUI();
-    if(b.state==="playing")setTimeout(doAiTurn,650);
+    if(b.state==="playing")setTimeout(doAiTurn,645);
   });
 }
-
 function doAiTurn(){
   const b=S.battle;if(!b||b.mode!=="ai"||b.state!=="playing"||b.turn!=="guest"||S.animating)return;
   S.animating=true;setCtrlEnabled(false);
@@ -1814,9 +1266,9 @@ function doAiTurn(){
     const heals=all.filter(x=>["hp","hp_pct","cleanse","cleanse_hp"].includes(x.f.effect));
     const power=all.filter(x=>["atk","power_up","atk_risk"].includes(x.f.effect));
     const roll=Math.random();
-    if(canSig&&roll<.52)                   {kind="special"}
-    else if(low&&heals.length&&roll<.62)   {kind="buff";idx=heals[Math.floor(Math.random()*heals.length)].i}
-    else if(power.length&&roll<.26&&!low)  {kind="buff";idx=power[Math.floor(Math.random()*power.length)].i}
+    if(canSig&&roll<.52){kind="special"}
+    else if(low&&heals.length&&roll<.62){kind="buff";idx=heals[Math.floor(Math.random()*heals.length)].i}
+    else if(power.length&&roll<.26&&!low){kind="buff";idx=power[Math.floor(Math.random()*power.length)].i}
     else if(!a.guard&&a.momentum<3&&roll<.18){kind="guard"}
   }
   const result=onlineApplyAction(b,"guest",kind,idx);
@@ -1826,14 +1278,12 @@ function doAiTurn(){
     setCtrlEnabled(true);refreshTurnUI();
   });
 }
-
 function setCtrlEnabled(on){
   ["a-hit","a-sig","a-guard","a-pass"].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.disabled=on?el.dataset.natural==="true"?false:el.disabled:true;
   });
 }
-
 function refreshTurnUI(){
   const b=S.battle;if(!b||b.state!=="playing")return;
   const myRole=b.mode==="online"?S.online.role:"host";
