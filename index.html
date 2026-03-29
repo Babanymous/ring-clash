@@ -3,709 +3,468 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Hajime no Ippo Ring Clash</title>
+  <title>Hajime no Ippo · Ring Clash</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <style>
   /* ══════════════════════════════════════
-     DESIGN SYSTEM — RING CLASH PREMIUM
+     RING CLASH v2 — MANGA PRINT PREMIUM
   ══════════════════════════════════════ */
   :root{
-    --bg:#04060e;--bg2:#080c18;--bg3:#0d1225;--bg4:#11192e;
-    --border:#141e36;--border2:#1e2e52;--border3:#2a4080;
-    --text:#f0f4ff;--muted:#3a4d78;--muted2:#6878a8;
-    --gold:#b87820;--gold2:#d8a030;--gold3:#f5c848;--gold4:#fff0a0;
-    --red:#a80f24;--red2:#cc1228;--red3:#ff2244;
-    --green:#00aa48;--green2:#00e060;
-    --fd:"Oswald",sans-serif;--fh:"Black Han Sans",sans-serif;--fb:"Rajdhani",sans-serif;
-    --radius:18px;--radius-sm:12px;
+    --bg:#0a0a0a;--bg2:#111111;--bg3:#181818;--bg4:#202020;
+    --border:#222;--border2:#333;--border3:#555;
+    --text:#f5f0e8;--muted:#666;--muted2:#999;
+    --ink:#1a1a1a;
+    --red:#c8102e;--red2:#e8192f;--red3:#ff3048;
+    --gold:#c89420;--gold2:#e8b030;--gold3:#f8cc50;--gold4:#fff8d0;
+    --green:#18a848;--green2:#20d860;
+    --cream:#f5f0e0;--cream2:#ede8d8;
+    --fd:"Bebas Neue",sans-serif;
+    --fh:"Bebas Neue",sans-serif;
+    --fb:"Barlow Condensed",sans-serif;
+    --fp:"Barlow",sans-serif;
+    --radius:12px;--radius-sm:8px;
   }
-  /* Style accent tokens per boxer type */
-  .sa-balanced{--sa:#4488ff;--sa2:#88bbff;--sa3:rgba(68,136,255,.18);--sa4:rgba(68,136,255,.07);--sag:68,136,255}
-  .sa-slugger {--sa:#ff6820;--sa2:#ffb070;--sa3:rgba(255,104,32,.18);--sa4:rgba(255,104,32,.07);--sag:255,104,32}
-  .sa-counter {--sa:#bb44ff;--sa2:#ddaaff;--sa3:rgba(187,68,255,.18);--sa4:rgba(187,68,255,.07);--sag:187,68,255}
-  .sa-tank    {--sa:#18d880;--sa2:#80ffcc;--sa3:rgba(24,216,128,.18);--sa4:rgba(24,216,128,.07);--sag:24,216,128}
-  .sa-speed   {--sa:#ffd020;--sa2:#ffe880;--sa3:rgba(255,208,32,.18);--sa4:rgba(255,208,32,.07);--sag:255,208,32}
-  .sa-buff    {--sa:#7070ff;--sa2:#aaaaff;--sa3:rgba(112,112,255,.18);--sa4:rgba(112,112,255,.07);--sag:112,112,255}
+  .sa-balanced{--sa:#3a6ee8;--sa2:#7aaaf8;--sa3:rgba(58,110,232,.22);--sa4:rgba(58,110,232,.08);--sag:58,110,232}
+  .sa-slugger {--sa:#e04818;--sa2:#f89060;--sa3:rgba(224,72,24,.22);--sa4:rgba(224,72,24,.08);--sag:224,72,24}
+  .sa-counter {--sa:#8830e0;--sa2:#c080f8;--sa3:rgba(136,48,224,.22);--sa4:rgba(136,48,224,.08);--sag:136,48,224}
+  .sa-tank    {--sa:#18a848;--sa2:#60e890;--sa3:rgba(24,168,72,.22);--sa4:rgba(24,168,72,.08);--sag:24,168,72}
+  .sa-speed   {--sa:#d8b020;--sa2:#f0d860;--sa3:rgba(216,176,32,.22);--sa4:rgba(216,176,32,.08);--sag:216,176,32}
+  .sa-buff    {--sa:#5858e8;--sa2:#9898f8;--sa3:rgba(88,88,232,.22);--sa4:rgba(88,88,232,.08);--sag:88,88,232}
 
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent}
   body{font-family:var(--fb);font-weight:500}
   #app{width:100vw;height:100dvh;position:relative}
 
-  /* ════════════════════════════════
+  /* ════════════════════════════
      KEYFRAMES
-  ════════════════════════════════ */
-  .view{position:absolute;inset:0;display:flex;flex-direction:column;animation:vIn .3s cubic-bezier(.2,0,.6,1) both}
-  @keyframes vIn        {from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes hpPulse    {0%,100%{opacity:1}50%{opacity:.38}}
-  @keyframes turnBlink  {0%,100%{opacity:1}50%{opacity:.25}}
-  @keyframes floatY     {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  ════════════════════════════ */
+  .view{position:absolute;inset:0;display:flex;flex-direction:column;animation:vIn .28s cubic-bezier(.2,0,.5,1) both}
+  @keyframes vIn        {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes hpPulse    {0%,100%{opacity:1}50%{opacity:.4}}
+  @keyframes floatY     {0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
   @keyframes bandShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-  @keyframes selPop     {0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+  @keyframes selPop     {0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
   @keyframes pipPop     {0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
-  @keyframes stunShake  {0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
-  @keyframes logIn      {from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes pulseGlow  {0%,100%{opacity:.6}50%{opacity:1}}
-  @keyframes arenaFlare {0%{opacity:0;transform:scaleX(0)}50%{opacity:1}100%{opacity:0;transform:scaleX(1)}}
-  @keyframes ropeSwing  {0%,100%{transform:scaleY(1)}50%{transform:scaleY(.97)}}
+  @keyframes stunShake  {0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+  @keyframes pulseGlow  {0%,100%{opacity:.7}50%{opacity:1}}
   @keyframes shimmerPass{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-  /* Battle action animations */
-  @keyframes fcPunchUp  {0%{transform:translateY(0)scale(1)}22%{transform:translateY(-14px)scale(1.08)}65%{transform:translateY(4px)scale(.95)}100%{transform:translateY(0)scale(1)}}
-  @keyframes fcPunchDn  {0%{transform:translateY(0)scale(1)}22%{transform:translateY(14px)scale(1.08)}65%{transform:translateY(-4px)scale(.95)}100%{transform:translateY(0)scale(1)}}
-  @keyframes fcHit      {0%{transform:translateX(0)}10%{transform:translateX(-14px)}25%{transform:translateX(14px)}42%{transform:translateX(-9px)}58%{transform:translateX(9px)}74%{transform:translateX(-4px)}88%{transform:translateX(4px)}100%{transform:translateX(0)}}
-  @keyframes hitFlash   {0%,100%{opacity:0}28%{opacity:.75}}
-  @keyframes hitGold    {0%,100%{opacity:0}28%{opacity:.9}}
-  @keyframes healFlash  {0%,100%{opacity:0}28%{opacity:.55}}
+  @keyframes inkDrip    {0%{transform:scaleY(0);transform-origin:top}100%{transform:scaleY(1);transform-origin:top}}
+  @keyframes mangaFlash {0%{opacity:0}15%{opacity:1}85%{opacity:1}100%{opacity:0}}
+  @keyframes speedLine  {0%{transform:translateX(-100%) skewX(-15deg)}100%{transform:translateX(200%) skewX(-15deg)}}
+  /* Battle animations */
+  @keyframes fcPunchUp  {0%{transform:translateY(0)scale(1)}22%{transform:translateY(-12px)scale(1.06)}65%{transform:translateY(3px)scale(.96)}100%{transform:translateY(0)scale(1)}}
+  @keyframes fcPunchDn  {0%{transform:translateY(0)scale(1)}22%{transform:translateY(12px)scale(1.06)}65%{transform:translateY(-3px)scale(.96)}100%{transform:translateY(0)scale(1)}}
+  @keyframes fcHit      {0%{transform:translateX(0)}10%{transform:translateX(-12px)}25%{transform:translateX(12px)}42%{transform:translateX(-8px)}58%{transform:translateX(8px)}74%{transform:translateX(-3px)}88%{transform:translateX(3px)}100%{transform:translateX(0)}}
+  @keyframes hitFlash   {0%,100%{opacity:0}28%{opacity:.7}}
+  @keyframes hitGold    {0%,100%{opacity:0}28%{opacity:.85}}
+  @keyframes healFlash  {0%,100%{opacity:0}28%{opacity:.5}}
   @keyframes koFlash    {0%{opacity:0}12%{opacity:1}55%{opacity:.7}100%{opacity:0}}
   @keyframes sigRipple  {0%{transform:scale(.5);opacity:.9}100%{transform:scale(2.5);opacity:0}}
-  @keyframes dmgFloat   {0%{opacity:1;transform:translateX(-50%)translateY(0)scale(1)}15%{opacity:1;transform:translateX(-50%)translateY(-20px)scale(1.18)}78%{opacity:.3;transform:translateX(-50%)translateY(-58px)scale(.82)}100%{opacity:0;transform:translateX(-50%)translateY(-78px)scale(.6)}}
-  @keyframes logSlide   {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes sigBurst   {0%{transform:scale(1)}18%{transform:scale(1.11)}48%{transform:scale(.95)}74%{transform:scale(1.04)}100%{transform:scale(1)}}
-  @keyframes ctrlIn     {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes newBoxerIn {0%{opacity:0;transform:scale(.82)translateY(20px)}55%{opacity:1;transform:scale(1.05)translateY(-5px)}100%{opacity:1;transform:scale(1)translateY(0)}}
-  @keyframes cardEnter  {from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+  @keyframes dmgFloat   {0%{opacity:1;transform:translateX(-50%)translateY(0)scale(1)}15%{opacity:1;transform:translateX(-50%)translateY(-18px)scale(1.15)}78%{opacity:.3;transform:translateX(-50%)translateY(-55px)scale(.82)}100%{opacity:0;transform:translateX(-50%)translateY(-72px)scale(.6)}}
+  @keyframes logSlide   {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes sigBurst   {0%{transform:scale(1)}18%{transform:scale(1.09)}48%{transform:scale(.96)}74%{transform:scale(1.03)}100%{transform:scale(1)}}
+  @keyframes ctrlIn     {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes newBoxerIn {0%{opacity:0;transform:scale(.84)translateY(18px)}55%{opacity:1;transform:scale(1.04)translateY(-4px)}100%{opacity:1;transform:scale(1)translateY(0)}}
+  @keyframes cardIdle   {0%,100%{box-shadow:0 0 0 2px rgba(var(--sag,80,100,200),.22),0 10px 40px rgba(0,0,0,.9)}50%{box-shadow:0 0 0 2px rgba(var(--sag,80,100,200),.5),0 14px 50px rgba(0,0,0,.95),0 0 34px rgba(var(--sag,80,100,200),.15)}}
+  @keyframes scanlines  {0%{background-position:0 0}100%{background-position:0 4px}}
+  @keyframes titleDrop  {0%{opacity:0;transform:translateY(-30px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes subtitleFade{0%{opacity:0;letter-spacing:.6em}100%{opacity:1;letter-spacing:.22em}}
 
-  /* Fight card animation states */
-  .fight-card.punching-up {animation:fcPunchUp .42s cubic-bezier(.3,0,.7,1) both!important}
-  .fight-card.punching-dn {animation:fcPunchDn .42s cubic-bezier(.3,0,.7,1) both!important}
-  .fight-card.taking-hit  {animation:fcHit .4s cubic-bezier(.25,.8,.25,1) both!important}
-  .fight-card.sig-burst   {animation:sigBurst .52s cubic-bezier(.3,0,.7,1) both!important}
+  .fight-card.punching-up {animation:fcPunchUp .4s cubic-bezier(.3,0,.7,1) both!important}
+  .fight-card.punching-dn {animation:fcPunchDn .4s cubic-bezier(.3,0,.7,1) both!important}
+  .fight-card.taking-hit  {animation:fcHit .38s cubic-bezier(.25,.8,.25,1) both!important}
+  .fight-card.sig-burst   {animation:sigBurst .5s cubic-bezier(.3,0,.7,1) both!important}
+
   .hit-ov{position:absolute;inset:0;border-radius:var(--radius);pointer-events:none;z-index:10}
-  .hit-ov.red  {background:rgba(255,40,70,.5);animation:hitFlash .44s ease both}
-  .hit-ov.gold {background:rgba(255,220,80,.55);animation:hitGold .58s ease both;box-shadow:inset 0 0 60px rgba(255,200,60,.35)}
-  .hit-ov.heal {background:rgba(0,240,100,.32);animation:healFlash .46s ease both}
-  .hit-ov.ko   {background:rgba(255,255,255,.9);animation:koFlash .65s ease both}
-  /* Signature ripple overlay */
-  .sig-ripple{position:absolute;border-radius:50%;border:3px solid var(--gold3);pointer-events:none;z-index:11;animation:sigRipple .7s ease both;width:100%;height:100%;top:0;left:0}
+  .hit-ov.red  {background:rgba(255,30,60,.45);animation:hitFlash .42s ease both}
+  .hit-ov.gold {background:rgba(255,210,60,.5);animation:hitGold .55s ease both;box-shadow:inset 0 0 50px rgba(255,190,50,.3)}
+  .hit-ov.heal {background:rgba(0,228,90,.28);animation:healFlash .44s ease both}
+  .hit-ov.ko   {background:rgba(255,255,255,.88);animation:koFlash .62s ease both}
+  .sig-ripple{position:absolute;border-radius:50%;border:2px solid var(--gold3);pointer-events:none;z-index:11;animation:sigRipple .68s ease both;width:100%;height:100%;top:0;left:0}
+
   /* Damage floats */
-  .dmg-float{position:absolute;z-index:20;pointer-events:none;font-family:var(--fd);font-weight:700;letter-spacing:.06em;animation:dmgFloat 1.1s cubic-bezier(.25,.8,.25,1) both;transform:translateX(-50%)}
-  .dmg-float.crit {font-size:2.6rem;color:#ff2055;text-shadow:0 0 24px rgba(255,32,85,.9),0 0 60px rgba(255,32,85,.4),0 2px 0 rgba(0,0,0,.8)}
-  .dmg-float.sig  {font-size:2.3rem;color:var(--gold3);text-shadow:0 0 24px rgba(245,200,72,.9),0 0 60px rgba(245,200,72,.4),0 2px 0 rgba(0,0,0,.8)}
-  .dmg-float.norm {font-size:1.8rem;color:#ff8888;text-shadow:0 0 12px rgba(255,136,136,.6),0 2px 0 rgba(0,0,0,.8)}
-  .dmg-float.heal {font-size:1.6rem;color:#00f870;text-shadow:0 0 16px rgba(0,248,112,.7)}
-  .dmg-float.bleed{font-size:1.3rem;color:#ff5555;text-shadow:0 0 10px rgba(255,85,85,.5)}
-  .log-txt.slide{animation:logSlide .3s ease both}
-  .ctrl.ctrl-in {animation:ctrlIn .35s ease both}
+  .dmg-float{position:absolute;z-index:20;pointer-events:none;font-family:var(--fd);letter-spacing:.04em;animation:dmgFloat 1.1s cubic-bezier(.25,.8,.25,1) both;transform:translateX(-50%)}
+  .dmg-float.crit {font-size:2.4rem;color:#ff1840;text-shadow:2px 2px 0 #000,0 0 20px rgba(255,24,64,.8),-2px -2px 0 #000}
+  .dmg-float.sig  {font-size:2.2rem;color:var(--gold3);text-shadow:2px 2px 0 #000,0 0 20px rgba(248,204,80,.8)}
+  .dmg-float.norm {font-size:1.7rem;color:#ff8888;text-shadow:2px 2px 0 #000}
+  .dmg-float.heal {font-size:1.5rem;color:#30f870;text-shadow:2px 2px 0 #000}
+  .dmg-float.bleed{font-size:1.2rem;color:#ff4444;text-shadow:1px 1px 0 #000}
+  .log-txt.slide{animation:logSlide .28s ease both}
+  .ctrl.ctrl-in {animation:ctrlIn .32s ease both}
 
-  /* ════════════════════════════════
-     BUTTONS — premium glass style
-  ════════════════════════════════ */
+  /* ════════════════════════════
+     BUTTONS — Manga ink style
+  ════════════════════════════ */
   .btn{
-    border:1px solid var(--border2);
-    background:linear-gradient(160deg,rgba(22,34,70,.95),rgba(10,16,40,.95));
-    color:var(--text);border-radius:var(--radius-sm);padding:10px 16px;
-    font-family:var(--fd);font-weight:600;letter-spacing:.12em;cursor:pointer;font-size:.85rem;
-    transition:transform .16s,box-shadow .16s,border-color .16s,background .16s;
-    touch-action:manipulation;min-height:44px;
-    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    border:2px solid var(--border2);
+    background:var(--bg3);
+    color:var(--text);border-radius:4px;padding:9px 14px;
+    font-family:var(--fd);letter-spacing:.12em;cursor:pointer;font-size:.9rem;
+    transition:transform .12s,box-shadow .12s,border-color .12s,background .12s;
+    touch-action:manipulation;min-height:42px;
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;
     user-select:none;-webkit-user-select:none;position:relative;overflow:hidden;
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    text-transform:uppercase;
   }
-  .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.09),transparent 55%);pointer-events:none;border-radius:inherit}
-  .btn::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 50%);pointer-events:none}
-  .btn:hover{transform:translateY(-2px);border-color:var(--border3);box-shadow:0 6px 24px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06)}
+  .btn::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:none;pointer-events:none}
+  .btn:hover{transform:translateY(-2px);border-color:var(--border3);background:var(--bg4);box-shadow:0 4px 16px rgba(0,0,0,.6)}
+  .btn:hover::after{animation:shimmerPass .5s ease both}
   .btn:active{transform:translateY(1px)scale(.97)}
-  .btn:disabled{opacity:.18;transform:none;cursor:not-allowed;box-shadow:none}
-  .btn-p{
-    background:linear-gradient(150deg,#e01838,#8c0c1e);
-    border-color:#ff2244;
-    box-shadow:0 4px 20px rgba(200,16,40,.45),inset 0 1px 0 rgba(255,120,140,.2);
-  }
-  .btn-p:not(:disabled):hover{background:linear-gradient(150deg,#ff2244,#b01428);box-shadow:0 8px 28px rgba(200,16,40,.7)}
-  .btn-sig{
-    background:linear-gradient(150deg,#c08818,#6e4800);
-    border-color:var(--gold3);color:#1a0e00;
-    box-shadow:0 4px 18px rgba(192,136,24,.35),inset 0 1px 0 rgba(255,240,120,.25);
-  }
-  .btn-sig.live{
-    box-shadow:0 0 0 2px var(--gold3),0 5px 22px rgba(192,136,24,.8),0 0 40px rgba(192,136,24,.35);
-    animation:pulseGlow 1.2s ease-in-out infinite;
-  }
-  .btn-sig:not(:disabled):hover{background:linear-gradient(150deg,#e8aa20,#8a5c08);box-shadow:0 8px 28px rgba(200,160,30,.7)}
+  .btn:disabled{opacity:.2;transform:none;cursor:not-allowed;box-shadow:none}
+  .btn-p{background:var(--red);border-color:var(--red2);color:#fff;box-shadow:3px 3px 0 #6a0010}
+  .btn-p:not(:disabled):hover{background:var(--red2);box-shadow:4px 4px 0 #8a0018,0 6px 20px rgba(200,16,40,.5)}
+  .btn-sig{background:linear-gradient(135deg,var(--gold),#7a5800);border-color:var(--gold3);color:#1a0e00;box-shadow:3px 3px 0 rgba(0,0,0,.6)}
+  .btn-sig.live{box-shadow:0 0 0 2px var(--gold3),3px 3px 0 rgba(0,0,0,.6),0 0 30px rgba(248,204,80,.35);animation:pulseGlow 1s ease-in-out infinite}
+  .btn-sig:not(:disabled):hover{background:linear-gradient(135deg,var(--gold2),#9a7010);box-shadow:4px 4px 0 rgba(0,0,0,.7),0 6px 20px rgba(200,160,30,.5)}
 
-  /* ════════════════════════════════
+  /* ════════════════════════════
      TOAST
-  ════════════════════════════════ */
+  ════════════════════════════ */
   .toast-wrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:99;pointer-events:none}
-  .toast{
-    background:rgba(6,10,22,.96);border:1px solid var(--border2);border-radius:999px;
-    padding:10px 22px;box-shadow:0 6px 30px rgba(0,0,0,.85);
-    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-    animation:vIn .2s ease both;font-size:.86rem;white-space:nowrap;letter-spacing:.04em;
-  }
+  .toast{background:#111;border:2px solid var(--border3);border-radius:4px;padding:9px 20px;box-shadow:4px 4px 0 rgba(0,0,0,.8);animation:vIn .2s ease both;font-family:var(--fd);font-size:.9rem;white-space:nowrap;letter-spacing:.08em}
 
-  /* ════════════════════════════════
-     MENU — cinematic title screen
-  ════════════════════════════════ */
+  /* ════════════════════════════
+     MENU — Manga title screen
+  ════════════════════════════ */
   .menu{
-    align-items:center;justify-content:center;text-align:center;gap:24px;padding:32px 24px;
-    background:
-      radial-gradient(ellipse 120% 70% at 50% 115%,rgba(168,12,28,.5),transparent 65%),
-      radial-gradient(ellipse 80% 50% at 8% 12%,rgba(68,100,255,.08),transparent 55%),
-      radial-gradient(ellipse 60% 40% at 92% 10%,rgba(180,60,255,.06),transparent 50%),
-      linear-gradient(180deg,#04060e,#070a18);
+    align-items:center;justify-content:center;text-align:center;gap:20px;padding:32px 24px;
+    background:#0a0a0a;overflow:hidden;
   }
+  /* Halftone dot bg */
   .menu::before{
+    content:'';position:absolute;inset:0;pointer-events:none;opacity:.06;
+    background-image:radial-gradient(circle,#fff 1px,transparent 1px);
+    background-size:16px 16px;
+  }
+  /* Speed lines radiating from center */
+  .menu::after{
     content:'';position:absolute;inset:0;pointer-events:none;
     background:
-      repeating-linear-gradient(0deg,transparent,transparent 47px,rgba(168,136,32,.05) 48px),
-      repeating-linear-gradient(90deg,transparent,transparent 47px,rgba(168,136,32,.03) 48px);
+      repeating-conic-gradient(from 0deg at 50% 55%,rgba(200,16,46,.0) 0deg, rgba(200,16,46,.03) .4deg, rgba(200,16,46,.0) .8deg);
+    opacity:.7;
   }
-  .menu::after{content:'';position:absolute;inset:14px;pointer-events:none;border:1px solid rgba(200,136,32,.12);border-radius:24px;box-shadow:inset 0 0 60px rgba(168,12,28,.06)}
   .menu>*{position:relative;z-index:1}
-  .menu-logo{display:flex;flex-direction:column;align-items:center;gap:8px}
-  .t1{font-family:var(--fh);font-size:clamp(2.8rem,11vw,6.5rem);line-height:.86;letter-spacing:.04em;color:#dde4ff;text-shadow:0 0 80px rgba(180,200,255,.2),0 4px 0 rgba(0,0,0,.95)}
-  .t2{
-    font-family:var(--fh);font-size:clamp(2.2rem,9vw,5rem);line-height:1;
-    background:linear-gradient(135deg,#ff2040,#cc0e28);
-    display:inline-block;padding:4px 32px 4px 28px;
-    transform:skewX(-6deg);
-    box-shadow:8px 8px 0 rgba(0,0,0,.7),0 0 60px rgba(200,16,40,.6),inset 0 1px 0 rgba(255,80,100,.3);
-    position:relative;letter-spacing:.06em;
-  }
-  .t2::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.2),transparent 55%);pointer-events:none}
-  .t3{font-family:var(--fd);font-weight:400;font-size:clamp(1.6rem,6vw,3.5rem);color:var(--muted2);letter-spacing:.3em}
-  .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-  .sub{color:var(--muted);font-size:.82rem;letter-spacing:.1em}
-  .gold-rule{
-    width:120px;height:1px;
-    background:linear-gradient(90deg,transparent,var(--gold3),transparent);
-    box-shadow:0 0 8px rgba(245,200,72,.4);
-  }
 
-  /* ════════════════════════════════
-     PANEL
-  ════════════════════════════════ */
-  .panel{
-    margin:10px;border:1px solid var(--border);border-radius:var(--radius);
-    background:linear-gradient(180deg,#0a1022,#060c1a);
-    padding:12px;overflow:hidden;display:flex;flex-direction:column;gap:10px;
-    box-shadow:0 8px 40px rgba(0,0,0,.7);
+  .menu-logo{display:flex;flex-direction:column;align-items:center;gap:6px}
+
+  /* Red action-panel title block */
+  .title-block{
+    position:relative;display:inline-block;
   }
-  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .panel-title{font-family:var(--fd);font-weight:600;letter-spacing:.16em;font-size:1rem;color:var(--gold2)}
+  .t1{
+    font-family:var(--fh);font-size:clamp(1.4rem,5vw,2.4rem);
+    letter-spacing:.28em;color:var(--muted2);
+    text-transform:uppercase;
+    animation:subtitleFade .8s ease both;
+  }
+  .t2{
+    font-family:var(--fh);font-size:clamp(5rem,20vw,10rem);
+    line-height:.82;color:#fff;
+    display:block;
+    text-shadow:6px 6px 0 var(--red),-1px -1px 0 rgba(0,0,0,.9);
+    animation:titleDrop .5s cubic-bezier(.2,0,.4,1.4) .1s both;
+    letter-spacing:.02em;
+  }
+  .t3-wrap{
+    background:var(--red);padding:6px 28px 5px;
+    transform:skewX(-4deg);display:inline-block;
+    box-shadow:4px 4px 0 #6a0010;margin-top:4px;
+    animation:vIn .4s ease .25s both;
+  }
+  .t3{
+    font-family:var(--fh);font-size:clamp(1.4rem,5vw,2.2rem);
+    letter-spacing:.18em;color:#fff;
+    display:block;transform:skewX(4deg);
+  }
+  .sub-tagline{
+    font-family:var(--fb);font-size:.82rem;letter-spacing:.15em;
+    color:var(--muted);text-transform:uppercase;margin-top:4px;
+    animation:vIn .4s ease .4s both;
+  }
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .sub{color:var(--muted);font-size:.78rem;letter-spacing:.1em}
+  .ink-rule{width:80px;height:3px;background:var(--red);margin:0 auto}
+
+  /* ════════════════════════════
+     PANEL
+  ════════════════════════════ */
+  .panel{
+    margin:0;border:none;border-radius:0;
+    background:var(--bg);
+    padding:12px;overflow:hidden;display:flex;flex-direction:column;gap:10px;
+  }
+  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+  .panel-title{font-family:var(--fd);font-size:1.2rem;letter-spacing:.2em;color:var(--text)}
   .tabs{display:flex;gap:8px}
   .tally{display:flex;gap:6px;align-items:center}
-  .tally-chip{font-size:.68rem;font-family:var(--fd);letter-spacing:.1em;background:var(--bg3);border:1px solid var(--border2);border-radius:999px;padding:3px 12px;color:var(--muted2)}
-  .tally-chip.done{border-color:var(--gold2);color:var(--gold3);box-shadow:0 0 8px rgba(220,160,48,.2)}
+  .tally-chip{font-family:var(--fd);font-size:.8rem;letter-spacing:.1em;background:var(--bg3);border:2px solid var(--border2);border-radius:3px;padding:3px 10px;color:var(--muted2)}
+  .tally-chip.done{border-color:var(--gold2);color:var(--gold3)}
 
-  /* ════════════════════════════════
+  /* ════════════════════════════
      TCG DECK CARDS
-  ════════════════════════════════ */
-  .cards{flex:1;overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));grid-auto-rows:272px;gap:12px;align-content:start;padding-bottom:4px}
-  .cards::-webkit-scrollbar{width:3px}.cards::-webkit-scrollbar-track{background:transparent}.cards::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
+  ════════════════════════════ */
+  .cards{flex:1;overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));grid-auto-rows:278px;gap:10px;align-content:start;padding-bottom:4px}
+  .cards::-webkit-scrollbar{width:3px}.cards::-webkit-scrollbar-track{background:transparent}.cards::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
   .tcg{
-    position:relative;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;
-    background:linear-gradient(165deg,#0e1a30 0%,#08101e 60%,#060c18 100%);
-    border:1px solid var(--border2);
-    box-shadow:0 6px 24px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.04);
+    position:relative;border-radius:6px;overflow:hidden;cursor:pointer;
+    background:#111;
+    border:2px solid var(--border);
+    box-shadow:3px 3px 0 rgba(0,0,0,.8);
     display:flex;flex-direction:column;
-    transition:transform .22s cubic-bezier(.25,.8,.25,1),box-shadow .22s,border-color .22s;
+    transition:transform .18s,box-shadow .18s,border-color .18s;
     touch-action:manipulation;
   }
-  .tcg:hover{transform:translateY(-7px)scale(1.03);border-color:var(--sa,var(--border3));box-shadow:0 20px 48px rgba(0,0,0,.8),0 0 0 1px var(--sa,var(--border3)),0 0 28px var(--sa3,transparent)}
+  .tcg:hover{transform:translateY(-5px)scale(1.02);border-color:var(--sa,var(--border3));box-shadow:5px 8px 0 rgba(0,0,0,.9),0 0 20px var(--sa3,transparent)}
   .tcg:active{transform:translateY(0)scale(.97)}
-  .tcg.sel{border-color:var(--sa,var(--red3));box-shadow:0 0 0 2px var(--sa,var(--red3)),0 10px 32px rgba(0,0,0,.7),0 0 44px var(--sa3,rgba(180,12,36,.2))}
-  .tcg-band{height:4px;flex-shrink:0;background:linear-gradient(90deg,transparent,var(--sa,#3a4870),var(--sa2,#6070a8),transparent);background-size:250% auto;animation:bandShimmer 4s linear infinite}
-  .tcg.sel .tcg-band{animation:bandShimmer 1.4s linear infinite}
-  .tcg-hd{display:flex;align-items:center;justify-content:space-between;padding:5px 9px 3px;flex-shrink:0;gap:5px}
-  .tcg-type{font-size:.55rem;font-family:var(--fd);font-weight:600;letter-spacing:.15em;border:1px solid var(--sa,var(--border2));color:var(--sa2,var(--muted2));background:rgba(0,0,0,.4);border-radius:999px;padding:2px 9px;white-space:nowrap}
-  .tcg-icon-sm{font-size:.88rem;line-height:1;flex-shrink:0}
-  .tcg-cost-badge{font-size:.68rem;font-family:var(--fd);font-weight:700;letter-spacing:.06em;background:linear-gradient(135deg,var(--gold2),#7a5c0e);color:#0e0800;border-radius:999px;padding:2px 9px}
-  .tcg-art{flex:1;margin:0 7px;border-radius:9px;min-height:0;background:#08101e center/cover no-repeat;border:1px solid rgba(255,255,255,.06);display:grid;place-items:center;font-size:3.4rem;position:relative;overflow:hidden}
-  .tcg-art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(4,8,18,.9));pointer-events:none}
-  .tcg-buff-ico{flex:1;margin:0 7px;border-radius:9px;min-height:0;background:radial-gradient(ellipse at 50% 55%,var(--sa3,rgba(99,102,241,.14)),transparent 72%);border:1px solid rgba(255,255,255,.05);display:grid;place-items:center;font-size:3.6rem;position:relative}
-  .tcg-plate{padding:5px 9px 3px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.05)}
-  .tcg-name{font-family:var(--fd);font-weight:600;font-size:.94rem;letter-spacing:.04em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tcg-flavor{font-size:.67rem;color:var(--muted2);line-height:1.25;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tcg-stats{display:flex;justify-content:space-around;padding:5px 7px 8px;flex-shrink:0;gap:2px;border-top:1px solid rgba(255,255,255,.04);background:linear-gradient(180deg,transparent,rgba(0,0,0,.45))}
+  .tcg.sel{border-color:var(--sa,var(--red3));box-shadow:0 0 0 3px var(--sa,var(--red3)),3px 3px 0 rgba(0,0,0,.9)}
+  .tcg-band{height:3px;flex-shrink:0;background:linear-gradient(90deg,transparent,var(--sa,#333),var(--sa2,#555),transparent);background-size:250% auto;animation:bandShimmer 3.5s linear infinite}
+  .tcg.sel .tcg-band{animation:bandShimmer 1.2s linear infinite}
+  .tcg-hd{display:flex;align-items:center;justify-content:space-between;padding:5px 8px 3px;flex-shrink:0;gap:5px;background:#0d0d0d}
+  .tcg-type{font-size:.58rem;font-family:var(--fd);letter-spacing:.14em;border:1px solid var(--sa,var(--border2));color:var(--sa2,var(--muted2));background:transparent;border-radius:2px;padding:1px 7px;white-space:nowrap}
+  .tcg-icon-sm{font-size:.85rem;line-height:1;flex-shrink:0}
+  .tcg-cost-badge{font-size:.65rem;font-family:var(--fd);letter-spacing:.06em;background:var(--gold);color:#0e0800;border-radius:2px;padding:1px 7px}
+  .tcg-art{flex:1;margin:0 6px;border-radius:4px;min-height:0;background:#0a0a0a center/cover no-repeat;border:1px solid var(--border);display:grid;place-items:center;font-size:3.2rem;position:relative;overflow:hidden}
+  .tcg-art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.92));pointer-events:none}
+  .tcg-buff-ico{flex:1;margin:0 6px;border-radius:4px;min-height:0;background:radial-gradient(ellipse at 50% 55%,var(--sa3,rgba(88,88,232,.15)),transparent 70%);border:1px solid var(--border);display:grid;place-items:center;font-size:3.4rem;position:relative}
+  .tcg-plate{padding:4px 8px 3px;flex-shrink:0;border-top:1px solid var(--border)}
+  .tcg-name{font-family:var(--fd);font-size:.95rem;letter-spacing:.04em;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tcg-flavor{font-size:.63rem;color:var(--muted2);line-height:1.2;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--fp)}
+  .tcg-stats{display:flex;justify-content:space-around;padding:4px 6px 7px;flex-shrink:0;gap:2px;border-top:1px solid var(--border)}
   .ts{display:flex;flex-direction:column;align-items:center;gap:0;flex:1}
-  .ts-l{font-size:.53rem;letter-spacing:.12em;font-family:var(--fd);font-weight:600;color:var(--muted)}
-  .ts-v{font-size:.94rem;font-family:var(--fd);font-weight:700;letter-spacing:.02em;line-height:1.1}
-  .tcg-sig{font-size:.58rem;font-family:var(--fd);font-weight:600;letter-spacing:.08em;color:var(--gold2);text-align:center;padding:0 8px 6px;border-top:1px solid rgba(220,160,48,.1);padding-top:4px}
-  .tcg-chk{position:absolute;top:9px;right:9px;width:22px;height:22px;background:var(--sa,var(--red2));border-radius:50%;display:grid;place-items:center;font-size:.75rem;color:#fff;z-index:4;box-shadow:0 2px 10px rgba(0,0,0,.6);animation:selPop .2s cubic-bezier(.35,0,.2,1.5) both}
+  .ts-l{font-size:.5rem;letter-spacing:.12em;font-family:var(--fd);color:var(--muted)}
+  .ts-v{font-size:.92rem;font-family:var(--fd);letter-spacing:.02em;line-height:1.1}
+  .tcg-sig{font-size:.56rem;font-family:var(--fd);letter-spacing:.08em;color:var(--gold2);text-align:center;padding:0 6px 5px;border-top:1px solid rgba(220,160,48,.15);padding-top:3px}
+  .tcg-chk{position:absolute;top:8px;right:8px;width:20px;height:20px;background:var(--sa,var(--red2));border-radius:2px;display:grid;place-items:center;font-size:.7rem;color:#fff;z-index:4;box-shadow:2px 2px 0 rgba(0,0,0,.6);animation:selPop .18s cubic-bezier(.35,0,.2,1.5) both}
 
-  /* ════════════════════════════════
+  /* ════════════════════════════
      ARENA LOBBY
-  ════════════════════════════════ */
-  .arena-hd{font-family:var(--fd);font-weight:600;letter-spacing:.15em;font-size:.86rem;color:var(--gold2);display:flex;align-items:center;gap:8px}
-  .arena-hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold2),transparent)}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  ════════════════════════════ */
+  .arena-hd{font-family:var(--fd);letter-spacing:.18em;font-size:.9rem;color:var(--red2);display:flex;align-items:center;gap:8px;padding:2px 0}
+  .arena-hd::after{content:'';flex:1;height:2px;background:var(--red)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .choice{
-    position:relative;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;
-    background:linear-gradient(165deg,#0e1a30,#080e20);
-    padding:16px 14px;cursor:pointer;
-    transition:transform .18s,box-shadow .18s,border-color .18s;touch-action:manipulation;
+    position:relative;border:2px solid var(--border2);border-radius:4px;overflow:hidden;
+    background:var(--bg2);padding:14px 12px;cursor:pointer;
+    transition:transform .15s,box-shadow .15s,border-color .15s;touch-action:manipulation;
   }
-  .choice::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold2),#7a5c08)}
-  .choice:hover{transform:translateY(-5px);border-color:var(--gold2);box-shadow:0 12px 36px rgba(0,0,0,.6),0 0 0 1px var(--gold2),0 0 24px rgba(192,136,32,.2)}
+  .choice::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
+  .choice:hover{transform:translateY(-4px);border-color:var(--red2);box-shadow:4px 4px 0 rgba(0,0,0,.8)}
   .choice:active{transform:scale(.97)}
-  .choice-ico{font-size:1.8rem;margin-bottom:8px;display:block}
-  .choice h3{font-family:var(--fd);font-weight:600;letter-spacing:.1em;font-size:1.1rem;color:var(--text)}
-  .choice p{font-size:.74rem;color:var(--muted2);margin-top:4px;line-height:1.4}
-  .rooms{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:144px;overflow-y:auto}
-  .room{border:1px solid var(--border);border-radius:10px;background:var(--bg3);padding:9px 12px;cursor:pointer;transition:border-color .14s,background .14s;touch-action:manipulation}
-  .room:hover{border-color:var(--border2);background:var(--bg4)}
-  .room b{font-family:var(--fd);font-weight:600;letter-spacing:.1em;font-size:1rem;color:var(--gold2)}
-  .warn{border:1px solid rgba(168,130,40,.4);background:rgba(100,75,20,.12);color:#f0d080;border-radius:10px;padding:9px 12px;font-size:.76rem}
+  .choice-ico{font-size:1.6rem;margin-bottom:6px;display:block}
+  .choice h3{font-family:var(--fd);letter-spacing:.12em;font-size:1rem;color:var(--text)}
+  .choice p{font-size:.7rem;color:var(--muted2);margin-top:3px;line-height:1.35;font-family:var(--fp)}
+  .rooms{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;max-height:130px;overflow-y:auto}
+  .room{border:2px solid var(--border);border-radius:4px;background:var(--bg2);padding:8px 10px;cursor:pointer;transition:border-color .12s,background .12s;touch-action:manipulation}
+  .room:hover{border-color:var(--border2);background:var(--bg3)}
+  .room b{font-family:var(--fd);letter-spacing:.12em;font-size:.95rem;color:var(--gold2)}
+  .warn{border:2px solid rgba(168,130,40,.35);background:rgba(80,60,10,.12);color:#e8c870;border-radius:4px;padding:8px 10px;font-size:.73rem;font-family:var(--fp)}
 
-  /* ════════════════════════════════
-     BATTLE LAYOUT — cinematic arena
-  ════════════════════════════════ */
+  /* ════════════════════════════
+     BATTLE LAYOUT
+  ════════════════════════════ */
   .battle{
     display:grid;
-    grid-template-columns:1fr 88px;
+    grid-template-columns:1fr 80px;
     grid-template-rows:auto 1fr auto 1fr auto;
-    overflow:hidden;
-    position:relative;
-    background:
-      radial-gradient(ellipse 180% 50% at 50% -5%,rgba(180,12,28,.22),transparent 60%),
-      radial-gradient(ellipse 180% 50% at 50% 105%,rgba(40,80,200,.12),transparent 60%),
-      radial-gradient(ellipse 100% 80% at 50% 50%,#06091a,#04060e);
+    overflow:hidden;position:relative;
+    background:#0a0a0a;
   }
-  /* Animated arena floor reflection */
+  /* Manga panel lines */
   .battle::before{
     content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
     background:
-      repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.008) 3px),
-      repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.005) 61px);
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.012) 2px),
+      repeating-linear-gradient(90deg,transparent,transparent 1px,rgba(255,255,255,.006) 2px);
+    background-size:100% 4px, 80px 100%;
   }
-  /* Arena rope divider — subtle horizontal line at the center */
   .battle::after{
-    content:'';position:absolute;left:0;right:0;top:50%;height:1px;
-    background:linear-gradient(90deg,transparent 5%,rgba(200,150,40,.2) 20%,rgba(200,150,40,.5) 50%,rgba(200,150,40,.2) 80%,transparent 95%);
+    content:'';position:absolute;left:0;right:0;top:50%;height:2px;
+    background:linear-gradient(90deg,transparent 4%,rgba(200,16,46,.15) 15%,rgba(200,16,46,.4) 50%,rgba(200,16,46,.15) 85%,transparent 96%);
     pointer-events:none;z-index:0;
-    box-shadow:0 0 12px rgba(200,150,40,.15);
   }
-  /* Card zone — centers the fight-card-wrap */
-  .card-zone{
-    display:flex;align-items:center;justify-content:center;
-    position:relative;z-index:1;overflow:hidden;
-    grid-column:1;
-  }
+  .card-zone{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;overflow:hidden;grid-column:1}
 
-  /* ════════════════════════════════
-     STATUS BARS (top / bottom)
-  ════════════════════════════════ */
+  /* ════════════════════════════
+     STATUS BARS
+  ════════════════════════════ */
   .bar{
-    padding:7px 14px;
-    background:linear-gradient(90deg,rgba(4,7,16,.98),rgba(8,12,26,.96));
-    border-bottom:1px solid rgba(255,255,255,.04);
+    padding:6px 12px;background:#0d0d0d;
+    border-bottom:2px solid var(--border);
     display:flex;justify-content:space-between;align-items:center;gap:8px;
-    position:relative;z-index:2;
-    box-shadow:0 2px 16px rgba(0,0,0,.6);
-    grid-column:1;
+    position:relative;z-index:2;grid-column:1;
   }
-  .bar-left{display:flex;align-items:center;gap:9px}
-  .bar-lbl{font-family:var(--fd);font-weight:600;letter-spacing:.1em;font-size:.82rem;color:var(--muted2)}
-  .bar-tc{
-    font-family:var(--fd);font-weight:700;font-size:.72rem;letter-spacing:.1em;
-    background:linear-gradient(135deg,var(--gold2),#6a4c08);color:#0e0800;
-    border-radius:999px;padding:3px 11px;
-    box-shadow:0 2px 8px rgba(180,130,24,.3);
-  }
-  .slots{display:flex;gap:5px;align-items:center}
-  .slot{
-    width:34px;height:34px;border:1px solid var(--border2);border-radius:9px;
-    background:linear-gradient(160deg,var(--bg3),var(--bg2));
-    display:grid;place-items:center;font-size:1.05rem;transition:all .15s;
-  }
+  .bar-left{display:flex;align-items:center;gap:8px}
+  .bar-lbl{font-family:var(--fd);letter-spacing:.12em;font-size:.8rem;color:var(--muted2)}
+  .bar-tc{font-family:var(--fd);font-size:.72rem;letter-spacing:.1em;background:var(--gold);color:#0e0800;border-radius:2px;padding:2px 9px}
+  .slots{display:flex;gap:4px;align-items:center}
+  .slot{width:32px;height:32px;border:2px solid var(--border2);border-radius:4px;background:var(--bg2);display:grid;place-items:center;font-size:1rem;transition:all .12s}
   button.slot{cursor:pointer;touch-action:manipulation}
-  button.slot:not(:disabled):hover{border-color:var(--gold2);background:var(--bg4);transform:scale(1.16);box-shadow:0 0 14px rgba(200,160,32,.4)}
+  button.slot:not(:disabled):hover{border-color:var(--gold2);background:var(--bg3);transform:scale(1.12)}
   button.slot:not(:disabled):active{transform:scale(.88)}
-  .slot.dead{opacity:.12;filter:grayscale(1)blur(.5px)}
-  .slot.active-slot{border-color:var(--sa,var(--border3));box-shadow:0 0 14px var(--sa3,transparent),0 0 0 1px rgba(var(--sag,80,100,200),.3)}
+  .slot.dead{opacity:.12;filter:grayscale(1)}
+  .slot.active-slot{border-color:var(--sa,var(--border3));box-shadow:0 0 10px var(--sa3,transparent)}
 
-  /* ════════════════════════════════
-     FIGHT CARD — REAL TCG CARD STYLE
-  ════════════════════════════════ */
-  @keyframes cardIdle{
-    0%,100%{box-shadow:0 0 0 2px rgba(var(--sag,80,100,200),.25),0 12px 48px rgba(0,0,0,.85),0 0 0 4px rgba(0,0,0,.6)}
-    50%{box-shadow:0 0 0 2px rgba(var(--sag,80,100,200),.55),0 16px 56px rgba(0,0,0,.9),0 0 40px rgba(var(--sag,80,100,200),.18),0 0 0 4px rgba(0,0,0,.6)}
-  }
-  @keyframes cardArtPan{0%{background-position:center 30%}100%{background-position:center 35%}}
-
-  /* Wrapper holds card + HP bar below it */
-  .fight-card-wrap{
-    display:flex;flex-direction:column;align-items:center;
-    padding:4px 12px 0;
-    position:relative;
-  }
-
+  /* ════════════════════════════
+     FIGHT CARD
+  ════════════════════════════ */
+  .fight-card-wrap{display:flex;flex-direction:column;align-items:center;padding:4px 10px 0;position:relative}
   .fight-card{
-    /* True TCG card proportions: ~2.5" × 3.5" → 5:7 ratio */
-    width:min(160px, 42vw);
-    aspect-ratio:5/7;
-    border-radius:14px;
-    overflow:hidden;
-    /* Multi-layer TCG card border: outer dark frame, then gold/color accent line, inner content */
-    border:3px solid rgba(0,0,0,.85);
-    outline:1px solid rgba(var(--sag,80,100,200),.45);
+    width:min(154px,41vw);aspect-ratio:5/7;border-radius:8px;overflow:hidden;
+    border:3px solid #000;outline:1.5px solid rgba(var(--sag,80,100,200),.4);
     box-shadow:
-      0 0 0 1px rgba(var(--sag,80,100,200),.2),
-      inset 0 0 0 1px rgba(255,255,255,.06),
-      0 14px 48px rgba(0,0,0,.85);
-    display:flex;flex-direction:column;
-    position:relative;
-    animation:cardIdle 5s ease-in-out infinite;
-    isolation:isolate;
-    cursor:default;
-    flex-shrink:0;
-    background:linear-gradient(165deg,#0e1830,#06091a);
+      0 0 0 1px rgba(var(--sag,80,100,200),.18),
+      inset 0 0 0 1px rgba(255,255,255,.05),
+      0 10px 40px rgba(0,0,0,.9);
+    display:flex;flex-direction:column;position:relative;
+    animation:cardIdle 4.5s ease-in-out infinite;
+    isolation:isolate;cursor:default;flex-shrink:0;
+    background:#0d0d0d;
   }
-  /* Holographic foil corner accents */
+  /* Corner ink splash */
   .fight-card::before{
-    content:'';position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:11px;
+    content:'';position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:5px;
     background:
-      linear-gradient(135deg, rgba(var(--sag,80,100,200),.18) 0%, transparent 28%),
-      linear-gradient(225deg, rgba(var(--sag,80,100,200),.12) 0%, transparent 22%),
-      linear-gradient(315deg, rgba(var(--sag,80,100,200),.1) 0%, transparent 20%),
-      linear-gradient(45deg,  rgba(var(--sag,80,100,200),.1) 0%, transparent 20%);
+      linear-gradient(135deg,rgba(var(--sag,80,100,200),.14) 0%,transparent 25%),
+      linear-gradient(225deg,rgba(var(--sag,80,100,200),.1) 0%,transparent 20%),
+      linear-gradient(315deg,rgba(var(--sag,80,100,200),.08) 0%,transparent 18%),
+      linear-gradient(45deg,rgba(var(--sag,80,100,200),.08) 0%,transparent 18%);
   }
-  /* Full-art boxer image — fills entire card */
-  .fc-fullart{
-    position:absolute;inset:0;z-index:0;
-    background:#06090e center 25%/cover no-repeat;
-    transition:transform .6s cubic-bezier(.25,.8,.25,1),filter .4s;
-  }
-  /* Cinematic gradient overlay */
-  .fc-overlay{
-    position:absolute;inset:0;z-index:1;pointer-events:none;
-    background:linear-gradient(
-      180deg,
-      rgba(4,7,18,.88) 0%,
-      rgba(4,7,18,.38) 20%,
-      rgba(4,7,18,.0) 38%,
-      rgba(4,7,18,.0) 52%,
-      rgba(4,7,18,.5) 66%,
-      rgba(4,7,18,.94) 80%,
-      rgba(4,7,18,1) 100%
-    );
-  }
-  /* Edge vignette */
-  .fc-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 40px rgba(0,0,0,.65),inset 0 0 14px rgba(0,0,0,.35)}
-  /* Style color accent tint */
-  .fc-tint{
-    position:absolute;inset:0;z-index:1;pointer-events:none;
-    background:
-      radial-gradient(ellipse 100% 55% at 50% 115%,rgba(var(--sag,80,100,200),.28),transparent 70%),
-      radial-gradient(ellipse 60% 30% at 50% 100%,rgba(var(--sag,80,100,200),.14),transparent 60%);
-  }
-  /* Shimmer sweep on hover */
-  .fc-shimmer{
-    position:absolute;top:0;bottom:0;left:0;width:40%;z-index:2;pointer-events:none;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
-    transform:translateX(-100%);
-  }
-  .fight-card:hover .fc-fullart{transform:scale(1.05) translateY(-2%)}
-  .fight-card:hover .fc-shimmer{animation:shimmerPass .7s ease both}
-
-  /* Content layer above all overlays */
+  .fc-fullart{position:absolute;inset:0;z-index:0;background:#080808 center 25%/cover no-repeat;transition:transform .5s cubic-bezier(.25,.8,.25,1),filter .35s}
+  /* Manga halftone overlay on art */
+  .fc-halftone{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.08;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:4px 4px}
+  .fc-overlay{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.28) 20%,rgba(0,0,0,.0) 38%,rgba(0,0,0,.0) 52%,rgba(0,0,0,.45) 66%,rgba(0,0,0,.92) 80%,rgba(0,0,0,1) 100%)}
+  .fc-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 36px rgba(0,0,0,.7)}
+  .fc-tint{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 100% 55% at 50% 115%,rgba(var(--sag,80,100,200),.24),transparent 68%)}
+  .fc-shimmer{position:absolute;top:0;bottom:0;left:0;width:40%;z-index:2;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transform:translateX(-100%)}
+  .fight-card:hover .fc-fullart{transform:scale(1.04) translateY(-1.5%)}
+  .fight-card:hover .fc-shimmer{animation:shimmerPass .65s ease both}
   .fc-content{position:relative;z-index:3;display:flex;flex-direction:column;height:100%}
-
-  /* Color band at top — thick TCG foil strip */
-  .fc-band{
-    height:4px;flex-shrink:0;
-    background:linear-gradient(90deg,
-      rgba(var(--sag,80,100,200),.0) 0%,
-      rgba(var(--sag,80,100,200),1) 20%,
-      rgba(255,255,255,.9) 50%,
-      rgba(var(--sag,80,100,200),1) 80%,
-      rgba(var(--sag,80,100,200),.0) 100%
-    );
-    background-size:250% auto;animation:bandShimmer 2.5s linear infinite;
-    box-shadow:0 0 8px rgba(var(--sag,80,100,200),.6);
-  }
-
-  /* Card header — name + type + guard */
-  .fc-hdr{
-    display:flex;align-items:center;gap:5px;padding:6px 9px 5px;flex-shrink:0;
-    background:linear-gradient(180deg,rgba(4,7,18,.92) 0%,rgba(4,7,18,.6) 70%,transparent);
-  }
-  .fc-hdr-name{
-    font-family:var(--fd);font-weight:700;font-size:.88rem;letter-spacing:.04em;flex:1;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1;
-    text-shadow:0 1px 10px rgba(0,0,0,.95),0 0 20px rgba(0,0,0,.5);
-  }
-  .fc-type-pill{
-    font-size:.44rem;font-family:var(--fd);font-weight:700;letter-spacing:.14em;
-    border:1px solid rgba(var(--sag,80,100,200),.6);
-    color:var(--sa2,var(--muted2));
-    background:rgba(0,0,0,.7);border-radius:999px;padding:2px 7px;white-space:nowrap;flex-shrink:0;
-    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-    box-shadow:0 0 8px rgba(var(--sag,80,100,200),.2);
-  }
-  .fc-guard-pill{
-    font-size:.44rem;font-family:var(--fd);font-weight:700;letter-spacing:.07em;
-    background:linear-gradient(135deg,rgba(245,168,0,.95),rgba(180,110,0,.9));
-    color:#1a0c00;border-radius:999px;padding:2px 7px;flex-shrink:0;
-    box-shadow:0 0 14px rgba(245,168,0,.55);animation:pulseGlow 1s ease-in-out infinite;
-  }
-
-  /* Art spacer */
+  .fc-band{height:3px;flex-shrink:0;background:linear-gradient(90deg,rgba(var(--sag,80,100,200),.0) 0%,rgba(var(--sag,80,100,200),1) 18%,rgba(255,255,255,.85) 50%,rgba(var(--sag,80,100,200),1) 82%,rgba(var(--sag,80,100,200),.0) 100%);background-size:250% auto;animation:bandShimmer 2.2s linear infinite;box-shadow:0 0 6px rgba(var(--sag,80,100,200),.5)}
+  .fc-hdr{display:flex;align-items:center;gap:4px;padding:5px 8px 4px;flex-shrink:0;background:linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.55) 70%,transparent)}
+  .fc-hdr-name{font-family:var(--fd);font-size:.86rem;letter-spacing:.04em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1;text-shadow:1px 1px 0 #000,0 0 12px rgba(0,0,0,.9)}
+  .fc-type-pill{font-size:.42rem;font-family:var(--fd);letter-spacing:.12em;border:1px solid rgba(var(--sag,80,100,200),.55);color:var(--sa2,var(--muted2));background:rgba(0,0,0,.75);border-radius:2px;padding:2px 6px;white-space:nowrap;flex-shrink:0}
+  .fc-guard-pill{font-size:.42rem;font-family:var(--fd);letter-spacing:.06em;background:var(--gold);color:#1a0c00;border-radius:2px;padding:2px 6px;flex-shrink:0;box-shadow:1px 1px 0 rgba(0,0,0,.8);animation:pulseGlow .9s ease-in-out infinite}
   .fc-art-zone{flex:1;min-height:0;position:relative}
-  .fc-art-emoji{position:absolute;inset:0;display:grid;place-items:center;font-size:3.8rem;filter:drop-shadow(0 4px 20px rgba(0,0,0,.9));z-index:2}
-
-  /* Stats panel — frosted glass at the bottom of card */
-  .fc-stats-panel{
-    flex-shrink:0;padding:6px 9px 8px;
-    background:linear-gradient(0deg,rgba(4,7,18,1) 50%,rgba(4,7,18,.9) 75%,transparent);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    border-top:1px solid rgba(var(--sag,80,100,200),.18);
-  }
-  .fc-subtitle{font-size:.5rem;font-weight:600;letter-spacing:.1em;color:var(--sa2,var(--muted2));text-transform:uppercase;margin-bottom:4px;text-shadow:0 0 10px rgba(var(--sag,80,100,200),.4)}
-
-  /* Momentum pips */
-  .fc-mom{display:flex;gap:4px;align-items:center;margin-bottom:5px}
-  .pip{
-    width:9px;height:9px;border-radius:50%;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.05);
-    transition:all .25s cubic-bezier(.25,.8,.25,1);
-  }
-  .pip.on{background:#2a4898;border-color:#5878d8;box-shadow:0 0 6px rgba(80,120,220,.5)}
-  .pip.rdy{background:var(--gold2);border-color:var(--gold3);box-shadow:0 0 10px rgba(220,160,48,.85),0 0 20px rgba(220,160,48,.3)}
-  .pip.max{background:#e02045;border-color:#ff3060;box-shadow:0 0 14px rgba(224,32,70,.95),0 0 28px rgba(224,32,70,.4);animation:pipPop .65s ease-in-out infinite}
-
-  /* Stats row */
-  .fc-srow{display:flex;gap:10px;align-items:center}
+  .fc-art-emoji{position:absolute;inset:0;display:grid;place-items:center;font-size:3.6rem;filter:drop-shadow(0 3px 16px rgba(0,0,0,.95));z-index:2}
+  .fc-stats-panel{flex-shrink:0;padding:5px 8px 7px;background:linear-gradient(0deg,rgba(0,0,0,1) 55%,rgba(0,0,0,.88) 78%,transparent);border-top:1px solid rgba(var(--sag,80,100,200),.15)}
+  .fc-subtitle{font-size:.48rem;letter-spacing:.08em;color:var(--sa2,var(--muted2));text-transform:uppercase;margin-bottom:3px;font-family:var(--fd)}
+  .fc-mom{display:flex;gap:3px;align-items:center;margin-bottom:4px}
+  .pip{width:8px;height:8px;border-radius:1px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);transition:all .22s}
+  .pip.on{background:#264898;border-color:#4868d8}
+  .pip.rdy{background:var(--gold2);border-color:var(--gold3);box-shadow:0 0 8px rgba(220,160,48,.75)}
+  .pip.max{background:#c81840;border-color:#f02858;box-shadow:0 0 12px rgba(200,24,64,.9);animation:pipPop .6s ease-in-out infinite}
+  .fc-srow{display:flex;gap:8px;align-items:center}
   .fst{display:flex;gap:2px;align-items:baseline}
-  .fst-l{font-size:.46rem;font-family:var(--fd);font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
-  .fst-v{font-size:.86rem;font-family:var(--fd);font-weight:700;line-height:1;text-shadow:0 1px 8px rgba(0,0,0,.9)}
+  .fst-l{font-size:.44rem;font-family:var(--fd);letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+  .fst-v{font-size:.84rem;font-family:var(--fd);line-height:1;text-shadow:1px 1px 0 rgba(0,0,0,.9)}
+  .fc-statuses{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+  .sbadge{font-size:.44rem;font-family:var(--fd);letter-spacing:.06em;border-radius:2px;padding:2px 6px;white-space:nowrap}
+  .sb-bleed{background:rgba(180,20,20,.45);border:1px solid #ef4444;color:#ffc0c0}
+  .sb-stun{background:rgba(200,158,0,.32);border:1px solid #f0c020;color:#fde060;animation:stunShake 1.6s ease-in-out infinite}
+  .sb-weaken{background:rgba(140,48,220,.32);border:1px solid #a840f8;color:#ddb0ff}
+  .sb-power{background:rgba(220,90,10,.35);border:1px solid #f06820;color:#ffc070}
 
-  /* Status effect badges */
-  .fc-statuses{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
-  .sbadge{
-    font-size:.46rem;font-family:var(--fd);font-weight:700;letter-spacing:.06em;
-    border-radius:999px;padding:2px 7px;white-space:nowrap;
-    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  }
-  .sb-bleed{background:rgba(200,30,30,.38);border:1px solid #ef4444;color:#ffc0c0;box-shadow:0 0 10px rgba(220,40,40,.3)}
-  .sb-stun{background:rgba(220,170,0,.3);border:1px solid #f5c820;color:#fde060;animation:stunShake 1.8s ease-in-out infinite;box-shadow:0 0 10px rgba(220,170,0,.3)}
-  .sb-weaken{background:rgba(160,60,240,.3);border:1px solid #bb44ff;color:#ddb0ff;box-shadow:0 0 10px rgba(160,60,240,.3)}
-  .sb-power{background:rgba(240,100,20,.32);border:1px solid #ff7020;color:#ffc070;box-shadow:0 0 10px rgba(240,100,20,.3)}
+  /* ════════════════════════════
+     HP BAR
+  ════════════════════════════ */
+  .fc-hp-bar{width:min(154px,41vw);margin-top:4px;padding:3px 5px 2px;background:#0d0d0d;border:2px solid var(--border)}
+  .fc-hp-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+  .hp-name{font-size:.5rem;font-family:var(--fd);letter-spacing:.06em;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
+  .hp-num{font-size:.74rem;font-family:var(--fd);color:var(--green2)}
+  .hp-num.mid{color:var(--gold3)}
+  .hp-num.low{color:var(--red3);animation:hpPulse .9s ease-in-out infinite}
+  .hpb{height:5px;background:#1a1a1a;border-radius:1px;overflow:hidden}
+  .hpfill{height:100%;background:var(--green2);border-radius:1px;transition:width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 6px rgba(32,216,96,.5)}
+  .hpfill.mid{background:var(--gold3);box-shadow:0 0 6px rgba(248,204,80,.5)}
+  .hpfill.low{background:var(--red3);box-shadow:0 0 6px rgba(255,48,72,.5)}
 
-  /* ════════════════════════════════
-     HP BAR — below the card
-  ════════════════════════════════ */
-  .fc-hp-bar{
-    width:min(160px, 42vw);
-    margin-top:5px;
-    padding:4px 6px 2px;
-    background:linear-gradient(90deg,rgba(4,7,18,.92),rgba(10,14,30,.9),rgba(4,7,18,.92));
-    border:1px solid rgba(var(--sag,80,100,200),.25);
-    border-radius:10px;
-    box-shadow:0 2px 12px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4);
-    display:flex;flex-direction:column;gap:2px;
-  }
-  .fc-hp-label{
-    display:flex;justify-content:space-between;align-items:center;
-    font-family:var(--fd);font-weight:700;font-size:.58rem;letter-spacing:.06em;
-    color:var(--muted2);
-  }
-  .fc-hp-label .hp-name{color:var(--sa2,var(--text));font-size:.6rem;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:65%}
-  .fc-hp-label .hp-num{flex-shrink:0}
-  .hpb{
-    width:100%;height:8px;border-radius:999px;
-    background:rgba(0,0,0,.7);
-    border:1px solid rgba(255,255,255,.07);
-    overflow:hidden;position:relative;
-    box-shadow:inset 0 1px 3px rgba(0,0,0,.5);
-  }
-  .hpfill{
-    height:100%;border-radius:999px;position:relative;
-    background:linear-gradient(90deg,#00a048,#00e860);
-    transition:width .5s cubic-bezier(.25,.8,.25,1);
-    box-shadow:0 0 10px rgba(0,200,80,.5);
-  }
-  .hpfill::after{content:'';position:absolute;top:0;left:0;right:0;height:45%;background:rgba(255,255,255,.28);border-radius:999px}
-  .hpfill.mid{background:linear-gradient(90deg,#c07000,#f0c030);box-shadow:0 0 10px rgba(220,160,0,.5)}
-  .hpfill.low{background:linear-gradient(90deg,#aa0f20,#ff2040);animation:hpPulse .8s ease-in-out infinite;box-shadow:0 0 12px rgba(220,20,50,.6)}
-  .hp-num{font-family:var(--fd);font-weight:700;font-size:.72rem;letter-spacing:.02em;white-space:nowrap;flex-shrink:0;text-shadow:0 1px 8px rgba(0,0,0,.95)}
-  .hp-num.low{color:#ff3355}.hp-num.mid{color:#f5a800}
-
-  /* ════════════════════════════════
-     BATTLE LOG
-  ════════════════════════════════ */
+  /* ════════════════════════════
+     LOG BOX
+  ════════════════════════════ */
   .logbox{
-    display:flex;align-items:center;justify-content:center;
-    padding:6px 16px;text-align:center;
-    background:linear-gradient(90deg,rgba(4,7,18,.98) 0%,rgba(10,14,32,.96) 50%,rgba(4,7,18,.98) 100%);
-    border-top:1px solid rgba(200,150,40,.15);
-    border-bottom:1px solid rgba(200,150,40,.15);
-    min-height:50px;position:relative;overflow:hidden;z-index:2;
-    box-shadow:0 0 30px rgba(0,0,0,.8);
-    grid-column:1;
+    padding:5px 12px;background:#0d0d0d;
+    border-top:2px solid var(--border);border-bottom:2px solid var(--border);
+    position:relative;z-index:2;grid-column:1;
+    min-height:44px;display:flex;align-items:center;
   }
-  /* Decorative gold corners */
-  .logbox::before{
-    content:'';position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;
-    background:
-      linear-gradient(135deg,rgba(200,150,40,.12) 0%,transparent 30%),
-      linear-gradient(225deg,rgba(200,150,40,.12) 0%,transparent 30%),
-      linear-gradient(315deg,rgba(200,150,40,.12) 0%,transparent 30%),
-      linear-gradient(45deg,rgba(200,150,40,.12) 0%,transparent 30%);
-  }
-  .logbox::after{
-    content:'';position:absolute;left:12%;right:12%;top:50%;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(200,150,40,.25),transparent);
-  }
-  .log-inner{position:relative;z-index:1}
-  .turn-lbl{font-family:var(--fd);font-weight:600;letter-spacing:.32em;font-size:.62rem;color:var(--muted);margin-bottom:2px}
-  .turn-lbl.yours{color:#ff3355;animation:turnBlink 1.1s ease-in-out infinite;text-shadow:0 0 16px rgba(255,51,85,.6)}
-  .turn-lbl.stunned-lbl{color:#f5c820;animation:turnBlink .75s ease-in-out infinite;text-shadow:0 0 12px rgba(245,200,32,.5)}
-  .log-txt{font-family:var(--fd);font-weight:600;font-size:1.05rem;letter-spacing:.04em;text-shadow:0 1px 10px rgba(0,0,0,.9)}
+  .log-inner{display:flex;flex-direction:column;gap:2px;width:100%}
+  .turn-lbl{font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;color:var(--muted)}
+  .turn-lbl.yours{color:var(--green2)}
+  .turn-lbl.stunned-lbl{color:var(--gold3)}
+  .log-txt{font-family:var(--fb);font-size:.82rem;color:var(--text);line-height:1.25}
 
-  /* ════════════════════════════════
-     CONTROLS PANEL
-  ════════════════════════════════ */
+  /* ════════════════════════════
+     CONTROLS
+  ════════════════════════════ */
   .ctrl{
-    border-top:1px solid rgba(255,255,255,.05);
-    background:linear-gradient(180deg,rgba(8,12,26,.97),rgba(4,7,16,.99));
-    padding:7px 10px;display:flex;flex-direction:column;gap:7px;
-    position:relative;z-index:2;
-    box-shadow:0 -4px 24px rgba(0,0,0,.7);
-    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    grid-column:1;
-  }
-  .ctrl::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,150,40,.2),transparent)}
-  .ctrl-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
-  .ctrl-info{display:flex;align-items:center;gap:8px;flex:1}
-  .ctrl-lbl{font-family:var(--fd);font-weight:600;letter-spacing:.1em;font-size:.82rem;color:var(--muted2)}
-  .tc-badge{
-    font-family:var(--fd);font-weight:700;font-size:.7rem;letter-spacing:.1em;
-    background:linear-gradient(135deg,var(--gold2),#6a4808);color:#0e0800;
-    border-radius:999px;padding:3px 11px;
-    box-shadow:0 2px 8px rgba(180,130,20,.35);
-  }
-  .stun-note{
-    font-size:.58rem;font-family:var(--fd);font-weight:700;letter-spacing:.1em;color:#f5c820;
-    background:rgba(220,170,0,.18);border:1px solid rgba(220,170,0,.45);
-    border-radius:999px;padding:2px 9px;animation:stunShake 1.8s ease-in-out infinite;
-    box-shadow:0 0 10px rgba(220,170,0,.25);
-  }
-
-  /* Action buttons row */
-  .act-row{display:flex;gap:7px}
-  .act-row .btn{flex:1;min-height:44px;font-size:.78rem}
-
-  /* ════════════════════════════════
-     SIDE BUFF PANEL
-  ════════════════════════════════ */
-  .buff-side{
-    grid-column:2;
-    grid-row:1 / -1;
+    padding:6px 8px;background:#0d0d0d;
+    border-top:2px solid var(--border);
     display:flex;flex-direction:column;gap:6px;
-    padding:8px 5px;
-    overflow-y:auto;overflow-x:hidden;
-    background:linear-gradient(180deg,rgba(4,7,18,.98),rgba(8,12,26,.96));
-    border-left:1px solid rgba(255,255,255,.05);
-    box-shadow:-4px 0 20px rgba(0,0,0,.5);
-    position:relative;z-index:3;
-    scroll-snap-type:y mandatory;
-    -webkit-overflow-scrolling:touch;
+    position:relative;z-index:2;grid-column:1;
+  }
+  .ctrl-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .ctrl-info{display:flex;align-items:center;gap:6px;flex:1;overflow:hidden}
+  .ctrl-lbl{font-family:var(--fd);font-size:.8rem;letter-spacing:.12em;color:var(--muted2);white-space:nowrap}
+  .tc-badge{font-family:var(--fd);font-size:.7rem;letter-spacing:.1em;background:var(--gold);color:#0e0800;border-radius:2px;padding:1px 7px;white-space:nowrap}
+  .stun-note{font-family:var(--fd);font-size:.65rem;color:var(--gold3);letter-spacing:.08em}
+  .act-row{display:flex;gap:5px;flex-wrap:wrap}
+  .act-row .btn{flex:1;min-width:0;font-size:.78rem;padding:8px 6px;min-height:38px}
+
+  /* ════════════════════════════
+     BUFF SIDE PANEL
+  ════════════════════════════ */
+  .buff-side{
+    grid-row:1 / -1;grid-column:2;
+    background:#0d0d0d;border-left:2px solid var(--border);
+    display:flex;flex-direction:column;gap:5px;padding:7px 4px;overflow-y:auto;
   }
   .buff-side::-webkit-scrollbar{width:2px}
-  .buff-side::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
-  .buff-side::before{
-    content:'BUFFS';
-    display:block;font-family:var(--fd);font-weight:700;font-size:.48rem;
-    letter-spacing:.18em;color:var(--muted);text-align:center;
-    padding-bottom:5px;border-bottom:1px solid rgba(200,150,40,.15);
-    flex-shrink:0;
-  }
-
-  /* Buff cards — vertical layout in side panel */
   .buff{
-    width:100%;flex-shrink:0;scroll-snap-align:start;
-    border:1px solid var(--border2);border-radius:10px;
-    background:linear-gradient(165deg,rgba(14,26,56,.95),rgba(8,14,32,.95));
-    padding:7px 6px;cursor:pointer;position:relative;overflow:hidden;
-    transition:transform .16s,border-color .16s,box-shadow .16s;touch-action:manipulation;
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;
+    background:var(--bg2);border:2px solid var(--border2);border-radius:4px;
+    padding:6px 5px;cursor:pointer;transition:border-color .12s,background .12s;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    touch-action:manipulation;text-align:center;
   }
-  .buff::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#4455dd,#8890ff)}
-  .buff::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 50%);pointer-events:none;border-radius:inherit}
-  .buff:not(.dis):hover{transform:scale(1.06);border-color:#5568cc;box-shadow:0 6px 20px rgba(0,0,0,.6),0 0 0 1px #5568cc,0 0 14px rgba(85,104,204,.3)}
-  .buff:not(.dis):active{transform:scale(.94)}
-  .buff.dis{opacity:.2;cursor:not-allowed}
-  .buff-top{display:flex;justify-content:center;align-items:center;flex-direction:column;gap:2px;margin-bottom:0}
-  .buff-ico{font-size:1.5rem;line-height:1}
-  .buff-tc{font-size:.55rem;font-family:var(--fd);font-weight:700;background:linear-gradient(135deg,var(--gold2),#7a5808);color:#0e0800;border-radius:999px;padding:1px 6px;margin-top:1px}
-  .buff-nm{font-family:var(--fd);font-weight:600;font-size:.6rem;letter-spacing:.03em;line-height:1.1;word-break:break-word}
-  .buff-dc{font-size:.52rem;color:var(--muted2);margin-top:1px;line-height:1.2;display:none}
+  .buff:not(:disabled):hover{border-color:var(--gold2);background:var(--bg3);box-shadow:2px 2px 0 rgba(0,0,0,.7)}
+  .buff:not(:disabled):active{transform:scale(.94)}
+  .buff.dis{opacity:.22}
+  .buff-top{display:flex;justify-content:space-between;width:100%;align-items:center}
+  .buff-ico{font-size:1.5rem}
+  .buff-tc{font-size:.52rem;font-family:var(--fd);letter-spacing:.08em;background:var(--gold);color:#0e0800;border-radius:2px;padding:1px 4px}
+  .buff-nm{font-size:.55rem;font-family:var(--fd);letter-spacing:.06em;color:var(--muted2)}
 
-  /* ════════════════════════════════
-     VICTORY / DEFEAT OVERLAY
-  ════════════════════════════════ */
-  .ov{
-    position:absolute;inset:0;z-index:10;
-    display:grid;place-items:center;
-    background:radial-gradient(ellipse 120% 120% at 50% 50%,rgba(8,12,26,.96),rgba(2,4,12,.99));
-    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-    animation:vIn .4s ease both;
-  }
-  .ov-box{text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
-  .ov-result{
-    font-family:var(--fh);font-size:clamp(4rem,13vw,7.5rem);letter-spacing:.1em;line-height:.86;
-    animation:floatY 3s ease-in-out infinite;
-  }
-  .win{
-    color:var(--green2);
-    text-shadow:0 0 60px rgba(0,224,96,.7),0 0 140px rgba(0,180,80,.4),0 4px 0 rgba(0,0,0,.9);
-  }
-  .lose{
-    color:var(--red3);
-    text-shadow:0 0 60px rgba(255,34,68,.65),0 0 140px rgba(180,12,36,.4),0 4px 0 rgba(0,0,0,.9);
-  }
-  .ov-rule{width:100px;height:1px;background:linear-gradient(90deg,transparent,var(--gold3),transparent);box-shadow:0 0 10px rgba(245,200,72,.4)}
-  .ov-sub{font-family:var(--fd);font-weight:600;font-size:1rem;letter-spacing:.28em;color:var(--muted2)}
-  .ov-stats{display:flex;gap:18px;font-size:.78rem;color:var(--muted2)}
-  .ov-stat{display:flex;flex-direction:column;align-items:center;gap:3px}
-  .ov-stat b{font-family:var(--fd);font-weight:700;font-size:1.5rem;color:var(--text)}
+  /* ════════════════════════════
+     RESULT OVERLAY
+  ════════════════════════════ */
+  .ov{position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center}
+  .ov-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 28px;border:3px solid var(--border3);background:#0d0d0d;box-shadow:6px 6px 0 rgba(0,0,0,.9);min-width:240px;max-width:90vw}
+  .ov-result{font-family:var(--fh);font-size:clamp(3rem,12vw,5.5rem);letter-spacing:.06em;line-height:1}
+  .ov-result.win{color:var(--gold3);text-shadow:4px 4px 0 var(--gold)}
+  .ov-result.lose{color:var(--red3);text-shadow:4px 4px 0 #6a0010}
+  .ov-rule{width:60px;height:3px;background:var(--border3)}
+  .ov-sub{font-family:var(--fd);font-size:1rem;letter-spacing:.2em;color:var(--muted2)}
+  .ov-stats{display:flex;gap:18px}.ov-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .ov-stat b{font-family:var(--fd);font-size:1.2rem;color:var(--text)}
+  .ov-stat span{font-size:.65rem;font-family:var(--fd);letter-spacing:.1em;color:var(--muted)}
 
-  /* ── Scrollbars ── */
-  .panel ::-webkit-scrollbar{width:3px;height:3px}.panel ::-webkit-scrollbar-track{background:transparent}.panel ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
-
-  /* ════════════════════════════════
-     RESPONSIVE
-  ════════════════════════════════ */
-  @media(max-width:760px){
-    .grid3{grid-template-columns:1fr;gap:8px}
-    .rooms{grid-template-columns:1fr}
-    .cards{grid-template-columns:repeat(2,1fr);grid-auto-rows:255px;gap:8px}
-    .fc-hdr-name{font-size:.88rem}
-    .fight-card{width:min(148px,40vw)}
-    .fc-hp-bar{width:min(148px,40vw)}
-    .battle{grid-template-columns:1fr 80px}
-    .buff-side{padding:6px 4px;gap:5px}
-  }
-  @media(max-width:480px){
-    .panel{margin:6px;padding:9px;gap:8px}
-    .cards{grid-auto-rows:238px;gap:6px}
-    .fc-hdr-name{font-size:.8rem}
-    .act-row .btn{min-height:40px;font-size:.74rem;padding:8px 6px}
-    .slot{width:31px;height:31px;font-size:.95rem}
-    .bar{padding:5px 10px}
-    .logbox{min-height:44px;padding:4px 12px}
-    .ctrl{padding:6px 8px;gap:6px}
-    .ov-result{font-size:clamp(3.5rem,12vw,6rem)}
-    .fight-card{width:min(120px,33vw)}
-    .fc-hp-bar{width:min(120px,33vw)}
-    .fc-stats-panel{padding:5px 8px 7px}
-    .fc-hdr{padding:5px 8px 4px}
-    .battle{grid-template-columns:1fr 72px}
-    .buff-side{padding:5px 3px;gap:4px}
-    .buff{padding:5px 4px;border-radius:8px}
-    .buff-ico{font-size:1.3rem}
-    .buff-nm{font-size:.54rem}
-    .buff-tc{font-size:.5rem}
+  /* Responsive */
+  @media(max-height:680px){
+    .fight-card{width:min(130px,35vw)}
+    .fc-hp-bar{width:min(130px,35vw)}
+    .fc-stats-panel{padding:4px 7px 6px}
+    .fc-hdr{padding:4px 7px 3px}
+    .battle{grid-template-columns:1fr 70px}
+    .buff{padding:5px 3px}
+    .buff-ico{font-size:1.25rem}
+    .buff-nm{font-size:.5rem}
+    .buff-tc{font-size:.48rem}
   }
   </style>
 </head>
@@ -721,101 +480,134 @@
 const FIREBASE_CONFIG={apiKey:"AIzaSyDi-5UoX0hDw7O6UQY5pduKgxQMX5C4KY4",authDomain:"ringclash1.firebaseapp.com",databaseURL:"https://ringclash1-default-rtdb.europe-west1.firebasedatabase.app",projectId:"ringclash1",storageBucket:"ringclash1.firebasestorage.app",messagingSenderId:"373910829853",appId:"1:373910829853:web:319a0093fedf3ef7123ff4"};
 
 /* ══════════════════════════════════════════
-   SIGNATURE MOVES — each boxer's special
-   Unlocks at momentum ≥ 3 · costs 2 TC
+   SIGNATURE MOVES
+   Lore-accurate: each boxer's iconic technique
 ══════════════════════════════════════════ */
 const SIGNATURES = {
-  // Original 12
-  ippo:    {name:"Dempsey Roll",      icon:"🌀", mult:1.9,  effect:null},
-  takamura:{name:"Bear Mauling",      icon:"🐻", mult:1.7,  effect:"stun"},
-  miyata:  {name:"Cross Counter",     icon:"⚡", mult:1.65, effect:null},
-  sendou:  {name:"Tiger Rush",        icon:"🐅", mult:1.6,  effect:"bleed"},
-  volg:    {name:"White Fang",        icon:"🐺", mult:1.8,  effect:null},
-  ricardo: {name:"Legendary Fist",    icon:"👑", mult:2.0,  effect:null},
-  date:    {name:"Heartbreak Shot",   icon:"💔", mult:1.55, effect:"weaken"},
-  mashiba: {name:"Reaping Hook",      icon:"💀", mult:1.55, effect:"bleed"},
-  itagaki: {name:"Speed Blitz",       icon:"🌪", mult:1.45, effect:null},
-  alfredo: {name:"Aztec Storm",       icon:"🌊", mult:1.75, effect:null},
-  aoki:    {name:"Frog Leap Jab",     icon:"🐸", mult:1.4,  effect:"stun"},
-  kimura:  {name:"Dragon Tail",       icon:"🐟", mult:1.6,  effect:null},
-  // New additions
+  // Kamogawa Gym
+  ippo:    {name:"Dempsey Roll",      icon:"🌀", mult:1.9,  effect:null},        // Ippo's signature windmill combo
+  takamura:{name:"Bear Mauling",      icon:"🐻", mult:1.75, effect:"stun"},       // Takamura's overwhelming raw power
+  aoki:    {name:"Frog Leap Jab",     icon:"🐸", mult:1.35, effect:"stun"},       // Aoki's tricky unorthodox jab
+  kimura:  {name:"Dragon Fish Blow",  icon:"🐟", mult:1.45, effect:null},         // Kimura's spinning hook
+  // Rivals
+  miyata:  {name:"Cross Counter",     icon:"⚡", mult:1.7,  effect:null},         // Miyata's signature counter
+  itagaki: {name:"Speed Blitz",       icon:"💨", mult:1.4,  effect:null},         // Itagaki's blinding speed rush
+  // Naniwa
+  sendou:  {name:"Tiger Rush",        icon:"🐅", mult:1.65, effect:"bleed"},      // Sendou's wild brawling rush
+  // World
+  volg:    {name:"White Fang",        icon:"🐺", mult:1.75, effect:null},         // Volg's scalpel-precise hooks
+  ricardo: {name:"Legendary Fist",    icon:"👑", mult:2.1,  effect:"weaken"},     // Ricardo's untouchable technique
+  alfredo: {name:"Aztec Storm",       icon:"🌊", mult:1.7,  effect:null},         // Alfredo's power punch
+  bryan:   {name:"Hawk Claw",         icon:"🦅", mult:1.6,  effect:"bleed"},      // Bryan's brutal slash hooks
+  david:   {name:"Eagle Eye Cross",   icon:"🦅", mult:1.55, effect:"weaken"},     // David's precise cross counter
+  ozuma:   {name:"Death Row Blast",   icon:"☠",  mult:1.8,  effect:"stun"},       // Ozuma's KO-hunting power shot
+  malcolm: {name:"Southpaw Feint",    icon:"🎭", mult:1.55, effect:"weaken"},     // Malcolm's ring-IQ technique
+  hammer:  {name:"Sledgehammer",      icon:"🔨", mult:1.85, effect:"stun"},       // Nao's iron hammer fist
+  wolf:    {name:"Wolf Fang",         icon:"🐺", mult:1.6,  effect:"bleed"},      // Wally's wild African style
+  shimabukuro:{name:"Southpaw Rush",  icon:"🌀", mult:1.5,  effect:null},
+  // Antagonists
+  date:    {name:"Heartbreak Shot",   icon:"💔", mult:1.6,  effect:"weaken"},     // Date's face-targeting special
+  mashiba: {name:"Reaping Hook",      icon:"💀", mult:1.55, effect:"bleed"},      // Mashiba's illegal-feeling hook
+  sawamura:{name:"Bullet Jab",        icon:"🔫", mult:1.5,  effect:"weaken"},     // Sawamura's piercing jab
+  sanada:  {name:"Iron Fist Combo",   icon:"🗜", mult:1.65, effect:"weaken"},     // Sanada's surgical combos
+  sendo2:  {name:"Smash",             icon:"💥", mult:1.55, effect:"bleed"},
   nao:     {name:"Hammer Fist",       icon:"🔨", mult:1.65, effect:"stun"},
-  sendo2:  {name:"Wild Smash",        icon:"💥", mult:1.5,  effect:"bleed"},
-  sawamura:{name:"Bullet Jab",        icon:"🔫", mult:1.5,  effect:"weaken"},
-  bryan:   {name:"Brawl Storm",       icon:"🌩", mult:1.55, effect:null},
-  sanada:  {name:"Iron Fist Combo",   icon:"🗜", mult:1.7,  effect:"weaken"},
-  david:   {name:"Blinding Cross",    icon:"😵", mult:1.6,  effect:"weaken"},
-  ozuma:   {name:"Death Blow",        icon:"☠", mult:1.85, effect:"stun"},
-  malcolm: {name:"Eagle Strike",      icon:"🦅", mult:1.6,  effect:null},
-  hammer:  {name:"Sledgehammer",      icon:"🔩", mult:1.8,  effect:"stun"},
-  shimabukuro:{name:"Southpaw Rush",  icon:"🌀", mult:1.55, effect:null},
-  wolf:    {name:"Savage Barrage",    icon:"🐗", mult:1.5,  effect:"bleed"},
-  ippo2:   {name:"Rising Smash",      icon:"⬆", mult:1.75, effect:null},
+  ozuma2:  {name:"Death Blow",        icon:"☠",  mult:1.85, effect:"stun"},
 };
 
 /* ══════════════════════════════════════════
-   BOXER ROSTER — unchanged
+   BOXER ROSTER — Lore-accurate, balanced stats
+   
+   STAT PHILOSOPHY:
+   HP:  Base health. Durability in manga — chin strength + stamina
+   ATK: Raw hitting power + technique. NOT just size.
+   DEF: Footwork + guard + counter skill + ring IQ
+   
+   Class tiers:
+   World-class (Ricardo, Takamura): 56-62 ATK
+   JPN elite (Ippo, Sendou, Volg): 50-56 ATK
+   Contender (Miyata, Mashiba): 46-52 ATK
+   Solid pro (Aoki, Kimura): 36-44 ATK
 ══════════════════════════════════════════ */
 const BOXERS=[
   // ── Kamogawa Gym ──
-  {id:"ippo",   name:"Makunouchi Ippo",  title:"The Wind God",       style:"balanced",hp:245,atk:46,def:28,icon:"🥊",img:"assets/boxers/ippo.jpg"},
-  {id:"takamura",name:"Takamura Mamoru", title:"The Rampaging Bear", style:"slugger", hp:285,atk:50,def:30,icon:"🐻",img:"assets/boxers/takamura.jpg"},
-  {id:"aoki",   name:"Aoki Masaru",      title:"Frog King",          style:"tank",    hp:230,atk:34,def:48,icon:"🐸",img:"assets/boxers/aoki.jpg"},
-  {id:"kimura", name:"Kimura Tatsuya",   title:"Dragon Fish Blow",   style:"speed",   hp:217,atk:39,def:43,icon:"🐟",img:"assets/boxers/kimura.jpg"},
+  // Ippo: Featherweight. Incredible punching power, great stamina, relatively low defense (rushes in recklessly)
+  {id:"ippo",   name:"Makunouchi Ippo",  title:"The Wind God",       style:"balanced",hp:252,atk:54,def:30,icon:"🥊",img:"assets/boxers/ippo.jpg"},
+  // Takamura: Multi-weight champion, superhuman physical ability. Dominant in every stat.
+  {id:"takamura",name:"Takamura Mamoru", title:"The Rampaging Bear", style:"slugger", hp:295,atk:62,def:36,icon:"🐻",img:"assets/boxers/takamura.jpg"},
+  // Aoki: Weak puncher but extremely durable and tricky, unorthodox
+  {id:"aoki",   name:"Aoki Masaru",      title:"Frog King",          style:"tank",    hp:248,atk:32,def:52,icon:"🐸",img:"assets/boxers/aoki.jpg"},
+  // Kimura: Dragon Fish Blow specialist, above-average speed and punching
+  {id:"kimura", name:"Kimura Tatsuya",   title:"Dragon Fish Blow",   style:"speed",   hp:228,atk:40,def:40,icon:"🐟",img:"assets/boxers/kimura.jpg"},
   // ── Kawahara Gym ──
-  {id:"miyata", name:"Miyata Ichiro",    title:"Counter King",       style:"counter", hp:218,atk:49,def:44,icon:"⚡",img:"assets/boxers/miyata.jpg"},
-  {id:"itagaki",name:"Itagaki Manabu",   title:"Speed Star",         style:"speed",   hp:210,atk:43,def:46,icon:"🌀",img:"assets/boxers/itagaki.jpg"},
+  // Miyata: Perfect counter fighter, fast, technically sound, lighter chin
+  {id:"miyata", name:"Miyata Ichiro",    title:"Counter King",       style:"counter", hp:222,atk:50,def:50,icon:"⚡",img:"assets/boxers/miyata.jpg"},
+  // Itagaki: Absurd speed, very technical, but lower power and chin
+  {id:"itagaki",name:"Itagaki Manabu",   title:"Speed Star",         style:"speed",   hp:210,atk:42,def:50,icon:"🌀",img:"assets/boxers/itagaki.jpg"},
   // ── Naniwa ──
-  {id:"sendou", name:"Sendou Takeshi",   title:"Naniwa Tiger",       style:"slugger", hp:232,atk:55,def:20,icon:"🐅",img:"assets/boxers/sendou.jpg"},
+  // Sendou: Pure wild brawler, huge power, terrible defense, great stamina
+  {id:"sendou", name:"Sendou Takeshi",   title:"Naniwa Tiger",       style:"slugger", hp:252,atk:58,def:18,icon:"🐅",img:"assets/boxers/sendou.jpg"},
   // ── Internationals ──
-  {id:"volg",   name:"Volg Zangief",     title:"White Fang",         style:"balanced",hp:235,atk:48,def:40,icon:"🐺",img:"assets/boxers/volg.jpg"},
-  {id:"ricardo",name:"Ricardo Martinez", title:"The Legend",         style:"counter", hp:260,atk:54,def:46,icon:"👑",img:"assets/boxers/ricardo.jpg"},
-  {id:"alfredo",name:"Alfredo Gonzales", title:"Metztli",            style:"balanced",hp:255,atk:51,def:36,icon:"🇲🇽",img:"assets/boxers/alfredo.jpg"},
-  {id:"bryan",  name:"Bryan Hawk",       title:"Wild Hawk",          style:"slugger", hp:268,atk:54,def:22,icon:"🦅",img:"assets/boxers/bryan.jpg"},
-  {id:"david",  name:"David Eagle",      title:"The Eagle",          style:"counter", hp:245,atk:50,def:42,icon:"🦅",img:"assets/boxers/david.jpg"},
-  {id:"ozuma",  name:"Hisato Ozuma",     title:"Death Row",          style:"slugger", hp:238,atk:56,def:20,icon:"☠️",img:"assets/boxers/ozuma.jpg"},
-  {id:"malcolm",name:"Malcolm Grid",     title:"The Professor",      style:"counter", hp:228,atk:47,def:44,icon:"🎓",img:"assets/boxers/malcolm.jpg"},
-  {id:"hammer", name:"Hammer Nao",       title:"Iron Hammer",        style:"tank",    hp:270,atk:52,def:38,icon:"🔨",img:"assets/boxers/hammer.jpg"},
-  {id:"wolf",   name:"Wally",             title:"African Wolf",       style:"slugger", hp:242,atk:53,def:22,icon:"🐗",img:"assets/boxers/wolf.jpg"},
-  {id:"shimabukuro",name:"Shimabukuro",  title:"Southpaw Stylist",   style:"speed",   hp:220,atk:44,def:44,icon:"🤙",img:"assets/boxers/shimabukuro.jpg"},
+  // Volg: Surgical Russian stylist, huge power, precise — was near world title level
+  {id:"volg",   name:"Volg Zangief",     title:"White Fang",         style:"balanced",hp:242,atk:52,def:44,icon:"🐺",img:"assets/boxers/volg.jpg"},
+  // Ricardo: Undefeated WBA featherweight champion. Best in the series. All stats exceptional.
+  {id:"ricardo",name:"Ricardo Martinez", title:"The Legend",         style:"counter", hp:268,atk:62,def:60,icon:"👑",img:"assets/boxers/ricardo.jpg"},
+  // Alfredo: WBC Mexican champion, power puncher, tough as nails
+  {id:"alfredo",name:"Alfredo Gonzales", title:"Metztli",            style:"balanced",hp:262,atk:54,def:38,icon:"🇲🇽",img:"assets/boxers/alfredo.jpg"},
+  // Bryan Hawk: WBC middleweight champion, dirty fighter, huge natural power
+  {id:"bryan",  name:"Bryan Hawk",       title:"Wild Hawk",          style:"slugger", hp:272,atk:58,def:26,icon:"🦅",img:"assets/boxers/bryan.jpg"},
+  // David Eagle: Very technical counterpuncher, precise
+  {id:"david",  name:"David Eagle",      title:"The Eagle",          style:"counter", hp:250,atk:50,def:48,icon:"🦅",img:"assets/boxers/david.jpg"},
+  // Hisato Ozuma: Death Row, power specialist, volatile
+  {id:"ozuma",  name:"Hisato Ozuma",     title:"Death Row",          style:"slugger", hp:244,atk:58,def:22,icon:"☠️",img:"assets/boxers/ozuma.jpg"},
+  // Malcolm Grid: Smart southpaw professor type
+  {id:"malcolm",name:"Malcolm Grid",     title:"The Professor",      style:"counter", hp:232,atk:46,def:48,icon:"🎓",img:"assets/boxers/malcolm.jpg"},
+  // Hammer Nao: Tank, big puncher, durable but slow
+  {id:"hammer", name:"Hammer Nao",       title:"Iron Hammer",        style:"tank",    hp:278,atk:54,def:40,icon:"🔨",img:"assets/boxers/hammer.jpg"},
+  // Wally: African wild-style prodigy, natural talent, offense-focused
+  {id:"wolf",   name:"Wally",             title:"African Wolf",       style:"slugger", hp:245,atk:55,def:24,icon:"🐗",img:"assets/boxers/wolf.jpg"},
+  // Shimabukuro: Southpaw stylist, balanced
+  {id:"shimabukuro",name:"Shimabukuro",  title:"Southpaw Stylist",   style:"speed",   hp:222,atk:44,def:46,icon:"🤙",img:"assets/boxers/shimabukuro.jpg"},
   // ── Antagonists ──
-  {id:"date",   name:"Date Eiji",        title:"The Veteran",        style:"tank",    hp:250,atk:44,def:48,icon:"🍷",img:"assets/boxers/date.jpg"},
-  {id:"mashiba",name:"Mashiba Ryo",      title:"The Reaper",         style:"counter", hp:228,atk:50,def:36,icon:"💀",img:"assets/boxers/mashiba.jpg"},
-  {id:"sawamura",name:"Sawamura Ryuhei", title:"Bullet Speed",       style:"speed",   hp:215,atk:50,def:36,icon:"🔫",img:"assets/boxers/sawamura.jpg"},
-  {id:"sanada", name:"Sanada Kazuki",    title:"Southpaw Surgeon",   style:"counter", hp:235,atk:48,def:42,icon:"🗜️",img:"assets/boxers/sanada.jpg"},
+  // Date Eiji: Veteran crafty fighter, durable chin, very defensive
+  {id:"date",   name:"Date Eiji",        title:"The Veteran",        style:"tank",    hp:262,atk:46,def:52,icon:"🍷",img:"assets/boxers/date.jpg"},
+  // Mashiba Ryo: Tall reach fighter, dangerous hooks, intimidation, moderate chin
+  {id:"mashiba",name:"Mashiba Ryo",      title:"The Reaper",         style:"counter", hp:232,atk:52,def:38,icon:"💀",img:"assets/boxers/mashiba.jpg"},
+  // Sawamura: Speed-based, fast and tricky, low power
+  {id:"sawamura",name:"Sawamura Ryuhei", title:"Bullet Speed",       style:"speed",   hp:218,atk:48,def:40,icon:"🔫",img:"assets/boxers/sawamura.jpg"},
+  // Sanada: Southpaw surgeon, precise combos, good all-around
+  {id:"sanada", name:"Sanada Kazuki",    title:"Southpaw Surgeon",   style:"counter", hp:238,atk:50,def:44,icon:"🗜️",img:"assets/boxers/sanada.jpg"},
 ];
 
 /* ══════════════════════════════════════════
-   REWORKED BUFF SYSTEM
-   Effects: hp · atk · def · tc · cleanse ·
-   cleanse_hp · atk_risk · hp_pct · power_up · multi
+   BUFF SYSTEM
 ══════════════════════════════════════════ */
 const BUFFS=[
   // ── Recovery & Defense ──
-  {id:"corner",   name:"Corner Work",      cost:1, effect:"def",        val:22,  icon:"🩹", desc:"+22 DEF this round"},
-  {id:"ice",      name:"Ice Pack",         cost:1, effect:"hp",         val:30,  icon:"🧊", desc:"+30 HP"},
+  {id:"corner",   name:"Corner Work",      cost:1, effect:"def",        val:20,  icon:"🩹", desc:"+20 DEF this round"},
+  {id:"ice",      name:"Ice Pack",         cost:1, effect:"hp",         val:28,  icon:"🧊", desc:"+28 HP"},
   {id:"salts",    name:"Smelling Salts",   cost:1, effect:"cleanse",    val:0,   icon:"💊", desc:"Remove all debuffs"},
-  {id:"tape",     name:"Tape & Treat",     cost:1, effect:"cleanse_hp", val:22,  icon:"🩺", desc:"Clear debuffs +22 HP"},
-  {id:"steak",    name:"Protein Steak",    cost:2, effect:"hp",         val:58,  icon:"🥩", desc:"+58 HP"},
+  {id:"tape",     name:"Tape & Treat",     cost:1, effect:"cleanse_hp", val:20,  icon:"🩺", desc:"Clear debuffs +20 HP"},
+  {id:"steak",    name:"Protein Steak",    cost:2, effect:"hp",         val:55,  icon:"🥩", desc:"+55 HP"},
   {id:"second",   name:"Second Wind",      cost:3, effect:"hp_pct",     val:.5,  icon:"🌬️", desc:"Restore 50% lost HP"},
-  {id:"focus",    name:"Deep Focus",       cost:0, effect:"def",        val:12,  icon:"🧘", desc:"+12 DEF"},
-  {id:"towel",    name:"Cold Towel",       cost:1, effect:"hp",         val:20,  icon:"🏳️", desc:"+20 HP & clear stun",special:"cleanse_stun"},
-  {id:"bandage",  name:"Hand Bandage",     cost:2, effect:"def",        val:35,  icon:"🤜", desc:"+35 DEF, knuckles armored"},
-  {id:"breathe",  name:"Controlled Breath",cost:1, effect:"def",        val:18,  icon:"💨", desc:"+18 DEF"},
+  {id:"focus",    name:"Deep Focus",       cost:0, effect:"def",        val:10,  icon:"🧘", desc:"+10 DEF"},
+  {id:"towel",    name:"Cold Towel",       cost:1, effect:"hp",         val:18,  icon:"🏳️", desc:"+18 HP & clear stun",special:"cleanse_stun"},
+  {id:"bandage",  name:"Hand Bandage",     cost:2, effect:"def",        val:32,  icon:"🤜", desc:"+32 DEF, armored"},
+  {id:"breathe",  name:"Controlled Breath",cost:1, effect:"def",        val:16,  icon:"💨", desc:"+16 DEF"},
   // ── Offense ──
-  {id:"rush",     name:"Adrenaline",       cost:2, effect:"atk_risk",   val:34,  icon:"💉", desc:"+34 ATK, -18 HP", cost_hp:18},
-  {id:"warcry",   name:"War Cry",          cost:2, effect:"power_up",   val:0,   icon:"🔥", desc:"Next hit: 1.8× DMG", mult:1.8},
-  {id:"haymaker", name:"Haymaker Drill",   cost:3, effect:"atk",        val:46,  icon:"💢", desc:"+46 ATK"},
-  {id:"rage",     name:"Fighting Spirit",  cost:2, effect:"atk",        val:28,  icon:"😤", desc:"+28 ATK"},
+  {id:"rush",     name:"Adrenaline",       cost:2, effect:"atk_risk",   val:32,  icon:"💉", desc:"+32 ATK, -16 HP", cost_hp:16},
+  {id:"warcry",   name:"War Cry",          cost:2, effect:"power_up",   val:0,   icon:"🔥", desc:"Next hit: 1.75× DMG", mult:1.75},
+  {id:"haymaker", name:"Haymaker Drill",   cost:3, effect:"atk",        val:42,  icon:"💢", desc:"+42 ATK"},
+  {id:"rage",     name:"Fighting Spirit",  cost:2, effect:"atk",        val:26,  icon:"😤", desc:"+26 ATK"},
   {id:"killer",   name:"Killer Instinct",  cost:3, effect:"power_up",   val:0,   icon:"⚔️", desc:"Next hit: 2.0× DMG", mult:2.0},
-  {id:"feint",    name:"Feint Master",     cost:1, effect:"atk",        val:16,  icon:"🎭", desc:"+16 ATK this round"},
+  {id:"feint",    name:"Feint Master",     cost:1, effect:"atk",        val:14,  icon:"🎭", desc:"+14 ATK this round"},
   // ── Utility ──
   {id:"plan",     name:"Game Plan",        cost:1, effect:"tc",         val:3,   icon:"📋", desc:"+3 TC"},
   {id:"trainer",  name:"Trainer's Call",   cost:0, effect:"multi",      val:0,   icon:"📣", desc:"+6 ATK, +8 DEF", extra:{atk:6,def:8}},
   {id:"kamogawa", name:"Kamogawa Fist",    cost:2, effect:"multi",      val:0,   icon:"👴", desc:"+18 ATK, +18 DEF", extra:{atk:18,def:18}},
   {id:"rooting",  name:"Crowd Roar",       cost:0, effect:"tc",         val:2,   icon:"📣", desc:"+2 TC"},
   {id:"tape2",    name:"Full Tape Job",    cost:2, effect:"multi",      val:0,   icon:"🩻", desc:"+12 DEF, +20 HP", extra:{def:12,hp:20}},
-  {id:"strategy", name:"Ring Strategy",    cost:1, effect:"def",        val:14,  icon:"♟️", desc:"+14 DEF"},
+  {id:"strategy", name:"Ring Strategy",    cost:1, effect:"def",        val:12,  icon:"♟️", desc:"+12 DEF"},
 ];
 
 /* ══════════════════════════════════════════
@@ -839,23 +631,18 @@ const app=()=>document.getElementById("app"),deep=x=>JSON.parse(JSON.stringify(x
   rcode=()=>Math.random().toString(36).slice(2,7).toUpperCase(),
   artBg=u=>u?`style="background-image:url('${u}');"` :"";
 
-function toast(m){const w=document.getElementById("toast-wrap");w.innerHTML=`<div class="toast">${m}</div>`;clearTimeout(S.toastTmr);S.toastTmr=setTimeout(()=>w.innerHTML="",2800)}
-function load(){try{const d=JSON.parse(localStorage.getItem("ring_clash_v2")||"{}");if(Array.isArray(d.b)&&d.b.length)S.deckBoxers=d.b;if(Array.isArray(d.f)&&d.f.length)S.deckBuffs=d.f}catch{}}
-function save(){localStorage.setItem("ring_clash_v2",JSON.stringify({b:S.deckBoxers,f:S.deckBuffs}))}
-
-/* ══════════════════════════════════════════
-   FIREBASE / ONLINE
-══════════════════════════════════════════ */
-async function initOnline(){if(!hasCfg())return false;if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);if(!S.online.db)S.online.db=firebase.database();if(firebase.auth().currentUser){S.online.uid=firebase.auth().currentUser.uid;return true}try{await firebase.auth().signInAnonymously();S.online.uid=firebase.auth().currentUser?.uid||null;return!!S.online.uid}catch(e){console.error(e);toast("Enable Anonymous Auth in Firebase.");return false}}
-async function detectNode(){const ns=["rooms","rooms2","rooms2d"];for(const n of ns){try{await S.online.db.ref(n).limitToFirst(1).get();S.online.roomNode=n;return}catch{}}S.online.roomNode="rooms"}
+function toast(msg,dur=2800){const w=document.getElementById("toast-wrap");if(!w)return;w.innerHTML=`<div class="toast">${msg}</div>`;clearTimeout(S.toastTmr);S.toastTmr=setTimeout(()=>{if(w)w.innerHTML=""},dur)}
 function goto(v){S.view=v;render()}
-function readyDeck(){if(S.deckBoxers.length!==3||S.deckBuffs.length!==5){toast("Pick 3 fighters and 5 buffs.");return false}return true}
+function save(){localStorage.setItem("rc_deck",JSON.stringify({b:S.deckBoxers,f:S.deckBuffs}))}
+function load(){try{const d=JSON.parse(localStorage.getItem("rc_deck")||"{}");if(d.b&&d.b.length===3)S.deckBoxers=d.b;if(d.f&&d.f.length===5)S.deckBuffs=d.f}catch(e){}}
+function readyDeck(){if(S.deckBoxers.length!==3||S.deckBuffs.length!==5){toast("Build your deck first.");goto("deck");return false}return true}
 
-/* ══════════════════════════════════════════
-   BATTLE CONSTRUCTION
-══════════════════════════════════════════ */
+async function initOnline(){if(S.online.db)return true;if(!hasCfg())return false;try{if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);await firebase.auth().signInAnonymously();S.online.uid=firebase.auth().currentUser?.uid||("u_"+Math.random().toString(36).slice(2));S.online.db=firebase.database();return true}catch(e){console.error(e);toast("Firebase error.");return false}}
+async function detectNode(){if(!S.online.db)return;try{const snap=await S.online.db.ref(".info/serverTimeOffset").get();S.online.roomNode="rooms"}catch(e){S.online.roomNode="rooms"}}
+
 function mkSide(bids,fids,label){
-  return{label,
+  return{
+    label,
     boxers:bids.map((id,i)=>{
       const b=BOXERS.find(x=>x.id===id);
       return{...b,maxHp:b.hp,hp:b.hp,dead:false,guard:false,momentum:0,statuses:{},iid:`${label}_${i}`}
@@ -872,108 +659,77 @@ function mkBattle(mode,hd,gd,hn,gn){return{mode,state:"playing",turn:"host",turn
 ══════════════════════════════════════════ */
 function hpClass(h,m){const p=h/m;return p<.3?"low":p<.58?"mid":""}
 function hashRoll(seed){let h=0;for(let i=0;i<seed.length;i++)h=(h*31+seed.charCodeAt(i))%100000;return(Math.sin(h)+1)/2}
-function styleBonus(style){if(style==="slugger")return 6;if(style==="speed")return 2;if(style==="balanced")return 1;return 0}
+function styleBonus(style){if(style==="slugger")return 5;if(style==="speed")return 2;if(style==="balanced")return 1;return 0}
 function nextAlive(s){return s.boxers.findIndex(x=>!x.dead)}
 function condOk(f,s){if(!f.cond)return true;const a=s.boxers[s.active];if(f.cond==="low")return a.hp<=a.maxHp*.4;return true}
 
-/* Apply status effect to a target boxer */
 function applyEffect(effect,target,src){
   if(!target.statuses)target.statuses={};
   if(effect==="stun"){target.statuses.stun=1;return"⚡ STUNNED!"}
-  if(effect==="bleed"){const dmg=Math.max(8,Math.floor(src.atk*.2));target.statuses.bleed={dmg,turns:2};return`🩸 BLEEDING (${dmg}/turn)`}
+  if(effect==="bleed"){const dmg=Math.max(8,Math.floor(src.atk*.18));target.statuses.bleed={dmg,turns:2};return`🩸 BLEEDING (${dmg}/turn)`}
   if(effect==="weaken"){target.statuses.weaken={turns:2};return"🛡 WEAKENED!"}
   return null
 }
 
-/* New applyBuff — handles all effect types */
 function applyBuff(f,s,opSide){
   const a=s.boxers[s.active];
   if(!a.statuses)a.statuses={};
-  if(f.effect==="hp")          {a.hp=Math.min(a.maxHp,a.hp+f.val)}
-  else if(f.effect==="atk")    {a.atk+=f.val}
-  else if(f.effect==="def")    {a.def+=f.val}
-  else if(f.effect==="tc")     {s.tc=Math.min(10,s.tc+f.val)}
-  else if(f.effect==="cleanse"){a.statuses={}}
+  if(f.effect==="hp")           a.hp=Math.min(a.maxHp,a.hp+f.val);
+  else if(f.effect==="atk")     a.atk+=f.val;
+  else if(f.effect==="def")     a.def+=f.val;
+  else if(f.effect==="tc")      s.tc=Math.min(10,s.tc+f.val);
+  else if(f.effect==="cleanse") a.statuses={};
   else if(f.effect==="cleanse_hp"){a.statuses={};a.hp=Math.min(a.maxHp,a.hp+f.val)}
-  else if(f.effect==="atk_risk"){a.atk+=f.val;a.hp=Math.max(1,a.hp-(f.cost_hp||15))}
-  else if(f.effect==="hp_pct") {a.hp=Math.min(a.maxHp,a.hp+Math.floor((a.maxHp-a.hp)*(f.val||.5)))}
-  else if(f.effect==="power_up"){a.statuses.power_up={mult:f.mult||1.8}}
-  else if(f.effect==="multi")  {
-    a.atk+=(f.extra?.atk||0);
-    a.def+=(f.extra?.def||0);
+  else if(f.effect==="atk_risk"){a.atk+=f.val;a.hp=Math.max(1,a.hp-(f.cost_hp||14))}
+  else if(f.effect==="hp_pct")  a.hp=Math.min(a.maxHp,a.hp+Math.floor((a.maxHp-a.hp)*(f.val||.5)));
+  else if(f.effect==="power_up")a.statuses.power_up={mult:f.mult||1.75};
+  else if(f.effect==="multi"){
+    a.atk+=(f.extra?.atk||0);a.def+=(f.extra?.def||0);
     if(f.extra?.hp)a.hp=Math.min(a.maxHp,a.hp+(f.extra.hp));
   }
-  // handle special side-effects
-  if(f.special==="cleanse_stun"){delete a.statuses.stun}
+  if(f.special==="cleanse_stun")delete a.statuses.stun;
 }
 
-/* Core attack resolver — now supports special moves */
 function resolveAttack(state,atk,def,salt,isSpecial){
   const sig=isSpecial?SIGNATURES[atk.id]:null;
   if(!atk.statuses)atk.statuses={};
   if(!def.statuses)def.statuses={};
 
-  // Dodge (only on normal attacks)
   if(!isSpecial){
-    const dodgeChance=def.style==="speed"?.18:.06;
+    const dodgeChance=def.style==="speed"?.17:.06;
     if(hashRoll(`${salt}|dodge`)<dodgeChance){
       atk.momentum=Math.min(5,atk.momentum+1);
       return{log:`${def.name} slips the punch!`}
     }
   }
 
-  // Base damage
-  let dmg=Math.max(8,atk.atk-Math.floor(def.def*.62))+styleBonus(atk.style)+(atk.momentum*2);
-
-  // Signature multiplier
+  let dmg=Math.max(8,atk.atk-Math.floor(def.def*.60))+styleBonus(atk.style)+(atk.momentum*2);
   if(sig)dmg=Math.floor(dmg*sig.mult);
+  if(atk.statuses.power_up){dmg=Math.floor(dmg*(atk.statuses.power_up.mult||1.75));delete atk.statuses.power_up}
+  if(def.statuses.weaken){dmg=Math.floor(dmg*1.32);def.statuses.weaken.turns--;if(def.statuses.weaken.turns<=0)delete def.statuses.weaken}
 
-  // Power-up buff: multiply then consume
-  if(atk.statuses.power_up){
-    dmg=Math.floor(dmg*(atk.statuses.power_up.mult||1.8));
-    delete atk.statuses.power_up;
-  }
-
-  // Weaken debuff: defender takes +35% dmg
-  if(def.statuses.weaken){
-    dmg=Math.floor(dmg*1.35);
-    def.statuses.weaken.turns--;
-    if(def.statuses.weaken.turns<=0)delete def.statuses.weaken;
-  }
-
-  // Crit (not on specials — they're already powerful)
   let crit=false;
-  if(!isSpecial){
-    const critChance=Math.min(.26,.05+atk.momentum*.05);
-    if(hashRoll(`${salt}|crit`)<critChance){dmg=Math.floor(dmg*1.55);crit=true}
-  }
+  if(!isSpecial){const critChance=Math.min(.25,.05+atk.momentum*.045);if(hashRoll(`${salt}|crit`)<critChance){dmg=Math.floor(dmg*1.5);crit=true}}
 
-  // Guard reduction + counter-punch
   let counter=0;
   if(def.guard){
     dmg=Math.floor(dmg*.5);
-    if(def.style==="counter"){counter=Math.max(8,Math.floor(def.atk*.45));atk.hp=Math.max(0,atk.hp-counter)}
+    if(def.style==="counter"){counter=Math.max(8,Math.floor(def.atk*.42));atk.hp=Math.max(0,atk.hp-counter)}
     def.guard=false;
   }
 
   def.hp=Math.max(0,def.hp-dmg);
-  // After special: momentum resets to 0; after normal: +1 (cap 5)
   atk.momentum=isSpecial?0:Math.min(5,atk.momentum+1);
 
-  // Build log string
   let parts=[];
   if(isSpecial)parts.push(`${sig.icon} ${sig.name}!`);
   const hitter=isSpecial?"Deals":atk.name+" lands";
   parts.push(`${hitter} ${dmg}${crit?" 💥CRIT":""}`);
   if(counter)parts.push(`Counter ${counter}`);
-
-  // Apply special effect
   if(sig?.effect){const fx=applyEffect(sig.effect,def,atk);if(fx)parts.push(fx)}
-
   return{log:parts.join(" — "),dmg,crit}
 }
 
-/* endTurn: flips turn AND procs bleed DoT on the incoming player */
 function endTurn(bb){
   bb.turn=bb.turn==="host"?"guest":"host";
   bb.turnCount++;
@@ -997,92 +753,54 @@ function endTurn(bb){
   }
 }
 
-/* ══════════════════════════════════════════
-   CORE ACTION HANDLER
-   Supports: attack · special · guard · switch · buff · pass
-══════════════════════════════════════════ */
 function onlineApplyAction(bb,role,kind,idx){
   const me=bb[role],op=bb[role==="host"?"guest":"host"];
   const myA=me.boxers[me.active],opA=op.boxers[op.active];
-  if(!myA.statuses)myA.statuses={};
-  if(!opA.statuses)opA.statuses={};
-
+  if(!myA.statuses)myA.statuses={};if(!opA.statuses)opA.statuses={};
   const isStunned=!!(myA.statuses.stun&&myA.statuses.stun>0);
-
-  // Stun gate: only allow pass when stunned
   if(isStunned&&kind!=="pass")return null;
-
   let log=null;
-  // Rich result object consumed by animateAction
   const res={kind,ko:false,dmg:0,crit:false,isSig:false,dodged:false,heal:false,bleedDmg:0};
 
   if(kind==="attack"||kind==="special"){
     const isSpecial=kind==="special";
-    if(isSpecial){
-      if(myA.momentum<3||me.tc<2)return null;
-      me.tc-=2;
-    }
+    if(isSpecial){if(myA.momentum<3||me.tc<2)return null;me.tc-=2}
     const r=resolveAttack(bb,myA,opA,`${bb.turnCount}|${myA.iid}|${opA.iid}`,isSpecial);
-    log=r.log;
-    res.dmg=r.dmg||0;
-    res.crit=!!r.crit;
-    res.isSig=isSpecial;
-    res.dodged=!!r.dodged;
+    log=r.log;res.dmg=r.dmg||0;res.crit=!!r.crit;res.isSig=isSpecial;res.dodged=!!r.dodged;
     if(!isSpecial)me.tc=Math.min(10,me.tc+1);
     if(opA.hp<=0){
-      opA.hp=0;opA.dead=true;
-      res.ko=true;
-      log=`🥊 KO! ${opA.name} is down!`;
+      opA.hp=0;opA.dead=true;res.ko=true;log=`🥊 KO! ${opA.name} is down!`;
       const ni=nextAlive(op);
       if(ni<0){bb.state="finished";bb.winner=role}
       else{op.active=ni;log+=` ${op.boxers[ni].name} steps in!`}
     }
   }else if(kind==="switch"){
     if(typeof idx!=="number"||idx===me.active||!me.boxers[idx]||me.boxers[idx].dead||me.tc<1)return null;
-    myA.momentum=0; // momentum lost on tag-out
-    me.active=idx;me.tc-=1;
-    log=`🔄 ${me.boxers[idx].name} tagged in!`
+    myA.momentum=0;me.active=idx;me.tc-=1;log=`🔄 ${me.boxers[idx].name} tagged in!`
   }else if(kind==="buff"){
     if(typeof idx!=="number"||!me.buffs[idx])return null;
     const f=me.buffs[idx];
     if(f.used||me.tc<f.cost||!condOk(f,me))return null;
     const hpBefore=myA.hp;
-    applyBuff(f,me,op);
-    f.used=true;me.tc-=f.cost;
-    res.heal=myA.hp>hpBefore;
+    applyBuff(f,me,op);f.used=true;me.tc-=f.cost;res.heal=myA.hp>hpBefore;
     log=`✨ ${myA.name} uses ${f.name}!`
   }else if(kind==="guard"){
     myA.guard=true;myA.momentum=Math.min(5,myA.momentum+1);
     log=`🛡 ${myA.name} raises guard! (+1 MOM)`
   }else if(kind==="pass"){
-    if(isStunned){
-      myA.statuses.stun--;
-      if(myA.statuses.stun<=0)delete myA.statuses.stun;
-      log=`💪 ${myA.name} shakes off the stun!`
-    }else{
-      me.tc=Math.min(10,me.tc+1);
-      log="⏳ Passed — +1 TC"
-    }
+    if(isStunned){myA.statuses.stun--;if(myA.statuses.stun<=0)delete myA.statuses.stun;log=`💪 ${myA.name} shakes off the stun!`}
+    else{me.tc=Math.min(10,me.tc+1);log="⏳ Passed — +1 TC"}
   }
 
   if(!log)return null;
   bb.log.push(log);
-
-  // Capture bleed damage that endTurn may apply, and detect KO from bleed
   const prevHp=bb[bb.turn==="host"?"guest":"host"]?.boxers[bb[bb.turn==="host"?"guest":"host"]?.active]?.hp;
   endTurn(bb);
-  const afterSide=bb[bb.turn];
-  const afterBx=afterSide?.boxers[afterSide?.active];
+  const afterSide=bb[bb.turn];const afterBx=afterSide?.boxers[afterSide?.active];
   if(afterBx&&afterBx.dead){res.ko=true}
-  // Detect bleed DoT damage that occurred during endTurn
-  const incomingSide=bb[bb.turn];
-  const incomingBx=incomingSide?.boxers[incomingSide?.active];
-  if(incomingBx&&!incomingBx.dead&&typeof prevHp==="number"){
-    const bleedDmg=prevHp-incomingBx.hp;
-    if(bleedDmg>0)res.bleedDmg=bleedDmg;
-  }
-
-  return res;
+  const incomingSide=bb[bb.turn];const incomingBx=incomingSide?.boxers[incomingSide?.active];
+  if(incomingBx&&!incomingBx.dead&&typeof prevHp==="number"){const bleedDmg=prevHp-incomingBx.hp;if(bleedDmg>0)res.bleedDmg=bleedDmg}
+  return res
 }
 
 /* ══════════════════════════════════════════
@@ -1095,14 +813,14 @@ function renderMenu(){
     <div class="menu-logo">
       <div class="t1">HAJIME NO</div>
       <div class="t2">IPPO</div>
-      <div class="t3">RING CLASH</div>
+      <div class="t3-wrap"><div class="t3">RING CLASH</div></div>
     </div>
-    <div class="gold-rule"></div>
+    <div class="ink-rule"></div>
+    <div class="sub-tagline">Strategic TCG Combat · Signature Moves · Online Battles</div>
     <div class="row">
       <button class="btn btn-p" id="m-ar">⚔ ENTER ARENA</button>
       <button class="btn" id="m-de">📋 DECK BUILDER</button>
     </div>
-    <div class="sub">Strategic turn-based TCG combat · Signature moves · Online</div>
   </div>`;
   document.getElementById("m-ar").onclick=()=>goto("arena");
   document.getElementById("m-de").onclick=()=>goto("deck");
@@ -1114,7 +832,7 @@ function renderDeck(){
   const cards=src.map(x=>{
     const selected=sel.includes(x.id);
     if(isB){
-      const sig=SIGNATURES[x.id];
+      const sig=SIGNATURES[x.id]||{name:"SPECIAL",icon:"⚡"};
       return`<div class="tcg sa-${x.style} ${selected?"sel":""}" data-id="${x.id}">
         <div class="tcg-band"></div>
         <div class="tcg-hd"><div class="tcg-type">${x.style.toUpperCase()}</div><div class="tcg-icon-sm">${x.icon}</div></div>
@@ -1135,7 +853,7 @@ function renderDeck(){
         <div class="tcg-buff-ico">${x.icon}</div>
         <div class="tcg-plate"><div class="tcg-name">${x.name}</div><div class="tcg-flavor">${x.desc}</div></div>
         <div class="tcg-stats">
-          <div class="ts"><span class="ts-l">EFFECT</span><span class="ts-v" style="color:#b6fcb5;font-size:.78rem">${x.effect.toUpperCase()}</span></div>
+          <div class="ts"><span class="ts-l">EFFECT</span><span class="ts-v" style="color:#b6fcb5;font-size:.76rem">${x.effect.toUpperCase()}</span></div>
           <div class="ts"><span class="ts-l">COST</span><span class="ts-v" style="color:var(--gold2)">${x.cost} TC</span></div>
         </div>
         ${selected?'<div class="tcg-chk">✓</div>':""}
@@ -1144,7 +862,7 @@ function renderDeck(){
   }).join("");
   app().innerHTML=`<div class="view panel">
     <div class="panel-head">
-      <button class="btn" id="d-bk">← Back</button>
+      <button class="btn" id="d-bk">← BACK</button>
       <div class="tally">
         <span class="tally-chip ${S.deckBoxers.length===3?"done":""}">⚔ ${S.deckBoxers.length}/3</span>
         <span class="tally-chip ${S.deckBuffs.length===5?"done":""}">🔮 ${S.deckBuffs.length}/5</span>
@@ -1175,7 +893,7 @@ async function renderArena(){
   if(cfg){await initOnline();await detectNode();subscribeRooms()}
   app().innerHTML=`<div class="view panel">
     <div class="panel-head">
-      <button class="btn" id="a-bk">← Back</button>
+      <button class="btn" id="a-bk">← BACK</button>
       <div class="panel-title">CHOOSE MATCH</div>
       <div></div>
     </div>
@@ -1185,7 +903,7 @@ async function renderArena(){
       <div class="choice" id="a-jn"><span class="choice-ico">🔑</span><h3>JOIN BY CODE</h3><p>Enter a room code.</p></div>
     </div>
     <div class="arena-hd">OPEN ROOMS</div>
-    <div class="rooms">${S.roomList.length?S.roomList.map(r=>`<div class="room" data-r="${r.id}"><b>${r.code}</b><div style="font-size:.74rem;color:var(--muted2);margin-top:2px">${r.hostName}</div></div>`).join(""):`<div style="color:var(--muted);font-size:.82rem;padding:6px">No open rooms.</div>`}</div>
+    <div class="rooms">${S.roomList.length?S.roomList.map(r=>`<div class="room" data-r="${r.id}"><b>${r.code}</b><div style="font-size:.7rem;color:var(--muted2);margin-top:2px;font-family:var(--fp)">${r.hostName}</div></div>`).join(""):`<div style="color:var(--muted);font-size:.8rem;padding:6px;font-family:var(--fp)">No open rooms.</div>`}</div>
     ${cfg?`<div class="warn">⚡ Node: ${S.online.roomNode}</div>`:`<div class="warn">⚠ Fill FIREBASE_CONFIG to enable online play.</div>`}
   </div>`;
   document.getElementById("a-bk").onclick=()=>goto("menu");
@@ -1203,7 +921,7 @@ function subscribeRooms(){if(!S.online.db||S.online.listCb)return;const q=roomsR
 function watchRoom(id){if(S.online.roomCb&&S.online.roomId)roomsRef(S.online.roomId).off("value",S.online.roomCb);const cb=snap=>{const room=snap.val();if(!room){toast("Room closed.");S.online.roomId=null;S.online.role=null;goto("arena");return}if(room.battle){S.battle=deep(room.battle);S.battle.mode="online";if(S.view!=="battle")goto("battle");else renderBattle()}};roomsRef(id).on("value",cb);S.online.roomCb=cb;if(S.view!=="battle")goto("battle")}
 
 /* ══════════════════════════════════════════
-   FIGHT CARD — redesigned with pips + status badges
+   FIGHT CARD COMPONENTS
 ══════════════════════════════════════════ */
 function momPips(mom){
   return Array.from({length:5},(_,i)=>{
@@ -1232,6 +950,7 @@ function fightCard(bx,cardId){
   return`<div class="fight-card-wrap sa-${bx.style}" ${wrapAttr}>
     <div class="fight-card sa-${bx.style}" ${idAttr}>
       <div class="fc-fullart" ${artBg(bx.img)}></div>
+      <div class="fc-halftone"></div>
       <div class="fc-overlay"></div>
       <div class="fc-vignette"></div>
       <div class="fc-tint"></div>
@@ -1267,7 +986,6 @@ function fightCard(bx,cardId){
   </div>`
 }
 
-/* Surgically update a fight card already in the DOM */
 function updateCard(bx,cardId){
   const pct=Math.max(0,(bx.hp/bx.maxHp)*100).toFixed(1);
   const hpC=hpClass(bx.hp,bx.maxHp);
@@ -1290,49 +1008,33 @@ function updateCard(bx,cardId){
   }
 }
 
-/* Fully replace a fight card when a KO swaps the active boxer */
 function replaceCard(bx,cardId){
-  const old=document.getElementById(cardId);
-  if(!old)return;
-  // Replace the wrap (card+hp bar) for KO transition
+  const old=document.getElementById(cardId);if(!old)return;
   const wrap=document.getElementById(cardId+"-wrap")||old;
-  wrap.style.transition="opacity .3s ease, transform .3s cubic-bezier(.5,0,.5,1), filter .3s ease";
-  wrap.style.filter="brightness(3) saturate(0)";
-  wrap.style.transform="scale(.95) translateY(4px)";
-  wrap.style.opacity="0";
+  wrap.style.transition="opacity .28s ease,transform .28s cubic-bezier(.5,0,.5,1),filter .28s ease";
+  wrap.style.filter="brightness(3) saturate(0)";wrap.style.transform="scale(.95) translateY(4px)";wrap.style.opacity="0";
   setTimeout(()=>{
-    const tmp=document.createElement("div");
-    tmp.innerHTML=fightCard(bx,cardId);
-    const newWrap=tmp.firstElementChild;
-    newWrap.style.animation="newBoxerIn .55s cubic-bezier(.3,0,.7,1) both";
-    wrap.replaceWith(newWrap);
-  },320);
+    const tmp=document.createElement("div");tmp.innerHTML=fightCard(bx,cardId);
+    const newWrap=tmp.firstElementChild;newWrap.style.animation="newBoxerIn .5s cubic-bezier(.3,0,.7,1) both";wrap.replaceWith(newWrap);
+  },300);
 }
 
-/* Floating damage number over a card element */
 function spawnFloat(cardEl,text,cls){
   if(!cardEl)return;
-  const f=document.createElement("div");
-  f.className="dmg-float "+cls;
-  f.textContent=text;
-  f.style.left=(28+Math.random()*44)+"%";
-  f.style.top="26%";
-  cardEl.style.overflow="visible";
-  cardEl.appendChild(f);
-  setTimeout(()=>{f.remove();},1050);
+  const f=document.createElement("div");f.className="dmg-float "+cls;f.textContent=text;
+  f.style.left=(28+Math.random()*44)+"%";f.style.top="26%";
+  cardEl.style.overflow="visible";cardEl.appendChild(f);
+  setTimeout(()=>{f.remove()},1050);
 }
 
-/* Hit overlay flash */
 function flashCard(cardEl,type){
   if(!cardEl)return;
-  const ov=document.createElement("div");
-  ov.className="hit-ov"+(type?" "+type:"");
-  cardEl.appendChild(ov);
-  setTimeout(()=>ov.remove(),540);
+  const ov=document.createElement("div");ov.className="hit-ov"+(type?" "+type:"");
+  cardEl.appendChild(ov);setTimeout(()=>ov.remove(),520);
 }
 
 /* ══════════════════════════════════════════
-   ANIMATION ENGINE — sequences every action visually
+   ANIMATION ENGINE
 ══════════════════════════════════════════ */
 function animateAction(result,isPlayerAction,afterDone){
   const b=S.battle;
@@ -1341,105 +1043,73 @@ function animateAction(result,isPlayerAction,afterDone){
   const atkCard=isPlayerAction?myCard:opCard;
   const defCard=isPlayerAction?opCard:myCard;
   const ms=t=>new Promise(r=>setTimeout(r,t));
-
   const myRole=b.mode==="online"?S.online.role:"host";
   const myKey=myRole==="guest"?"guest":"host",opKey=myKey==="host"?"guest":"host";
 
   async function run(){
     const kind=result?.kind||"pass";
     const isAtk=kind==="attack"||kind==="special";
-
     if(isAtk&&!result.dodged){
-      // 1 — Attacker bounce
-      if(atkCard){
-        atkCard.classList.add(isPlayerAction?"punching-dn":"punching-up");
-        if(result.isSig)atkCard.classList.add("sig-burst");
-      }
-      await ms(160);
-
-      // 2 — Defender shakes + flash + float
+      if(atkCard){atkCard.classList.add(isPlayerAction?"punching-dn":"punching-up");if(result.isSig)atkCard.classList.add("sig-burst")}
+      await ms(155);
       if(defCard){
-        defCard.classList.add("taking-hit");
-        flashCard(defCard,result.isSig?"gold":"red");
-        if(result.isSig){const rip=document.createElement("div");rip.className="sig-ripple";defCard.appendChild(rip);setTimeout(()=>rip.remove(),800)}
-        if(result.dmg>0){
-          const cls=result.isSig?"sig":result.crit?"crit":"norm";
-          spawnFloat(defCard,"-"+result.dmg,cls);
-        }
+        defCard.classList.add("taking-hit");flashCard(defCard,result.isSig?"gold":"red");
+        if(result.isSig){const rip=document.createElement("div");rip.className="sig-ripple";defCard.appendChild(rip);setTimeout(()=>rip.remove(),750)}
+        if(result.dmg>0){const cls=result.isSig?"sig":result.crit?"crit":"norm";spawnFloat(defCard,"-"+result.dmg,cls)}
       }
-
-      // 3 — HP bar update (CSS handles smooth slide)
-      await ms(90);
+      await ms(88);
       updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
       updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
-      await ms(260);
+      await ms(250);
       if(atkCard)atkCard.classList.remove("punching-dn","punching-up","sig-burst");
       if(defCard)defCard.classList.remove("taking-hit");
-
-      // If a KO happened the active boxer changed — replace the whole card
       if(result.ko){
         const defId=isPlayerAction?"fc-op":"fc-me";
         const defSide=isPlayerAction?b[opKey]:b[myKey];
-        // Brief white KO flash on the defeated card
-        const koCard=document.getElementById(defId);
-        if(koCard)flashCard(koCard,"ko");
-        await ms(220);
+        const koCard=document.getElementById(defId);if(koCard)flashCard(koCard,"ko");
+        await ms(210);
         replaceCard(defSide.boxers[defSide.active],defId);
-        // Also update the attacker card (momentum reset etc.)
-        updateCard(b[isPlayerAction?myKey:opKey].boxers[b[isPlayerAction?myKey:opKey].active],
-                   isPlayerAction?"fc-me":"fc-op");
+        updateCard(b[isPlayerAction?myKey:opKey].boxers[b[isPlayerAction?myKey:opKey].active],isPlayerAction?"fc-me":"fc-op");
       }
-
     }else if(isAtk&&result.dodged){
       if(defCard)defCard.classList.add("taking-hit");
       updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
       updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
-      await ms(400);
-      if(defCard)defCard.classList.remove("taking-hit");
-
+      await ms(380);if(defCard)defCard.classList.remove("taking-hit");
     }else{
-      // Buff / guard / pass / switch — also handle switch KO (switch to new boxer)
       if(result.heal&&atkCard)flashCard(atkCard,"heal");
       if(result.heal&&atkCard)spawnFloat(atkCard,"+","heal");
       if(result.ko){
-        // KO from bleed etc.
         const defId=isPlayerAction?"fc-op":"fc-me";
         const defSide=isPlayerAction?b[opKey]:b[myKey];
         replaceCard(defSide.boxers[defSide.active],defId);
-      } else {
+      }else{
         updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
         updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
       }
-      await ms(280);
+      await ms(270);
     }
-
-    // 4 — Bleed DoT float
     if(result.bleedDmg>0){
       const bleedTarget=isPlayerAction?opCard:myCard;
       spawnFloat(bleedTarget,"🩸 -"+result.bleedDmg,"bleed");
-      await ms(70);
+      await ms(65);
       updateCard(b[opKey].boxers[b[opKey].active],"fc-op");
       updateCard(b[myKey].boxers[b[myKey].active],"fc-me");
-      await ms(300);
+      await ms(290);
     }
-
-    // 5 — Slide log
     const lt=document.querySelector(".log-txt");
     if(lt){lt.classList.remove("slide");void lt.offsetWidth;lt.textContent=b.log[b.log.length-1]||"";lt.classList.add("slide")}
-    await ms(110);
-
+    await ms(105);
     afterDone();
   }
   run().catch(console.error);
 }
 
-
 /* ══════════════════════════════════════════
    RENDER BATTLE
 ══════════════════════════════════════════ */
 function renderBattle(){
-  const b=S.battle;
-  if(!b)return goto("menu");
+  const b=S.battle;if(!b)return goto("menu");
   const myRole=b.mode==="online"?S.online.role:"host";
   const myKey=myRole==="guest"?"guest":"host",opKey=myKey==="host"?"guest":"host";
   const me=b[myKey],op=b[opKey];
@@ -1451,76 +1121,54 @@ function renderBattle(){
   const canSig=can&&!isStunned&&(myA?.momentum||0)>=3&&me.tc>=2;
   const isWin=(b.mode==="ai"&&b.winner==="host")||(b.mode==="online"&&b.winner===myRole);
 
-  // Turn label
   let turnLbl,turnClass="turn-lbl";
   if(!can){turnLbl="○ OPPONENT TURN"}
   else if(isStunned){turnLbl="⚡ STUNNED — PASS TO RECOVER";turnClass="turn-lbl stunned-lbl"}
   else{turnLbl="● YOUR TURN";turnClass="turn-lbl yours"}
 
   app().innerHTML=`<div class="view battle">
-    <!-- Opponent bar -->
     <div class="bar">
       <div class="bar-left">
         <div class="slots">${op.boxers.map((x,i)=>`<div class="slot ${x.dead?"dead":""} ${i===op.active?"active-slot":""}">${x.icon}</div>`).join("")}</div>
         <div class="bar-lbl">${op.label}</div>
-        <div style="font-size:.6rem;font-family:var(--fd);color:var(--muted);letter-spacing:.06em">${op.boxers[op.active].name}</div>
+        <div style="font-size:.58rem;font-family:var(--fd);color:var(--muted);letter-spacing:.06em">${op.boxers[op.active].name}</div>
       </div>
       <div class="bar-tc">TC ${op.tc}</div>
     </div>
-
-    <!-- Opponent fight card -->
     <div class="card-zone">${fightCard(op.boxers[op.active],"fc-op")}</div>
-
-    <!-- Battle log -->
     <div class="logbox">
       <div class="log-inner">
         <div class="${turnClass}">${turnLbl}</div>
         <div class="log-txt">${b.log[b.log.length-1]||""}</div>
       </div>
     </div>
-
-    <!-- My fight card -->
     <div class="card-zone">${fightCard(myA,"fc-me")}</div>
-
-    <!-- Controls -->
     <div class="ctrl ctrl-in" id="ctrl-root">
       <div class="ctrl-top">
         <div class="ctrl-info">
           <span class="ctrl-lbl">${me.label}</span>
-          <span style="font-size:.58rem;font-family:var(--fd);color:var(--muted);letter-spacing:.06em">${myA.name}</span>
+          <span style="font-size:.56rem;font-family:var(--fd);color:var(--muted);letter-spacing:.06em">${myA.name}</span>
           <span class="tc-badge" id="my-tc">TC ${me.tc}</span>
           ${isStunned&&can?'<span class="stun-note">⚡ STUNNED</span>':""}
         </div>
         <div class="slots">${me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""} ${i===me.active?"active-slot":""}" data-sw="${i}" ${(!can||i===me.active||x.dead||isStunned)?"disabled":""}>${x.icon}</button>`).join("")}</div>
       </div>
       <div class="act-row">
-        <button class="btn" id="a-guard" ${(can&&!isStunned)?"":"disabled"}>GUARD</button>
+        <button class="btn" id="a-guard" ${(can&&!isStunned)?"":"disabled"}>🛡 GUARD</button>
         <button class="btn btn-sig ${canSig?"live":""}" id="a-sig" ${canSig?"":"disabled"}>${sig.icon} ${sig.name}</button>
         <button class="btn" id="a-pass" ${can?"":"disabled"}>${(isStunned&&can)?"SHAKE OFF":"PASS"}</button>
         <button class="btn btn-p" id="a-hit" ${(can&&!isStunned)?"":"disabled"}>ATTACK</button>
       </div>
     </div>
-
-    <!-- Side buff panel -->
     <div class="buff-side" id="buff-side-panel">
-      ${me.buffs.map((f,i)=>{
-        const u=can&&!f.used&&me.tc>=f.cost&&!isStunned;
-        return`<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}>
-          <div class="buff-top"><div class="buff-ico">${f.icon}</div><div class="buff-tc">${f.cost}TC</div></div>
-          <div class="buff-nm">${f.name}</div>
-        </button>`
-      }).join("")}
+      ${me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost&&!isStunned;return`<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="buff-top"><div class="buff-ico">${f.icon}</div><div class="buff-tc">${f.cost}TC</div></div><div class="buff-nm">${f.name}</div></button>`}).join("")}
     </div>
-
-    <!-- Victory/Defeat overlay -->
     ${b.state==="finished"?`<div class="ov"><div class="ov-box">
       <div class="ov-result ${isWin?"win":"lose"}">${isWin?"VICTORY":"DEFEAT"}</div>
       <div class="ov-rule"></div>
       <div class="ov-sub">${isWin?"THE CROWD GOES WILD":"THE BELL HAS RUNG"}</div>
-      <div class="ov-stats">
-        <div class="ov-stat"><b>Turn ${b.turnCount}</b><span>turns fought</span></div>
-      </div>
-      <button class="btn btn-p" id="b-ex" style="font-size:1.1rem;padding:13px 32px">RETURN TO MENU</button>
+      <div class="ov-stats"><div class="ov-stat"><b>Turn ${b.turnCount}</b><span>TURNS FOUGHT</span></div></div>
+      <button class="btn btn-p" id="b-ex" style="font-size:1.1rem;padding:12px 28px">RETURN TO MENU</button>
     </div></div>`:""}
   </div>`;
 
@@ -1540,7 +1188,7 @@ function renderBattle(){
 }
 
 /* ══════════════════════════════════════════
-   ACT — routes to AI or online
+   ACTION ROUTER
 ══════════════════════════════════════════ */
 async function act(kind,idx){
   const b=S.battle;if(!b||b.state!=="playing")return;
@@ -1562,24 +1210,20 @@ async function act(kind,idx){
 }
 
 function actAI(kind,idx){
-  const b=S.battle;
-  if(!b||b.state!=="playing"||b.turn!=="host"||S.animating)return;
-  S.animating=true;
-  setCtrlEnabled(false);
+  const b=S.battle;if(!b||b.state!=="playing"||b.turn!=="host"||S.animating)return;
+  S.animating=true;setCtrlEnabled(false);
   const result=onlineApplyAction(b,"host",kind,idx);
   if(!result){S.animating=false;setCtrlEnabled(true);return}
   animateAction(result,true,()=>{
     S.animating=false;
     if(b.state==="finished"){renderBattle();return}
-    setCtrlEnabled(true);
-    refreshTurnUI();
-    if(b.state==="playing")setTimeout(doAiTurn,680);
+    setCtrlEnabled(true);refreshTurnUI();
+    if(b.state==="playing")setTimeout(doAiTurn,660);
   });
 }
 
 function doAiTurn(){
-  const b=S.battle;
-  if(!b||b.mode!=="ai"||b.state!=="playing"||b.turn!=="guest"||S.animating)return;
+  const b=S.battle;if(!b||b.mode!=="ai"||b.state!=="playing"||b.turn!=="guest"||S.animating)return;
   S.animating=true;setCtrlEnabled(false);
   const ai=b.guest,a=ai.boxers[ai.active];
   if(!a.statuses)a.statuses={};
@@ -1599,10 +1243,8 @@ function doAiTurn(){
   const result=onlineApplyAction(b,"guest",kind,idx);
   if(!result){S.animating=false;setCtrlEnabled(true);return}
   animateAction(result,false,()=>{
-    S.animating=false;
-    if(b.state==="finished"){renderBattle();return}
-    setCtrlEnabled(true);
-    refreshTurnUI();
+    S.animating=false;if(b.state==="finished"){renderBattle();return}
+    setCtrlEnabled(true);refreshTurnUI();
   });
 }
 
@@ -1624,20 +1266,16 @@ function refreshTurnUI(){
   const isStunned=!!(myA?.statuses?.stun&&myA.statuses.stun>0);
   const sig=SIGNATURES[myA?.id]||{name:"SPECIAL",icon:"⚡"};
   const canSig=can&&!isStunned&&(myA?.momentum||0)>=3&&me.tc>=2;
-  // Log
   const lt=document.querySelector(".log-txt");
   if(lt){lt.classList.remove("slide");void lt.offsetWidth;lt.textContent=b.log[b.log.length-1]||"";lt.classList.add("slide")}
-  // Turn label
   const tl=document.querySelector(".turn-lbl");
   if(tl){
     if(!can){tl.textContent="○ OPPONENT TURN";tl.className="turn-lbl"}
     else if(isStunned){tl.textContent="⚡ STUNNED — PASS TO RECOVER";tl.className="turn-lbl stunned-lbl"}
     else{tl.textContent="● YOUR TURN";tl.className="turn-lbl yours"}
   }
-  // TC
   const myTcEl=document.getElementById("my-tc");if(myTcEl)myTcEl.textContent="TC "+me.tc;
   const opTcEl=document.querySelector(".bar-tc");if(opTcEl)opTcEl.textContent="TC "+op.tc;
-  // Rebuild ctrl
   const ctrl=document.getElementById("ctrl-root");if(!ctrl)return;
   const actRow=ctrl.querySelector(".act-row");
   if(actRow){
@@ -1656,7 +1294,6 @@ function refreshTurnUI(){
     swRow.innerHTML=me.boxers.map((x,i)=>`<button class="slot ${x.dead?"dead":""} ${i===me.active?"active-slot":""}" data-sw="${i}" ${(!can||i===me.active||x.dead||isStunned)?"disabled":""}>${x.icon}</button>`).join("");
     ctrl.querySelectorAll("[data-sw]").forEach(el=>el.addEventListener("click",()=>act("switch",+el.dataset.sw)));
   }
-  // Rebuild side buff panel
   const sidePanel=document.getElementById("buff-side-panel");
   if(sidePanel){
     sidePanel.innerHTML=me.buffs.map((f,i)=>{const u=can&&!f.used&&me.tc>=f.cost&&!isStunned;return`<button class="buff ${u?"":"dis"}" data-bf="${i}" ${u?"":"disabled"}><div class="buff-top"><div class="buff-ico">${f.icon}</div><div class="buff-tc">${f.cost}TC</div></div><div class="buff-nm">${f.name}</div></button>`}).join("");
@@ -1664,10 +1301,7 @@ function refreshTurnUI(){
   }
 }
 
-
-    load();render();
-  </script>
+load();render();
+</script>
 </body>
 </html>
-
-
